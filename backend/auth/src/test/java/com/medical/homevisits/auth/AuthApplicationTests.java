@@ -1,10 +1,10 @@
-package com.medical.homevisits.home_visits;
+package com.medical.homevisits.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HomeVisitsApplicationTests {
+class AuthApplicationTests {
 
 	@Test
 	void contextLoads() {

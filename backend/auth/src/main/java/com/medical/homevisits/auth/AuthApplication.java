@@ -1,13 +1,13 @@
-package com.medical.homevisits.home_visits;
+package com.medical.homevisits.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HomeVisitsApplication {
+public class AuthApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HomeVisitsApplication.class, args);
+		SpringApplication.run(AuthApplication.class, args);
 	}
 
 }
