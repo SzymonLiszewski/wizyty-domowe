@@ -23,6 +23,7 @@ import jakarta.persistence.TemporalType;
 @Table(name = "users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID ID;
     private String firstName;
     private String lastName;

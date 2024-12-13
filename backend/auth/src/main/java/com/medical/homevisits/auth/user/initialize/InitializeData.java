@@ -33,7 +33,6 @@ public class InitializeData implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if (userRepository.findByEmail("test").isEmpty()) {
             User admin = User.builder()
-                    .ID(UUID.fromString("c4804e0f-769e-4ab9-9ebe-0578fb4f00a6"))
                     .email("test")
                     .password(passwordEncoder.encode("test"))
                     .build();
