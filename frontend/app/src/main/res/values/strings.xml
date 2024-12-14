@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Wizyty domowe</string>
+    <string name="nav_search">Znajdź</string>
+    <string name="nav_visits">Wizyty</string>
+    <string name="nav_add_visit">Dodaj wizytę</string>
+    <string name="nav_prescription">Recepty</string>
+    <string name="nav_profile">Profil</string>
+</resources>
