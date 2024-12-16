@@ -53,6 +53,7 @@ public class AuthController {
 
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
+        response.put("role", userRepository.findByEmail(request.getEmail()).get().getRole());
         return response;
     }
 

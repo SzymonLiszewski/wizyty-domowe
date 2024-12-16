@@ -43,7 +43,4 @@ public class User {
         return "OtherUser";
     }
 
-    public String getPassword() {
-        return password;
-    }
 }
