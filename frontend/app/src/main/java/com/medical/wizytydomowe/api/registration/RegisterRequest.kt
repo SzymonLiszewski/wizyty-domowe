@@ -1,4 +1,6 @@
 package com.medical.wizytydomowe.api.registration
 
-class RegisterRequest {
-}
+data class RegisterRequest(
+    val email: String,
+    val password: String
+)

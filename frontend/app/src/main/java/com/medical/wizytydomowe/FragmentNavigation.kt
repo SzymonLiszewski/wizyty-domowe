@@ -1,4 +1,7 @@
 package com.medical.wizytydomowe
 
-class FragmentNavigation {
+import androidx.fragment.app.Fragment
+
+interface FragmentNavigation {
+    fun navigateToFragment(fragment: Fragment)
 }

@@ -48,4 +48,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Dodaj Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    // Dodaj konwerter Gson do Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    
 }

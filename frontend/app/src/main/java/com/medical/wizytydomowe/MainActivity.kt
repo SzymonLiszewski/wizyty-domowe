@@ -16,7 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.medical.wizytydomowe.fragments.LoginFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentNavigation {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -80,4 +80,8 @@ class MainActivity : AppCompatActivity() {
             addToBackStack(null)
             commit()
         }
+
+    override fun navigateToFragment(fragment: Fragment) {
+        setCurrentFragment(fragment)
+    }
 }
