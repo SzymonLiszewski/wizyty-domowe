@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
@@ -28,6 +29,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
             val preferenceManager = PreferenceManager(requireContext())
             preferenceManager.clearAuthToken()
+
+            Toast.makeText(context, "Wylogowano.", Toast.LENGTH_SHORT).show()
 
             val searchFragment = SearchFragment()
             val activity = activity as? FragmentNavigation
