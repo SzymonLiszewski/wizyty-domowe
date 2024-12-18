@@ -107,4 +107,15 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
         }
         return true
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        val emailEditText = view?.findViewById<EditText>(R.id.et_username)
+        val passwordEditText = view?.findViewById<EditText>(R.id.et_password)
+
+        // Czyszczenie pól przy ponownym wejściu do fragmentu
+        emailEditText?.text?.clear()
+        passwordEditText?.text?.clear()
+    }
 }

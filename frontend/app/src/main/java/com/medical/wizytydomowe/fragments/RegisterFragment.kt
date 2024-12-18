@@ -10,12 +10,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.registration.RegisterRequest
 import com.medical.wizytydomowe.api.registration.RegisterResponse
+import okhttp3.ResponseBody
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,41 +65,34 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
                     dateOfBirth = dateOfBirth
                 )
 
-                RetrofitInstance.apiService.register(registerRequest).enqueue(object : Callback<RegisterResponse> {
-                    override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                        val registerResponse = response.body()
+                RetrofitInstance.apiService.register(registerRequest).enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.isSuccessful) {
-                            if (registerResponse != null) {
-                                val responseMessage = registerResponse.response
-                                if (responseMessage != null) {
-                                    Toast.makeText(context, "Rejestracja przebiegła pomyślnie: $responseMessage.", Toast.LENGTH_LONG).show()
-                                }
-                                else {
-                                    Toast.makeText(context, "Rejestracja przebiegła pomyślnie.", Toast.LENGTH_LONG).show()
-                                }
-                            } else {
-                                Toast.makeText(context, "Rejestracja przebiegła pomyślnie.", Toast.LENGTH_LONG).show()
+                            val responseBody = response.body()?.string()
+
+                            try {
+                                val jsonResponse = JSONObject(responseBody)
+                                val registerResponse = Gson().fromJson(jsonResponse.toString(), RegisterResponse::class.java)
+
+                                Toast.makeText(context, registerResponse.response ?: "Rejestracja przebiegła pomyślnie.", Toast.LENGTH_LONG).show()
+
+                            } catch (e: JSONException) {
+                                Toast.makeText(context, responseBody, Toast.LENGTH_LONG).show()
                             }
 
-                            val activity = activity as? FragmentNavigation
-                            activity?.navigateToFragment(LoginFragment())
-
+                            val loginFragment = LoginFragment()
+                            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                            transaction.replace(R.id.fragment_container, loginFragment)
+                            transaction.addToBackStack(null)
+                            transaction.commit()
                         }
                         else {
-                            if (registerResponse != null) {
-                                val responseMessage = registerResponse.response
-                                if (responseMessage != null) {
-                                    Toast.makeText(context, "Rejestracja nie została zakończona sukcesem: $responseMessage.", Toast.LENGTH_LONG).show()
-                                }
-                                else {
-                                    Toast.makeText(context, "Rejestracja nie została zakończona sukcesem.", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                            else Toast.makeText(context, "Rejestracja nie została zakończona sukcesem.", Toast.LENGTH_SHORT).show()
+                            val errorMessage = response.errorBody()?.string()
+                            Toast.makeText(context, "$errorMessage.", Toast.LENGTH_LONG).show()
                         }
                     }
 
-                    override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         // Obsługa błędu połączenia
                         Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
                     }
@@ -157,5 +154,24 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         } catch (e: Exception) {
             null // W przypadku błędu w konwersji zwróci null
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val firstNameEditText = view?.findViewById<EditText>(R.id.et_first_name)
+        val lastNameEditText = view?.findViewById<EditText>(R.id.et_last_name)
+        val emailEditText = view?.findViewById<EditText>(R.id.et_email)
+        val dateOfBirthEditText = view?.findViewById<EditText>(R.id.et_date_of_birth)
+        val phoneNumberEditText = view?.findViewById<EditText>(R.id.et_phone_number)
+        val passwordEditText = view?.findViewById<EditText>(R.id.et_password)
+
+        // Czyszczenie pól przy każdym ponownym wejściu do fragmentu
+        firstNameEditText?.text?.clear()
+        lastNameEditText?.text?.clear()
+        emailEditText?.text?.clear()
+        dateOfBirthEditText?.text?.clear()
+        phoneNumberEditText?.text?.clear()
+        passwordEditText?.text?.clear()
     }
 }

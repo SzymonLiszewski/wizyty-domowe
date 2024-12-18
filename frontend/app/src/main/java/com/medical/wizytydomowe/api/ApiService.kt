@@ -4,6 +4,7 @@ import com.medical.wizytydomowe.api.login.LoginRequest
 import com.medical.wizytydomowe.api.login.LoginResponse
 import com.medical.wizytydomowe.api.registration.RegisterRequest
 import com.medical.wizytydomowe.api.registration.RegisterResponse
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -11,9 +12,9 @@ import retrofit2.http.POST
 interface ApiService {
 
     // Rejestracja
-    @POST("http://192.168.56.1:8081/api/auth/register/patient")
-    fun register(@Body registerRequest: RegisterRequest): Call<RegisterResponse>
+    @POST("register/patient")
+    fun register(@Body registerRequest: RegisterRequest): Call<ResponseBody>
 
-    @POST("http://192.168.56.1:8081/api/auth/login")
+    @POST("login")
     fun login(@Body loginRequest: LoginRequest): Call<LoginResponse>
 }
