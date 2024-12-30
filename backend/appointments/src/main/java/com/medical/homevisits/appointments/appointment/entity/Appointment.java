@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -26,16 +28,13 @@ public class Appointment {
     private AppointmentStatus status; //status of the appointment (reserved, available, cancelled or completed)
     private LocalDateTime appointmentStartTime;
     private LocalDateTime appointmentEndTime;
+    @ManyToOne
+    @JoinColumn(name="doctors")
     private Doctor doctor;
+    @ManyToOne
+    @JoinColumn(name="patients")
     private Patient patient;
     private String address;
     private String notes;   //available for doctors to add additional info about appointment
-}
-
-enum AppointmentStatus {
-    RESERVED,
-    AVAILABLE,
-    CANCELED,
-    COMPLETED
 }
 
