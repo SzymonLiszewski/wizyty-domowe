@@ -16,6 +16,5 @@ import java.util.UUID;
 @Table(name="patients")
 public class Patient {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID ID;
 }
