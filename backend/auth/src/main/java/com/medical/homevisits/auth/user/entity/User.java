@@ -12,6 +12,7 @@ import java.util.UUID;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+
 @Getter
 @Setter
 @SuperBuilder
@@ -42,5 +43,51 @@ public class User {
         }
         return "OtherUser";
     }
+    public UserInfoResponse getUserInfo() {
+        UserInfoResponse response = new UserInfoResponse(
+            this.ID,
+            this.firstName,
+            this.lastName,
+            this.email,
+            this.getRole(),
+            this.dateOfBirth,
+            null, 
+            null, 
+            null, 
+            null  
+        );
+
+        if (this instanceof Doctor) {
+            Doctor doctor = (Doctor) this;
+            response.setSpecialisation(doctor.getSpecialisation());
+            response.setAcademicDegree(doctor.getAcademicDegree());
+            response.setWorkPlace(doctor.getWorkPlace());
+        }
+
+        if (this instanceof Patient) {
+            Patient patient = (Patient) this;
+            response.setAddress(patient.getAddress());
+        }
+
+        return response;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserInfoResponse {
+        private UUID id;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String role;
+        private Date dateOfBirth;
+
+        private String address; 
+        private String specialisation; 
+        private String academicDegree; 
+        private String workPlace;
+    }
+
 
 }
