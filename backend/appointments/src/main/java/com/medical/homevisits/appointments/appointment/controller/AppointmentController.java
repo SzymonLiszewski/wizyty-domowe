@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,9 +60,13 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping("/getAvailableAppointments")
-    public ResponseEntity<List<Appointment>> getAvailableAppointments(){
-        List<Appointment> appointments = service.getAvailableAppointments();
+    @GetMapping("/getAppointments")
+    public ResponseEntity<List<Appointment>> getAvailableAppointments(
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) UUID doctorId,
+            @RequestParam(required = false) LocalDateTime appointmentDate
+            ){
+        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate);
         return ResponseEntity.ok(appointments);
     }
 
