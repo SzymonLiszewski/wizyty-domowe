@@ -6,6 +6,7 @@ import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.event.repository.UserEventRestRepository;
 import com.medical.homevisits.auth.user.repository.UserRepository;
 import com.medical.homevisits.auth.user.service.CustomUserDetailsService;
+import com.medical.homevisits.auth.user.service.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,17 +22,19 @@ public class InitializeData implements InitializingBean {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserEventRestRepository userEventRestRepository;
+    private final UserService userService;
 
     @Autowired
     public InitializeData(
             CustomUserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder,
-            UserRepository userRepository, UserEventRestRepository userEventRestRepository
+            UserRepository userRepository, UserEventRestRepository userEventRestRepository, UserService userService
     ) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userEventRestRepository = userEventRestRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -49,9 +52,7 @@ public class InitializeData implements InitializingBean {
                     .email("test2")
                     .password(passwordEncoder.encode("test"))
                     .build();
-            userRepository.save(doctor);
-            CreateUserObject userObject = new CreateUserObject(doctor.getID());
-            userEventRestRepository.create(userObject);
+            userService.create(doctor);
             System.out.println("Doctor has been created with id "+doctor.getID().toString());
         }
     }

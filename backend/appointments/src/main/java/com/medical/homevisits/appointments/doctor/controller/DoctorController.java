@@ -30,6 +30,6 @@ public class DoctorController {
 }
 
 @Getter
-class createRequest{
+class   createRequest{
     private UUID id;
 }

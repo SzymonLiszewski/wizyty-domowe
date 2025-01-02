@@ -14,8 +14,12 @@ public class UserEventRestRepository {
         this.restTemplate = restTemplate;
     }
 
-    public void create(CreateUserObject user){
+    public void createDoctor(CreateUserObject user){
         restTemplate.postForObject("/api/doctors", user, Void.class);
+    }
+
+    public void createPatient(CreateUserObject user){
+        restTemplate.postForObject("/api/patients", user, Void.class);
     }
 
 }
