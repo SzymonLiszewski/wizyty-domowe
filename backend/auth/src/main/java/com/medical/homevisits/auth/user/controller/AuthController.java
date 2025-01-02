@@ -115,45 +115,29 @@ class AuthRequest {
 @Getter
 @Setter
 class RegisterRequest {
+	@NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     private String lastName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
     private String email;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "\\d{9,15}", message = "Phone number must be between 9 and 15 digits")
     private String phoneNumber;
+
     @Temporal(TemporalType.DATE)
+    @Past(message = "Date of birth must be in the past")
     private Date dateOfBirth;
-
-    public Map<String, String> validate() {
-        Map<String, String> errors = new HashMap<>();
-
-        if (firstName == null || firstName.trim().isEmpty()) {
-            errors.put("firstName", "First name is required");
-        } else if (firstName.length() < 2 || firstName.length() > 50) {
-            errors.put("firstName", "First name must be between 2 and 50 characters");
-        }
-
-        if (lastName == null || lastName.trim().isEmpty()) {
-            errors.put("lastName", "Last name is required");
-        } else if (lastName.length() < 2 || lastName.length() > 50) {
-            errors.put("lastName", "Last name must be between 2 and 50 characters");
-        }
-
-        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            errors.put("email", "Invalid email format");
-        }
-
-        if (password == null || password.length() < 8) {
-            errors.put("password", "Password must be at least 8 characters long");
-        }
-
-        if (phoneNumber == null || !phoneNumber.matches("\\d{9,15}")) {
-            errors.put("phoneNumber", "Phone number must be between 9 and 15 digits");
-        }
-
-        if (dateOfBirth == null || dateOfBirth.after(new Date())) {
-            errors.put("dateOfBirth", "Date of birth must be in the past");
-        }
-
-        return errors;
-    }
 }
+
+
