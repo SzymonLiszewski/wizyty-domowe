@@ -15,4 +15,5 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @DiscriminatorValue("Patient")
 public class Patient extends User {
+    private String address;
 }
