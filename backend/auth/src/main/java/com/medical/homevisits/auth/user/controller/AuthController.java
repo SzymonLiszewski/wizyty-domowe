@@ -94,6 +94,7 @@ public class AuthController {
                 .dateOfBirth(request.getDateOfBirth())
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .address(request.getAddress())
                 .build();
         userRepository.save(patient);
         String jwtToken = generateToken(request.getEmail(), 3600000); 
@@ -136,6 +137,7 @@ class RegisterRequest {
     @Temporal(TemporalType.DATE)
     @Past(message = "Date of birth must be in the past")
     private Date dateOfBirth;
+    private String address;
 }
 
 
