@@ -107,9 +107,23 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
+    /**
+     * this function allows doctors to pass their available time and generate appointments calendar for 1 month forward
+     */
     @PostMapping("/doctors")
-    public void addAppointmentsCalendar(@RequestBody CalendarRequest request){
-        service.createAvailableAppoitnments(request.getDoctorId(), request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
+    public void addAppointmentsCalendar(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody CalendarRequest request){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID doctorId = UUID.fromString(claims.get("id", String.class));
+        service.createAvailableAppoitnments(doctorId, request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
     }
 
 }
@@ -128,7 +142,6 @@ class AddAppointmentRequest{
 
 @Getter
 class CalendarRequest{
-    private UUID doctorId;
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
