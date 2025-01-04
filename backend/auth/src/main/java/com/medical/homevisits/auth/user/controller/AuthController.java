@@ -1,12 +1,14 @@
 package com.medical.homevisits.auth.user.controller;
 import com.medical.homevisits.auth.patient.entity.Patient;
 import com.medical.homevisits.auth.user.entity.User;
+import com.medical.homevisits.auth.user.entity.User.UserInfoResponse;
 import com.medical.homevisits.auth.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,7 +46,8 @@ public class AuthController {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-    private String generateToken(String email, long duration) {
+    @SuppressWarnings("deprecation")
+	private String generateToken(String email, long duration) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
@@ -64,11 +75,13 @@ public class AuthController {
         String refreshToken = request.get("refresh_token");
 
         try {
-            String email = Jwts.parser()
-                    .setSigningKey(jwtSecret)
-                    .parseClaimsJws(refreshToken)
-                    .getBody()
-                    .getSubject();
+        	String email = Jwts.parserBuilder()
+        		    .setSigningKey(jwtSecret)
+        		    .build()
+        		    .parseClaimsJws(refreshToken)
+        		    .getBody()
+        		    .getSubject();
+
 
             if (email == null || userRepository.findByEmail(email).isEmpty()) {
                 return ResponseEntity.status(401).body(Map.of("error", "Invalid refresh token"));
@@ -82,8 +95,9 @@ public class AuthController {
         }
     }
 
+    
     @PostMapping("/register/patient")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request){
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("User with this email is already registered");
         }
@@ -93,26 +107,54 @@ public class AuthController {
                 .email(request.getEmail())
                 .dateOfBirth(request.getDateOfBirth())
                 .phoneNumber(request.getPhoneNumber())
-                .password(passwordEncoder.encode(request.getPassword()))
                 .address(request.getAddress())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build();
         userRepository.save(patient);
-        String jwtToken = generateToken(request.getEmail(), 3600000); 
-        String refreshToken = generateToken(request.getEmail(), 3600000*4); 
+       
         return ResponseEntity.ok("User registered successfully");
     }
+    @GetMapping("/user/info")
+    public ResponseEntity<UserInfoResponse> getCurrentUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        
+        try {
+            String email = Jwts.parserBuilder()
+                    .setSigningKey(jwtSecret)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject(); 
+            
+            if (email == null || userRepository.findByEmail(email).isEmpty()) {
+                return ResponseEntity.status(401).body(null); 
+            }
+
+            User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+
+            UserInfoResponse userInfoResponse = currentUser.getUserInfo();
+            
+            return ResponseEntity.ok(userInfoResponse);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(null); 
+        }
+    }
+
 }
 
 @Getter
 @Setter
+@NoArgsConstructor
 class AuthRequest {
     private String email;
     private String password;
-
+   
 }
 
 @Getter
 @Setter
+@NoArgsConstructor
 class RegisterRequest {
 	@NotBlank(message = "First name is required")
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
@@ -137,7 +179,20 @@ class RegisterRequest {
     @Temporal(TemporalType.DATE)
     @Past(message = "Date of birth must be in the past")
     private Date dateOfBirth;
+    
     private String address;
 }
+@ControllerAdvice
+ class GlobalExceptionHandler {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
 
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+}
