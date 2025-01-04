@@ -1,7 +1,5 @@
-package com.medical.homevisits.auth.nurse.entity;
+package com.medical.homevisits.auth.paramedic.entity;
 
-
-import com.medical.homevisits.auth.doctor.entity.Doctor;
 import com.medical.homevisits.auth.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,11 +9,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-@DiscriminatorValue("Nurse")
-public class Nurse extends User {
+@DiscriminatorValue("Paramedic")
+public class Paramedic extends User {
     private String specialisation;
     private String academicDegree;
-    private Doctor doctor;
     private String workPlace;
 
 }
