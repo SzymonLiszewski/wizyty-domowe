@@ -46,8 +46,13 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
+        User user = userRepository.findByEmail(request.getEmail()).get();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getID());
+        claims.put("role", user.getRole());
 
         String token = Jwts.builder()
+                .setClaims(claims)
                 .setSubject(request.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000))
@@ -56,7 +61,7 @@ public class AuthController {
 
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
-        response.put("role", userRepository.findByEmail(request.getEmail()).get().getRole());
+        response.put("role", user.getRole());
         return response;
     }
 
