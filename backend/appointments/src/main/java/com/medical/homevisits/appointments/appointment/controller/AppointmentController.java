@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.Jwts;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -108,6 +107,11 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
+    @PostMapping("/doctors")
+    public void addAppointmentsCalendar(@RequestBody CalendarRequest request){
+        service.createAvailableAppoitnments(request.getDoctorId(), request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
+    }
+
 }
 
 @Getter
@@ -122,3 +126,11 @@ class AddAppointmentRequest{
     private String notes;
 }
 
+@Getter
+class CalendarRequest{
+    private UUID doctorId;
+    private DayOfWeek dayOfWeek;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private Duration appointmentsDuration;
+}

@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.print.Doc;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,5 +64,35 @@ public class AppointmentService {
             spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.between(root.get("appointmentStartTime"), startOfDay, endOfDay));
         }
         return repository.findAll(spec);
+    }
+
+    /**
+     * function creates available appointments for given doctor in specified hours range for 1 month forward
+     * @param doctorId - doctors id
+     * @param dayOfWeek - appointments are created for every week on the same hours
+     * @param appointmentsDuration - duration of appointment (each patient can only reserve whole time slot)
+     */
+    public void createAvailableAppoitnments(UUID doctorId,DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, Duration appointmentsDuration){
+        if (appointmentsDuration == null){
+            appointmentsDuration=Duration.ofHours(1);
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate nextDate = today.with(TemporalAdjusters.nextOrSame(dayOfWeek));
+        LocalDate oneMonthLater = today.plusMonths(1);
+        LocalTime currentTime = startTime;
+
+        while (!nextDate.isAfter(oneMonthLater)) {
+            while (!currentTime.isAfter(endTime)) {
+                repository.save(Appointment.builder()
+                        .appointmentStartTime(LocalDateTime.of(nextDate, currentTime))
+                        .appointmentEndTime(LocalDateTime.of(nextDate, currentTime.plus(appointmentsDuration)))
+                        .status(AppointmentStatus.AVAILABLE)
+                        .doctor(doctorRepository.findById(doctorId).get())
+                        .build());
+                currentTime = currentTime.plus(appointmentsDuration);
+            }
+            currentTime = startTime;
+            nextDate = nextDate.plusWeeks(1);
+        }
     }
 }
