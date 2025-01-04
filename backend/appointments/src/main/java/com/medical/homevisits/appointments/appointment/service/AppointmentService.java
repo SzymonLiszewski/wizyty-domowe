@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.print.Doc;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,10 +42,10 @@ public class AppointmentService {
      * Finding Appointments which fit given parameters
      * @param status - status RESERVED/AVAILABLE/CANCELED/COMPLETED
      * @param doctorId - doctors id
-     * @param date - start date of appointment
+     * @param date - date of appointment (function will return appointments which start in given day)
      * @return - list of appointments which fit specification
      */
-    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDateTime date){
+    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date){
         Specification<Appointment> spec = Specification.where(null);
         if (status != null){
             spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("status"), status));
@@ -58,7 +60,9 @@ public class AppointmentService {
             }
         }
         if (date != null){
-            spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("appointmentStartTime"), date));
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+            spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.between(root.get("appointmentStartTime"), startOfDay, endOfDay));
         }
         return repository.findAll(spec);
     }

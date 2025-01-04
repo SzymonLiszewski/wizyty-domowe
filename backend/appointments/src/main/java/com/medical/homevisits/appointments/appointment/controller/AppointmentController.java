@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.Jwts;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -69,13 +70,13 @@ public class AppointmentController {
     /**
      * function for all users for viewing appointments (can view only available appointments)
      * @param doctorId - filtering available appointments by doctor
-     * @param appointmentDate - filtering available appointments by datetime
+     * @param appointmentDate - filtering available appointments by date
      * @return - list of appointments that fit specification
      */
     @GetMapping("")
     public ResponseEntity<List<Appointment>> getAvailableAppointments(
             @RequestParam(required = false) UUID doctorId,
-            @RequestParam(required = false) LocalDateTime appointmentDate
+            @RequestParam(required = false) LocalDate appointmentDate
             ){
         List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate);
         return ResponseEntity.ok(appointments);
@@ -84,14 +85,14 @@ public class AppointmentController {
     /**
      * function for doctors to get their appointments (can view all appointments for specific doctor)
      * @param status - appointment status
-     * @param appointmentDate - datetime of appointment
+     * @param appointmentDate - date of appointment
      * @return - list of appointments that fit specification
      */
     @GetMapping("/doctors")
     public ResponseEntity<List<Appointment>> getDoctorAppointments(
-            @RequestHeader("Authorization") String token,
+            @RequestHeader(value = "Authorization") String token,
             @RequestParam(required = false) AppointmentStatus status,
-            @RequestParam(required = false) LocalDateTime appointmentDate
+            @RequestParam(required = false) LocalDate appointmentDate
     ){
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
