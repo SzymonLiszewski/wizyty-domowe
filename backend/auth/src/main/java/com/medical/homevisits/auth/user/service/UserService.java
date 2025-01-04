@@ -1,5 +1,7 @@
 package com.medical.homevisits.auth.user.service;
 
+import com.medical.homevisits.auth.doctor.entity.Doctor;
+import com.medical.homevisits.auth.patient.entity.Patient;
 import com.medical.homevisits.auth.user.dto.CreateUserObject;
 import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.event.repository.UserEventRestRepository;
@@ -18,6 +20,10 @@ public class UserService {
 
     public void create(User user){
         userRepository.save(user);
-        userEventRestRepository.createDoctor(new CreateUserObject(user.getID()));
+        if (user instanceof Doctor){
+            userEventRestRepository.createDoctor(new CreateUserObject(user.getID()));
+        } else if (user instanceof Patient) {
+            userEventRestRepository.createPatient(new CreateUserObject(user.getID()));
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.medical.homevisits.auth.user.controller;
 import com.medical.homevisits.auth.patient.entity.Patient;
 import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.repository.UserRepository;
+import com.medical.homevisits.auth.user.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.persistence.Temporal;
@@ -28,14 +29,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -70,7 +73,7 @@ public class AuthController {
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-        userRepository.save(patient);
+        userService.create(patient);
         return ResponseEntity.ok("User registered successfully");
     }
 }
