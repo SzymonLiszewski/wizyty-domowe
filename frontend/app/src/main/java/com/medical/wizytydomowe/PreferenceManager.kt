@@ -12,6 +12,12 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
+    fun saveRefreshAuthToken(token: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString("refreshAuthToken", token)
+        editor.apply()
+    }
+
     fun getAuthToken(): String? {
         return sharedPreferences.getString("authToken", null)
     }

@@ -5,4 +5,5 @@
     <string name="nav_add_visit">Dodaj wizytę</string>
     <string name="nav_prescription">Recepty</string>
     <string name="nav_profile">Profil</string>
+    <string name="unknown">UNKNOWN</string>
 </resources>

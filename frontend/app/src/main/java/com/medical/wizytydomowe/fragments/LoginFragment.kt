@@ -61,9 +61,12 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
 
                             val token = loginResponse?.token
 
-                            if (token != null) {
+                            val refresh_token = loginResponse?.refresh_token
+
+                            if (token != null && refresh_token != null) {
                                 val preferenceManager = PreferenceManager(requireContext())
                                 preferenceManager.saveAuthToken(token)
+                                preferenceManager.saveRefreshAuthToken(refresh_token)
                             }
                             else{
                                 Toast.makeText(context, "Wystąpił bład podczas logowania.", Toast.LENGTH_SHORT).show()

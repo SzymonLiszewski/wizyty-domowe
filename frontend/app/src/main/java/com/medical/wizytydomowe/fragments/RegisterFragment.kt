@@ -128,7 +128,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
                 Toast.makeText(context, "Pole 'Numer telefonu' jest wymagane", Toast.LENGTH_SHORT).show()
                 return false
             }
-            !phoneNumber.matches(Regex("[0-9]{3}-[0-9]{3}-[0-9]{3}\$")) -> {
+            !phoneNumber.matches(Regex("[0-9]{3}[0-9]{3}[0-9]{3}\$")) -> {
                 Toast.makeText(context, "Nieprawidłowy numer telefonu", Toast.LENGTH_SHORT).show()
                 return false
             }
