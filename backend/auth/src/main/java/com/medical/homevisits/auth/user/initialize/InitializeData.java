@@ -90,7 +90,6 @@ public class InitializeData implements InitializingBean {
                     .firstName("Tom")
                     .lastName("White")
                     .email("paramedic@test.com")
-                    .email("nurse@test.com")
                     .password(passwordEncoder.encode("paramedic123"))
                     .dateOfBirth(null)
                     .phoneNumber("012345678")
