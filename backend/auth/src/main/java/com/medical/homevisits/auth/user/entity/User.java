@@ -1,6 +1,8 @@
 package com.medical.homevisits.auth.user.entity;
 
 import com.medical.homevisits.auth.doctor.entity.Doctor;
+import com.medical.homevisits.auth.nurse.entity.Nurse;
+import com.medical.homevisits.auth.paramedic.entity.Paramedic;
 import com.medical.homevisits.auth.patient.entity.Patient;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +13,6 @@ import java.util.UUID;
 
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-
 
 @Getter
 @Setter
@@ -41,9 +42,16 @@ public class User {
         else if (this instanceof Patient){
             return "Patient";
         }
+        else if (this instanceof Nurse){
+            return "Nurse";
+        }
+        else if (this instanceof Paramedic){
+            return "Paramedic";
+        }
         return "OtherUser";
     }
-    public UserInfoResponse getUserInfo() {
+    public  UserInfoResponse getUserInfo() {
+    	
         UserInfoResponse response = new UserInfoResponse(
             this.ID,
             this.firstName,
@@ -53,13 +61,14 @@ public class User {
             this.dateOfBirth,
             null, 
             null, 
+            null,
             null, 
             null  
         );
 
         if (this instanceof Doctor) {
             Doctor doctor = (Doctor) this;
-            response.setSpecialisation(doctor.getSpecialisation());
+            response.setSpecialization(doctor.getSpecialization());
             response.setAcademicDegree(doctor.getAcademicDegree());
             response.setWorkPlace(doctor.getWorkPlace());
         }
@@ -67,6 +76,19 @@ public class User {
         if (this instanceof Patient) {
             Patient patient = (Patient) this;
             response.setAddress(patient.getAddress());
+        }
+        if (this instanceof Nurse) {
+            Nurse nurse = (Nurse) this;
+            response.setSpecialization(nurse.getSpecialization());
+            response.setAcademicDegree(nurse.getAcademicDegree());
+            response.setWorkPlace(nurse.getWorkPlace());
+            response.setDoctor(nurse.getDoctor());
+        }
+        if (this instanceof Paramedic) {
+        	Paramedic paramedic = (Paramedic) this;
+            response.setSpecialization(paramedic.getSpecialization());
+            response.setAcademicDegree(paramedic.getAcademicDegree());
+            response.setWorkPlace(paramedic.getWorkPlace());
         }
 
         return response;
@@ -84,8 +106,9 @@ public class User {
         private Date dateOfBirth;
 
         private String address; 
-        private String specialisation; 
+        private String specialization; 
         private String academicDegree; 
+        private String doctor; 
         private String workPlace;
     }
 
