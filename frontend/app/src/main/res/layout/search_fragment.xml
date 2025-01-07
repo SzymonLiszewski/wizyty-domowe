@@ -7,19 +7,46 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!--    Placeholder      -->
-    <TextView
-        android:id="@+id/tvSearchFragment"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llSearch"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Znajdź coś"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginEnd="16dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="280dp"
+            android:layout_height="48dp"
+            android:hint="Szukaj wizyty"
+            android:inputType="text"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/imgbtnSearchAppointment"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/search_svgrepo_com"
+            android:contentDescription="Search appointment"/>
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAppointments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/llSearch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
