@@ -29,34 +29,29 @@
             android:id="@+id/tvAppointmentStartTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start: 09:00 AM"
+            android:text="2025-01-11 09:00 AM"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             android:gravity="center" />
 
-        <TextView
-            android:id="@+id/tvAppointmentEndTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End: 10:00 AM"
-            android:textSize="14sp"
-            android:gravity="center" />
 
         <TextView
-            android:id="@+id/tvDoctorId"
+            android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Doctor ID: 12345"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
+            android:text="Anulowana"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
             android:gravity="center" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnMakeAppointment"
+        android:id="@+id/btnAppointmentDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Book" />
+        android:text="Szczegóły" />
 
 </LinearLayout>

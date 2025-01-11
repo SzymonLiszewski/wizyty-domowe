@@ -15,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.medical.wizytydomowe.fragments.LoginFragment
+import com.medical.wizytydomowe.fragments.VisitsLogoutFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigation {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val prescriptionsFragment = PrescriptionsFragment()
         val profileFragment = ProfileFragment()
         val loginFragment = LoginFragment()
+        val visitLogoutFragment = VisitsLogoutFragment()
 
         setCurrentFragment(visitFragment)
 
@@ -43,8 +45,14 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
                 R.id.bottom_visits -> {
-                    setCurrentFragment(visitFragment)
-                    true
+                    if (preferenceManager.isLoggedIn()) {
+                        setCurrentFragment(visitFragment)
+                        true
+                    }
+                    else {
+                        setCurrentFragment(visitLogoutFragment)
+                        true
+                    }
                 }
                 R.id.bottom_search -> {
                     setCurrentFragment(searchFragment)

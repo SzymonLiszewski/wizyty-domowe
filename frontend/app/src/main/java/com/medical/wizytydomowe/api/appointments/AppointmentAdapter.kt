@@ -1,37 +1,47 @@
 package com.medical.wizytydomowe.api.appointments
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medical.wizytydomowe.R
 
 
 class AppointmentAdapter(
     private val appointments: List<Appointment>,
-    private val onAppointmentClick: (Appointment) -> Unit
+    private val onAppointmentDetailsClick: (Appointment) -> Unit
 ) : RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder>() {
 
     inner class AppointmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvStartTime: TextView = itemView.findViewById(R.id.tvAppointmentStartTime)
-        private val tvEndTime: TextView = itemView.findViewById(R.id.tvAppointmentEndTime)
-        private val tvDoctorId: TextView = itemView.findViewById(R.id.tvDoctorId)
-        private val btnMakeAppointment: Button = itemView.findViewById(R.id.btnMakeAppointment)
+        private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
+        private val btnAppointmentDetails: Button = itemView.findViewById(R.id.btnAppointmentDetails)
 
         fun bind(appointment: Appointment) {
-            tvStartTime.text = "Start: ${appointment.appointmentStartTime}"
-            tvEndTime.text = "End: ${appointment.appointmentEndTime}"
-            if (appointment.doctor != null) {
-                tvDoctorId.text = "Doctor ID: ${appointment.doctor.id}"
-            }
-            else{
-                tvDoctorId.text = "Doctor is not assigned."
+            tvStartTime.text = "${appointment.appointmentStartTime}"
+
+            when (appointment.status) {
+                "cancelled" -> tvStatus.text = "Anulowana"
+                "completed" -> tvStatus.text = "Odbyta"
+                "reserved" -> tvStatus.text = "Zarezerwowana"
+                "available" -> tvStatus.text = "Dostępna"
             }
 
-            btnMakeAppointment.setOnClickListener {
-                onAppointmentClick(appointment)
+            when (tvStatus.text) {
+                "Anulowana" -> tvStatus.setTextColor(Color.RED)
+                "Odbyta" -> tvStatus.setTextColor(Color.BLACK)
+                "Zarezerwowana" -> tvStatus.setTextColor(
+                    ContextCompat.getColor(itemView.context, R.color.gray)
+                )
+                else -> tvStatus.setTextColor(Color.BLACK)
+            }
+
+            btnAppointmentDetails.setOnClickListener {
+                onAppointmentDetailsClick(appointment)
             }
         }
     }
