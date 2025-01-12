@@ -6,4 +6,13 @@
     <string name="nav_prescription">Recepty</string>
     <string name="nav_profile">Profil</string>
     <string name="unknown">UNKNOWN</string>
+
+    <string-array name="specializations">
+        <item>Wszyscy</item>
+        <item>Ginekolog</item>
+        <item>Urolog</item>
+        <item>Pediatra</item>
+        <item>Laryngolog</item>
+        <item>Psycholog</item>
+    </string-array>
 </resources>

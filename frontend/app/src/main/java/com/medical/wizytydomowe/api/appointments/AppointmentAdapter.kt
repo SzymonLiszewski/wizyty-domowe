@@ -12,7 +12,7 @@ import com.medical.wizytydomowe.R
 
 
 class AppointmentAdapter(
-    private val appointments: List<Appointment>,
+    private var appointments: List<Appointment>,
     private val onAppointmentDetailsClick: (Appointment) -> Unit
 ) : RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder>() {
 
@@ -56,4 +56,9 @@ class AppointmentAdapter(
     }
 
     override fun getItemCount(): Int = appointments.size
+
+    fun updateAppointments(newAppointments: List<Appointment>) {
+        appointments = newAppointments
+        notifyDataSetChanged()
+    }
 }

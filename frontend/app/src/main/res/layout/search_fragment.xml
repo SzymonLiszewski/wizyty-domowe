@@ -20,27 +20,33 @@
 
         <EditText
             android:id="@+id/et_search"
-            android:layout_width="280dp"
+            android:layout_width="160dp"
             android:layout_height="48dp"
-            android:hint="Szukaj wizyty"
+            android:hint="Szukaj lekarza"
             android:inputType="text"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="25dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            android:layout_marginRight="10dp" />
+
+        <Spinner
+            android:id="@+id/sp_specialization"
+            android:layout_width="130dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="10dp"
+            android:entries="@array/specializations"
+            android:spinnerMode="dropdown" />
 
         <ImageButton
-            android:id="@+id/imgbtnSearchAppointment"
+            android:id="@+id/imgBtnSearch"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:src="@drawable/search_svgrepo_com"
-            android:contentDescription="Search appointment"/>
+            android:contentDescription="Search appointment" />
     </LinearLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvAppointments"
+        android:id="@+id/rvDoctors"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="8dp"

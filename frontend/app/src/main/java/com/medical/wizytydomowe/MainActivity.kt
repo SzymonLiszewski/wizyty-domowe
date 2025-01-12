@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val loginFragment = LoginFragment()
         val visitLogoutFragment = VisitsLogoutFragment()
 
-        setCurrentFragment(visitFragment)
+        setCurrentFragment(searchFragment)
 
         val bottomNavigationView: NavigationBarView = findViewById(R.id.bottom_navigation)
 
