@@ -15,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.medical.wizytydomowe.fragments.LoginFragment
+import com.medical.wizytydomowe.fragments.PrescriptionsLogoutFragment
 import com.medical.wizytydomowe.fragments.VisitsLogoutFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigation {
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val visitFragment = VisitsFragment()
         val addVisitFragment = AddVisitFragment()
         val prescriptionsFragment = PrescriptionsFragment()
+        val prescriptionsLogoutFragment = PrescriptionsLogoutFragment()
         val profileFragment = ProfileFragment()
         val loginFragment = LoginFragment()
         val visitLogoutFragment = VisitsLogoutFragment()
@@ -63,8 +65,14 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     true
                 }
                 R.id.bottom_prescriptions -> {
-                    setCurrentFragment(prescriptionsFragment)
-                    true
+                    if (preferenceManager.isLoggedIn()) {
+                        setCurrentFragment(prescriptionsFragment)
+                        true
+                    }
+                    else {
+                        setCurrentFragment(prescriptionsLogoutFragment)
+                        true
+                    }
                 }
                 R.id.bottom_profile -> {
                     if (preferenceManager.isLoggedIn()) {

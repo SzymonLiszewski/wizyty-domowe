@@ -48,7 +48,7 @@
             android:id="@+id/btnNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/darker_gray"
+            android:backgroundTint="@color/blue"
             android:text="Nie"
             android:textColor="@android:color/white" />
     </LinearLayout>
