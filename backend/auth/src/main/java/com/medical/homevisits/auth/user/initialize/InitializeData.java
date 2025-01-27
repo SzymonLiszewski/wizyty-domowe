@@ -4,11 +4,15 @@ import com.medical.homevisits.auth.patient.entity.Patient;
 import com.medical.homevisits.auth.doctor.entity.Doctor;
 import com.medical.homevisits.auth.nurse.entity.Nurse;
 import com.medical.homevisits.auth.paramedic.entity.Paramedic;
+import com.medical.homevisits.auth.doctor.entity.Doctor;
+import com.medical.homevisits.auth.user.dto.CreateUserObject;
 import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.repository.UserRepository;
 
 import java.text.DateFormat;
 
+import com.medical.homevisits.auth.user.service.CustomUserDetailsService;
+import com.medical.homevisits.auth.user.service.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,11 +23,20 @@ public class InitializeData implements InitializingBean {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserEventRestRepository userEventRestRepository;
+    private final UserService userService;
 
     @Autowired
-    public InitializeData(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public InitializeData(
+            CustomUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder,
+            UserRepository userRepository, UserEventRestRepository userEventRestRepository, UserService userService
+    ) {
+        this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.userEventRestRepository = userEventRestRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -63,11 +76,11 @@ public class InitializeData implements InitializingBean {
                     .workPlace("clinic")
                     .dateOfBirth(null)
                     .build();
-            userRepository.save(doctor);
+            userService.create(doctor);
             System.out.println("Doctor user has been created!");
-       
 
-        
+
+
         }
         if (userRepository.findByEmail("nurse@test.com").isEmpty()) {
             Nurse nurse = Nurse.builder()

@@ -3,6 +3,7 @@ import com.medical.homevisits.auth.patient.entity.Patient;
 import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.entity.User.UserInfoResponse;
 import com.medical.homevisits.auth.user.repository.UserRepository;
+import com.medical.homevisits.auth.user.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.persistence.Temporal;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -37,18 +39,25 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
     @SuppressWarnings("deprecation")
 	private String generateToken(String email, long duration) {
+        User user = userRepository.findByEmail(email).get();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getID());
+        claims.put("role", user.getRole());
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + duration))
@@ -87,7 +96,7 @@ public class AuthController {
                 return ResponseEntity.status(401).body(Map.of("error", "Invalid refresh token"));
             }
 
-            String newJwtToken = generateToken(email, 3600000); 
+            String newJwtToken = generateToken(email, 3600000);
             return ResponseEntity.ok(Map.of("jwt_token", newJwtToken));
 
         } catch (Exception e) {
@@ -95,7 +104,7 @@ public class AuthController {
         }
     }
 
-    
+
     @PostMapping("/register/patient")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -110,34 +119,33 @@ public class AuthController {
                 .address(request.getAddress())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-        userRepository.save(patient);
-       
+        userService.create(patient);
         return ResponseEntity.ok("User registered successfully");
     }
     @GetMapping("/user/info")
     public ResponseEntity<UserInfoResponse> getCurrentUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
-        
+
         try {
             String email = Jwts.parserBuilder()
                     .setSigningKey(jwtSecret)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
-                    .getSubject(); 
-            
+                    .getSubject();
+
             if (email == null || userRepository.findByEmail(email).isEmpty()) {
-                return ResponseEntity.status(401).body(null); 
+                return ResponseEntity.status(401).body(null);
             }
 
             User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
             UserInfoResponse userInfoResponse = currentUser.getUserInfo();
-            
+
             return ResponseEntity.ok(userInfoResponse);
 
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(null); 
+            return ResponseEntity.status(401).body(null);
         }
     }
 
@@ -149,7 +157,7 @@ public class AuthController {
 class AuthRequest {
     private String email;
     private String password;
-   
+
 }
 
 @Getter
@@ -179,7 +187,7 @@ class RegisterRequest {
     @Temporal(TemporalType.DATE)
     @Past(message = "Date of birth must be in the past")
     private Date dateOfBirth;
-    
+
     private String address;
 }
 @ControllerAdvice
