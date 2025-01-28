@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WizytyDomowe" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+         <item name="colorPrimary">@color/greyish_white</item>
+         <item name="colorPrimaryVariant">@color/greyish_white</item>
+
+    </style>
+
+    <style name="Theme.WizytyDomowe" parent="Base.Theme.WizytyDomowe" />
+</resources>

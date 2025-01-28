@@ -1,3 +1,5 @@
+.idea
+frontend/local.properties
 backend/home-visits/HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

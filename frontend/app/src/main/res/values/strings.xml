@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Wizyty domowe</string>
+    <string name="nav_search">Znajdź</string>
+    <string name="nav_visits">Wizyty</string>
+    <string name="nav_add_visit">Dodaj wizytę</string>
+    <string name="nav_paramedic_medical_report">Moje zgłoszenia</string>
+    <string name="nav_add_prescription">Dodaj receptę</string>
+    <string name="nav_prescription">Recepty</string>
+    <string name="nav_profile">Profil</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="nav_medical_report">Zgłoszenia</string>
+
+    <string-array name="specializations">
+        <item>Wszyscy</item>
+        <item>Ginekolog</item>
+        <item>Urolog</item>
+        <item>Pediatra</item>
+        <item>Laryngolog</item>
+        <item>Psycholog</item>
+    </string-array>
+</resources>

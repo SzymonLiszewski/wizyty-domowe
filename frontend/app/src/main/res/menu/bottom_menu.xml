@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <item
+        android:id="@+id/bottom_search"
+        android:title="@string/nav_search"
+        android:icon="@drawable/search_svgrepo_com"
+
+        />
+
+    <item
+        android:id="@+id/bottom_visits"
+        android:title="@string/nav_visits"
+        android:icon="@drawable/calendar_alt_svgrepo_com"
+
+        />
+
+    <item
+        android:id="@+id/bottom_medical_report"
+        android:title="@string/nav_medical_report"
+        android:icon="@drawable/ambulance_light_svgrepo_com"
+        />
+
+
+    <item
+        android:id="@+id/bottom_prescriptions"
+        android:title="@string/nav_prescription"
+        android:icon="@drawable/documents_svgrepo_com"
+
+        />
+
+    <item
+        android:id="@+id/bottom_profile"
+        android:title="@string/nav_profile"
+        android:icon="@drawable/baseline_account_circle_24"
+
+        />
+
+</menu>

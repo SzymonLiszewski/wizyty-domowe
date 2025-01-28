@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/bottom_pramedic_medical_reports"
+        android:title="@string/nav_paramedic_medical_report"
+        android:icon="@drawable/ambulance_svgrepo_com"
+        />
+
+
+    <item
+        android:id="@+id/bottom_available_medical_report"
+        android:title="@string/nav_medical_report"
+        android:icon="@drawable/ambulance_light_svgrepo_com"
+        />
+
+
+    <item
+        android:id="@+id/bottom_profile"
+        android:title="@string/nav_profile"
+        android:icon="@drawable/baseline_account_circle_24"
+
+        />
+
+
+</menu>
