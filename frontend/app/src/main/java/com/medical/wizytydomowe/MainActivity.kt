@@ -14,11 +14,18 @@ import com.medical.wizytydomowe.fragments.VisitsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
+import com.medical.wizytydomowe.fragments.AddMedicalReportFragment
+import com.medical.wizytydomowe.fragments.AddPrescriptionFragment
+import com.medical.wizytydomowe.fragments.AvailableMedicalReportsFragment
 import com.medical.wizytydomowe.fragments.LoginFragment
+import com.medical.wizytydomowe.fragments.ParamedicMedicalReportsFragment
 import com.medical.wizytydomowe.fragments.PrescriptionsLogoutFragment
 import com.medical.wizytydomowe.fragments.VisitsLogoutFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigation {
+
+    private lateinit var bottomNavigationView: NavigationBarView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,6 +35,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
 
         val preferenceManager = PreferenceManager(this)
 
@@ -39,10 +47,16 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val profileFragment = ProfileFragment()
         val loginFragment = LoginFragment()
         val visitLogoutFragment = VisitsLogoutFragment()
+        val addMedicalReport = AddMedicalReportFragment()
+        val addPrescriptionFragment = AddPrescriptionFragment()
+        val availableMedicalReportsFragment = AvailableMedicalReportsFragment()
+        val paramedicMedicalReportsFragment = ParamedicMedicalReportsFragment()
 
-        setCurrentFragment(searchFragment)
+        setCurrentFragment(visitLogoutFragment)
 
-        val bottomNavigationView: NavigationBarView = findViewById(R.id.bottom_navigation)
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        setMenuForUser(preferenceManager)
 
         bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
@@ -84,7 +98,24 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                         true
                     }
                 }
+                R.id.bottom_medical_report -> {
+                    setCurrentFragment(addMedicalReport)
+                    true
+                }
+                R.id.bottom_add_prescription -> {
+                    setCurrentFragment(addPrescriptionFragment)
+                    true
+                }
+                R.id.bottom_available_medical_report -> {
+                    setCurrentFragment(availableMedicalReportsFragment)
+                    true
+                }
+                R.id.bottom_pramedic_medical_reports -> {
+                    setCurrentFragment(paramedicMedicalReportsFragment)
+                    true
+                }
                 else -> false
+
             }
         }
 
@@ -100,4 +131,37 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
     override fun navigateToFragment(fragment: Fragment) {
         setCurrentFragment(fragment)
     }
+
+    private fun setMenuPatient() {
+        bottomNavigationView.inflateMenu(R.menu.bottom_menu)
+    }
+
+    private fun setMenuDoctor() {
+        bottomNavigationView.inflateMenu(R.menu.doctor_menu)
+    }
+
+    private fun setMenuNurse() {
+        bottomNavigationView.inflateMenu(R.menu.nurse_menu)
+    }
+
+    private fun setMenuParamedic() {
+        bottomNavigationView.inflateMenu(R.menu.paramedic_menu)
+    }
+
+    fun setMenuForUser(preferenceManager: PreferenceManager){
+        bottomNavigationView.menu.clear()
+        if (!preferenceManager.isLoggedIn() || preferenceManager.getRole() == "Patient"){
+            setMenuPatient()
+        }
+        else if (preferenceManager.getRole() == "Doctor"){
+            setMenuDoctor()
+        }
+        else if (preferenceManager.getRole() == "Nurse"){
+            setMenuNurse()
+        }
+        else if (preferenceManager.getRole() == "Paramedic"){
+            setMenuParamedic()
+        }
+    }
+
 }

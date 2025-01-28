@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
+import com.medical.wizytydomowe.MainActivity
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.RetrofitInstance
@@ -63,10 +64,13 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
 
                             val refresh_token = loginResponse?.refresh_token
 
-                            if (token != null && refresh_token != null) {
+                            val role = loginResponse?.role
+
+                            if (token != null && refresh_token != null && role != null) {
                                 val preferenceManager = PreferenceManager(requireContext())
                                 preferenceManager.saveAuthToken(token)
                                 preferenceManager.saveRefreshAuthToken(refresh_token)
+                                preferenceManager.saveRole(role)
                             }
                             else{
                                 Toast.makeText(context, "Wystąpił bład podczas logowania.", Toast.LENGTH_SHORT).show()
@@ -74,6 +78,7 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
                             }
 
                             val activity = activity as? FragmentNavigation
+                            (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
                             activity?.navigateToFragment(ProfileFragment())
 
 

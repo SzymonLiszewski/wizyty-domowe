@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
+import com.medical.wizytydomowe.MainActivity
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.RetrofitInstance
@@ -69,12 +70,15 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
             val preferenceManager = PreferenceManager(requireContext())
             preferenceManager.clearAuthToken()
+            preferenceManager.clearRole()
 
             Toast.makeText(context, "Wylogowano.", Toast.LENGTH_SHORT).show()
 
             userInformationTable.visibility = View.GONE
             logoutButton.visibility = View.GONE
             userNotLoggedInTextView.visibility = View.VISIBLE
+
+            (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
 
             val searchFragment = SearchFragment()
             val activity = activity as? FragmentNavigation

@@ -2,11 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-
     <item
-        android:id="@+id/bottom_search"
-        android:title="@string/nav_search"
-        android:icon="@drawable/search_svgrepo_com"
+        android:id="@+id/bottom_add_prescription"
+        android:title="@string/nav_add_prescription"
+        android:icon="@drawable/prescription_svgrepo_com__1_"
 
         />
 
@@ -18,11 +17,10 @@
         />
 
     <item
-        android:id="@+id/bottom_medical_report"
-        android:title="@string/nav_medical_report"
-        android:icon="@drawable/ambulance_light_svgrepo_com"
+        android:id="@+id/bottom_add_visit"
+        android:title="@string/nav_add_visit"
+        android:icon="@drawable/baseline_add_circle_outline_24"
         />
-
 
     <item
         android:id="@+id/bottom_prescriptions"
@@ -31,11 +29,13 @@
 
         />
 
+
     <item
         android:id="@+id/bottom_profile"
         android:title="@string/nav_profile"
         android:icon="@drawable/baseline_account_circle_24"
 
         />
+
 
 </menu>

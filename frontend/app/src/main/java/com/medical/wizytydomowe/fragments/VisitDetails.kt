@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
+import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
 
@@ -28,12 +29,42 @@ class VisitDetails : Fragment(R.layout.visit_details) {
         val tvDoctorName : TextView = view.findViewById(R.id.tvDoctorName)
         val tvDoctorSurname : TextView = view.findViewById(R.id.tvDoctorSurname)
         val tvDoctorSpeciality : TextView = view.findViewById(R.id.tvDoctorSpeciality)
+        val tvPatientName : TextView = view.findViewById(R.id.tvPatientName)
+        val tvPatientSurname : TextView = view.findViewById(R.id.tvPatientSurname)
+        val tvDoctorHeader : TextView = view.findViewById(R.id.tvDoctorHeader)
+        val tvPatientHeader : TextView = view.findViewById(R.id.tvPatientHeader)
+
+        val preferenceManager = PreferenceManager(requireContext())
+
+
+        //TODO patient can see doctor details (and nurse ???)
+        //TODO doctor and nurse can see patient details ??? should they see each other if they went to home visit together ???
+        if (preferenceManager.getRole() == "Patient"){
+            tvPatientName.visibility = View.GONE
+            tvPatientSurname.visibility = View.GONE
+            tvPatientHeader.visibility = View.GONE
+            tvDoctorName.visibility = View.VISIBLE
+            tvDoctorSurname.visibility = View.VISIBLE
+            tvDoctorHeader.visibility = View.VISIBLE
+            tvDoctorSpeciality.visibility = View.VISIBLE
+            tvDoctorName.text = "Imię: ${appointment?.doctor?.firstName}";
+            tvDoctorSurname.text = "Nazwisko: ${appointment?.doctor?.lastName}";
+            tvDoctorSpeciality.text = "Specjalność: ${appointment?.doctor?.specialization}";
+        }
+        else { // doctor and nurse
+            tvPatientName.visibility = View.VISIBLE
+            tvPatientSurname.visibility = View.VISIBLE
+            tvPatientHeader.visibility = View.VISIBLE
+            tvDoctorName.visibility = View.GONE
+            tvDoctorSurname.visibility = View.GONE
+            tvDoctorHeader.visibility = View.GONE
+            tvDoctorSpeciality.visibility = View.GONE
+            tvPatientName.text = "Imię: ${appointment?.patient?.firstName}";
+            tvPatientSurname.text = "Nazwisko: ${appointment?.patient?.lastName}";
+        }
 
         tvStartDate.text = "Data rozpoczęcia: ${appointment?.appointmentStartTime}";
-        tvEndDate.text = "Data rozpoczęcia: ${appointment?.appointmentEndTime}";
-        tvDoctorName.text = "Imię: ${appointment?.doctor?.firstName}";
-        tvDoctorSurname.text = "Nazwisko: ${appointment?.doctor?.lastName}";
-        tvDoctorSpeciality.text = "Specjalność: ${appointment?.doctor?.specialization}";
+        tvEndDate.text = "Data zakończenia: ${appointment?.appointmentEndTime}";
 
         when (appointment?.status.toString()) {
             "cancelled" -> tvStatus.text = "Anulowana"
@@ -52,7 +83,7 @@ class VisitDetails : Fragment(R.layout.visit_details) {
         }
 
 
-        btnCancelAppointment.visibility = if (tvStatus.text == "Zarezerwowana") {
+        btnCancelAppointment.visibility = if (tvStatus.text == "Zarezerwowana" && preferenceManager.getRole() == "Patient") {
             View.VISIBLE
         } else {
             View.GONE

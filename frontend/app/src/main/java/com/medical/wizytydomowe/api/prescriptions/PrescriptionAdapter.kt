@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 
 
@@ -16,12 +17,19 @@ class PrescriptionAdapter(
 
     inner class PrescriptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvPrescriptionTime: TextView = itemView.findViewById(R.id.tvPrescriptionTime)
-        private val tvPrescriptionDoctor: TextView = itemView.findViewById(R.id.tvPrescriptionDoctor)
+        private val tvPrescriptionDoctor: TextView = itemView.findViewById(R.id.tvPrescriptionPerson)
         private val btnPrescriptionDetails: Button = itemView.findViewById(R.id.btnPrescriptionDetails)
 
         fun bind(prescription: Prescription) {
             tvPrescriptionTime.text = "${prescription.prescriptionTime}"
-            tvPrescriptionDoctor.text = "Wystawił: ${prescription.doctor?.firstName} ${prescription.doctor?.lastName}"
+            val preferenceManager = PreferenceManager(itemView.context)
+
+            if (preferenceManager.getRole() == "Patient"){
+                tvPrescriptionDoctor.text = "Wystawił: ${prescription.doctor?.firstName} ${prescription.doctor?.lastName}"
+            }
+            else {
+                tvPrescriptionDoctor.text = "Pacjent: ${prescription.patient?.firstName} ${prescription.patient?.lastName}"
+            }
 
             btnPrescriptionDetails.setOnClickListener {
                 onPrescriptionDetailsClick(prescription)

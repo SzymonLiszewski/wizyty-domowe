@@ -12,6 +12,12 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
+    fun saveRole(role: String){
+        val editor = sharedPreferences.edit()
+        editor.putString("role", role)
+        editor.apply()
+    }
+
     fun saveRefreshAuthToken(token: String) {
         val editor = sharedPreferences.edit()
         editor.putString("refreshAuthToken", token)
@@ -22,9 +28,19 @@ class PreferenceManager(context: Context) {
         return sharedPreferences.getString("authToken", null)
     }
 
+    fun getRole(): String? {
+        return sharedPreferences.getString("role", null)
+    }
+
     fun clearAuthToken() {
         val editor = sharedPreferences.edit()
         editor.remove("authToken")
+        editor.apply()
+    }
+
+    fun clearRole() {
+        val editor = sharedPreferences.edit()
+        editor.remove("role")
         editor.apply()
     }
 

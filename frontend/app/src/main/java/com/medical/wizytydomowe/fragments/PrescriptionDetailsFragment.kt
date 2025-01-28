@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.prescriptions.Prescription
 
@@ -22,6 +23,7 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
         val tvDoctorName : TextView = view.findViewById(R.id.tvDoctorName)
         val tvDoctorSurname : TextView = view.findViewById(R.id.tvDoctorSurname)
         val tvDoctorSpeciality : TextView = view.findViewById(R.id.tvDoctorSpeciality)
+        val tvDoctorHeader : TextView = view.findViewById(R.id.tvDoctorHeader)
 
         tvDate.text = "Data wystawienia: ${prescription?.prescriptionTime}";
         tvPatient.text = "Pacjent: ${prescription?.patient?.firstName} ${prescription?.patient?.lastName}";
@@ -29,6 +31,14 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
         tvDoctorSurname.text = "Nazwisko: ${prescription?.doctor?.lastName}";
         tvDoctorSpeciality.text = "Specjalność: ${prescription?.doctor?.specialization}";
         tvDescription.text = "${prescription?.notes}"
+
+        val preferenceManager = PreferenceManager(requireContext())
+        if (preferenceManager.getRole() == "Doctor"){
+            tvDoctorName.visibility = View.GONE
+            tvDoctorSurname.visibility = View.GONE
+            tvDoctorSpeciality.visibility = View.GONE
+            tvDoctorHeader.visibility = View.GONE
+        }
 
     }
 
