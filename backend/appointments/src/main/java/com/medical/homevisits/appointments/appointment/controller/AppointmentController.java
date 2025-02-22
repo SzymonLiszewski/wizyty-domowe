@@ -21,6 +21,7 @@ import io.jsonwebtoken.Jwts;
 import java.time.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -77,7 +78,7 @@ public class AppointmentController {
             @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) LocalDate appointmentDate
             ){
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -103,9 +104,60 @@ public class AppointmentController {
 
         UUID doctorId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate);
+        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate, null);
         return ResponseEntity.ok(appointments);
     }
+
+    /**
+     * function for patients to get their appointments (can view all appointments for specific patient)
+     * @param status - appointment status
+     * @param appointmentDate - date of appointment
+     * @return - list of appointments that fit specification
+     */
+    @GetMapping("/patients")
+    public ResponseEntity<List<Appointment>> getPatientAppointments(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) LocalDate appointmentDate
+    ){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID patientId = UUID.fromString(claims.get("id", String.class));
+
+        List<Appointment> appointments = service.getAppointments(null, null, null, patientId);
+        return ResponseEntity.ok(appointments);
+    }
+
+    /**
+     * this function enables patient to register for given appointment
+     * @param token
+     */
+    @PostMapping("/register")
+    public void registerPatientOnAppointment(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody RegisterRequest request){
+
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID patientId = UUID.fromString(claims.get("id", String.class));
+        Appointment appointment = service.find(request.getAppointmentId());
+
+        appointment.setPatient(patientRepository.findById(patientId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "patient not found")));
+        service.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
+    }
+
 
     /**
      * this function allows doctors to pass their available time and generate appointments calendar for 1 month forward
@@ -146,4 +198,9 @@ class CalendarRequest{
     private LocalTime startTime;
     private LocalTime endTime;
     private Duration appointmentsDuration;
+}
+
+@Getter
+class RegisterRequest{
+    private UUID appointmentId;
 }

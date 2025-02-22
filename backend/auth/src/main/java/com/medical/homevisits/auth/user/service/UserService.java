@@ -25,5 +25,6 @@ public class UserService {
         } else if (user instanceof Patient) {
             userEventRestRepository.createPatient(new CreateUserObject(user.getID()));
         }
+        //TODO: extend for other classes, use in initialize file
     }
 }
