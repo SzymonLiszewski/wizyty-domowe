@@ -130,7 +130,7 @@ public class AppointmentController {
 
         UUID patientId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(null, null, null, patientId);
+        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, patientId);
         return ResponseEntity.ok(appointments);
     }
 
@@ -152,10 +152,8 @@ public class AppointmentController {
                 .getBody();
 
         UUID patientId = UUID.fromString(claims.get("id", String.class));
-        Appointment appointment = service.find(request.getAppointmentId());
 
-        appointment.setPatient(patientRepository.findById(patientId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "patient not found")));
-        service.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
+        service.registerPatient(request.getAppointmentId(), patientId);
     }
 
 

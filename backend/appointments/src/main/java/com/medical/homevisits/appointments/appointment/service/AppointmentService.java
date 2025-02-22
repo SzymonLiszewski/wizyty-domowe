@@ -112,4 +112,17 @@ public class AppointmentService {
             nextDate = nextDate.plusWeeks(1);
         }
     }
+
+    /**
+     * function for registering patients on specific appointments - currently changes availability and sets patient's id TODO: maybe add notes or smth
+     * @param appointmentId
+     * @param patientId
+     */
+    public void registerPatient(UUID appointmentId, UUID patientId){
+        Appointment appointment = this.find(appointmentId);
+        Patient patient = patientRepository.findById(patientId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "patient not found"));
+        appointment.setPatient(patient);
+        appointment.setStatus(AppointmentStatus.RESERVED);
+        this.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
+    }
 }
