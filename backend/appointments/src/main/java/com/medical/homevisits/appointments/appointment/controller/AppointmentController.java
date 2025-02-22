@@ -19,10 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.Jwts;
 
 import java.time.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -176,6 +173,22 @@ public class AppointmentController {
         service.createAvailableAppoitnments(doctorId, request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
     }
 
+    /**
+     * function returns all available doctors - currently only their ids TODO: communication with other service to get basic info about doctor
+     * @param appointmentDate
+     * @return
+     */
+    @GetMapping("/doctors/available")
+    public ResponseEntity<Set<Doctor>> getAvailableDoctors(
+            @RequestParam(required = false) LocalDate appointmentDate
+    ){
+        Set<Doctor> doctorSet = new HashSet<>();
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null);
+        appointments.forEach((appointment -> {
+            doctorSet.add(appointment.getDoctor());
+        }));
+        return ResponseEntity.ok(doctorSet);
+    }
 }
 
 @Getter
