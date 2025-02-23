@@ -27,4 +27,9 @@ public class UserService {
         }
         //TODO: extend for other classes, use in initialize file
     }
+
+    public void delete(User user){
+        userRepository.delete(user);
+        //TODO: eventrestrepository delete, (currently if user change email)
+    }
 }
