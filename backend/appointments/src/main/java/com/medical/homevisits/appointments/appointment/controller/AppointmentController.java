@@ -186,13 +186,19 @@ public class AppointmentController {
     @GetMapping("/doctors/available")
     public ResponseEntity<Set<Doctor>> getAvailableDoctors(
             @RequestParam(required = false) LocalDate appointmentDate,
-            @RequestParam(required = false) String preferredSpecialization
+            @RequestParam(required = false) String preferredSpecialization,
+            @RequestParam(required = false) String preferredWorkPlace,
+            @RequestParam(required = false) String preferredFirstName,
+            @RequestParam(required = false) String preferredLastName
     ){
         Set<Doctor> doctorSet = new HashSet<>();
         List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null);
         appointments.forEach((appointment -> {
             // adding doctor to set if his specialization matches preferred one
-            if (preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)){
+            if ((preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)) &&
+                    (preferredWorkPlace == null || Objects.equals(appointment.getDoctor().getWorkPlace(), preferredWorkPlace)) &&
+                    (preferredFirstName == null || Objects.equals(appointment.getDoctor().getFirstName(), preferredFirstName)) &&
+                    (preferredLastName == null || Objects.equals(appointment.getDoctor().getLastName(), preferredLastName))){
                 doctorSet.add(appointment.getDoctor());
             }
         }));

@@ -15,4 +15,5 @@ public class CreateDoctorObject{
     private String firstName;
     private String lastName;
     private String specialization;
+    private String workPlace;
 }

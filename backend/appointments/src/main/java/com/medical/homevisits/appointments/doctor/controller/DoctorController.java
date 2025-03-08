@@ -24,7 +24,7 @@ public class DoctorController {
 
     @PostMapping("/api/doctors")
     public void createDoctor(@RequestBody createRequest request){
-        Doctor doctor = new Doctor(request.getId(), request.getFirstName(), request.getLastName(), request.getSpecialization());
+        Doctor doctor = new Doctor(request.getId(), request.getFirstName(), request.getLastName(), request.getSpecialization(), request.getWorkPlace());
         doctorService.create(doctor);
     }
 }
@@ -35,4 +35,5 @@ class   createRequest{
     private String firstName;
     private String lastName;
     private String specialization;
+    private String workPlace;
 }

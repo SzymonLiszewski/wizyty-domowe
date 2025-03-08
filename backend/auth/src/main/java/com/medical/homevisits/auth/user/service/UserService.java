@@ -22,7 +22,7 @@ public class UserService {
     public void create(User user){
         userRepository.save(user);
         if (user instanceof Doctor){
-            userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization()));
+            userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization(), ((Doctor) user).getWorkPlace()));
         } else if (user instanceof Patient) {
             userEventRestRepository.createPatient(new CreateUserObject(user.getID()));
         }
