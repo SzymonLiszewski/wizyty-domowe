@@ -178,18 +178,23 @@ public class AppointmentController {
     }
 
     /**
-     * function returns all available doctors - currently only their ids TODO: communication with other service to get basic info about doctor
+     * function returns all available doctors - currently only their ids TODO: think about not returning doctorId
      * @param appointmentDate
+     * @param preferredSpecialization - filtering doctors based on their specialization
      * @return
      */
     @GetMapping("/doctors/available")
     public ResponseEntity<Set<Doctor>> getAvailableDoctors(
-            @RequestParam(required = false) LocalDate appointmentDate
+            @RequestParam(required = false) LocalDate appointmentDate,
+            @RequestParam(required = false) String preferredSpecialization
     ){
         Set<Doctor> doctorSet = new HashSet<>();
         List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null);
         appointments.forEach((appointment -> {
-            doctorSet.add(appointment.getDoctor());
+            // adding doctor to set if his specialization matches preferred one
+            if (preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)){
+                doctorSet.add(appointment.getDoctor());
+            }
         }));
         return ResponseEntity.ok(doctorSet);
     }

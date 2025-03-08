@@ -17,4 +17,7 @@ import java.util.UUID;
 public class Doctor {
     @Id
     private UUID ID;
+    private String firstName;
+    private String lastName;
+    private String specialization;
 }
