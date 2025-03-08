@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.Jwts;
@@ -150,6 +151,9 @@ public class AppointmentController {
 
         UUID patientId = UUID.fromString(claims.get("id", String.class));
 
+        if (service.find(request.getAppointmentId()).getStatus() != AppointmentStatus.AVAILABLE){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "appointment not available");
+        }
         service.registerPatient(request.getAppointmentId(), patientId);
     }
 
