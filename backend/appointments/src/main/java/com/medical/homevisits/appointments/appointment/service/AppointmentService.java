@@ -5,6 +5,8 @@ import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
 import com.medical.homevisits.appointments.appointment.repository.AppointmentRepository;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
+import com.medical.homevisits.appointments.patient.entity.Patient;
+import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -23,28 +25,34 @@ import java.util.UUID;
 public class AppointmentService {
     private final AppointmentRepository repository;
     private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
 
     @Autowired
-    public AppointmentService(AppointmentRepository repository, DoctorRepository doctorRepository){
+    public AppointmentService(AppointmentRepository repository, DoctorRepository doctorRepository, PatientRepository patientRepository){
         this.repository = repository;
         this.doctorRepository = doctorRepository;
+        this.patientRepository = patientRepository;
     }
     public void delete(UUID id){
-        Appointment appointment = repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "appointment not fount"));
+        Appointment appointment = repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "appointment not found"));
         repository.delete(appointment);
     }
     public void create(Appointment appointment){
         repository.save(appointment);
     }
 
+    public Appointment find(UUID id){
+        return repository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "appointment not found"));
+    }
     /**
      * Finding Appointments which fit given parameters
      * @param status - status RESERVED/AVAILABLE/CANCELED/COMPLETED
      * @param doctorId - doctors id
      * @param date - date of appointment (function will return appointments which start in given day)
+     * @param patientId - patients id
      * @return - list of appointments which fit specification
      */
-    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date){
+    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId){
         Specification<Appointment> spec = Specification.where(null);
         if (status != null){
             spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("status"), status));
@@ -53,6 +61,15 @@ public class AppointmentService {
             if (doctorRepository.findById(doctorId).isPresent()){
                 Doctor doctor = doctorRepository.findById(doctorId).get();
                 spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("doctor"), doctor));
+            }
+            else{
+                return new ArrayList<>();
+            }
+        }
+        if (patientId!=null){
+            if (patientRepository.findById(patientId).isPresent()){
+                Patient patient = patientRepository.findById(patientId).get();
+                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("patient"), patient));
             }
             else{
                 return new ArrayList<>();
@@ -94,5 +111,18 @@ public class AppointmentService {
             currentTime = startTime;
             nextDate = nextDate.plusWeeks(1);
         }
+    }
+
+    /**
+     * function for registering patients on specific appointments - currently changes availability and sets patient's id TODO: maybe add notes or smth
+     * @param appointmentId
+     * @param patientId
+     */
+    public void registerPatient(UUID appointmentId, UUID patientId){
+        Appointment appointment = this.find(appointmentId);
+        Patient patient = patientRepository.findById(patientId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "patient not found"));
+        appointment.setPatient(patient);
+        appointment.setStatus(AppointmentStatus.RESERVED);
+        this.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
     }
 }

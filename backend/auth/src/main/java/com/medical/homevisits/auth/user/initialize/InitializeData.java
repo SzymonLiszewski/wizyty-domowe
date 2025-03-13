@@ -7,6 +7,7 @@ import com.medical.homevisits.auth.paramedic.entity.Paramedic;
 import com.medical.homevisits.auth.doctor.entity.Doctor;
 import com.medical.homevisits.auth.user.dto.CreateUserObject;
 import com.medical.homevisits.auth.user.entity.User;
+import com.medical.homevisits.auth.user.event.repository.UserEventRestRepository;
 import com.medical.homevisits.auth.user.repository.UserRepository;
 
 import java.text.DateFormat;
@@ -28,11 +29,9 @@ public class InitializeData implements InitializingBean {
 
     @Autowired
     public InitializeData(
-            CustomUserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository, UserEventRestRepository userEventRestRepository, UserService userService
     ) {
-        this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userEventRestRepository = userEventRestRepository;
@@ -59,7 +58,7 @@ public class InitializeData implements InitializingBean {
                     .phoneNumber("012345678")
                     .dateOfBirth(null)
                     .build();
-            userRepository.save(patient);
+            userService.create(patient);
             System.out.println("Patient user has been created!");
         }
 

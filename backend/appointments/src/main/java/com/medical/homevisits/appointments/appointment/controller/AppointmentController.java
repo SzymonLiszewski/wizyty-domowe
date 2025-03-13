@@ -14,14 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.Jwts;
 
 import java.time.*;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -77,7 +76,7 @@ public class AppointmentController {
             @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) LocalDate appointmentDate
             ){
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -103,9 +102,61 @@ public class AppointmentController {
 
         UUID doctorId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate);
+        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate, null);
         return ResponseEntity.ok(appointments);
     }
+
+    /**
+     * function for patients to get their appointments (can view all appointments for specific patient)
+     * @param status - appointment status
+     * @param appointmentDate - date of appointment
+     * @return - list of appointments that fit specification
+     */
+    @GetMapping("/patients")
+    public ResponseEntity<List<Appointment>> getPatientAppointments(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) LocalDate appointmentDate
+    ){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID patientId = UUID.fromString(claims.get("id", String.class));
+
+        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, patientId);
+        return ResponseEntity.ok(appointments);
+    }
+
+    /**
+     * this function enables patient to register for given appointment
+     * @param token
+     */
+    @PostMapping("/register")
+    public void registerPatientOnAppointment(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody RegisterRequest request){
+
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID patientId = UUID.fromString(claims.get("id", String.class));
+
+        if (service.find(request.getAppointmentId()).getStatus() != AppointmentStatus.AVAILABLE){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "appointment not available");
+        }
+        service.registerPatient(request.getAppointmentId(), patientId);
+    }
+
 
     /**
      * this function allows doctors to pass their available time and generate appointments calendar for 1 month forward
@@ -126,6 +177,33 @@ public class AppointmentController {
         service.createAvailableAppoitnments(doctorId, request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
     }
 
+    /**
+     * function returns all available doctors - currently only their ids TODO: think about not returning doctorId
+     * @param appointmentDate
+     * @param preferredSpecialization - filtering doctors based on their specialization
+     * @return
+     */
+    @GetMapping("/doctors/available")
+    public ResponseEntity<Set<Doctor>> getAvailableDoctors(
+            @RequestParam(required = false) LocalDate appointmentDate,
+            @RequestParam(required = false) String preferredSpecialization,
+            @RequestParam(required = false) String preferredWorkPlace,
+            @RequestParam(required = false) String preferredFirstName,
+            @RequestParam(required = false) String preferredLastName
+    ){
+        Set<Doctor> doctorSet = new HashSet<>();
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null);
+        appointments.forEach((appointment -> {
+            // adding doctor to set if his specialization matches preferred one
+            if ((preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)) &&
+                    (preferredWorkPlace == null || Objects.equals(appointment.getDoctor().getWorkPlace(), preferredWorkPlace)) &&
+                    (preferredFirstName == null || Objects.equals(appointment.getDoctor().getFirstName(), preferredFirstName)) &&
+                    (preferredLastName == null || Objects.equals(appointment.getDoctor().getLastName(), preferredLastName))){
+                doctorSet.add(appointment.getDoctor());
+            }
+        }));
+        return ResponseEntity.ok(doctorSet);
+    }
 }
 
 @Getter
@@ -146,4 +224,9 @@ class CalendarRequest{
     private LocalTime startTime;
     private LocalTime endTime;
     private Duration appointmentsDuration;
+}
+
+@Getter
+class RegisterRequest{
+    private UUID appointmentId;
 }

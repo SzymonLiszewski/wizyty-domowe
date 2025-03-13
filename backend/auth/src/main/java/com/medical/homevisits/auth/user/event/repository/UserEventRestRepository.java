@@ -1,5 +1,6 @@
 package com.medical.homevisits.auth.user.event.repository;
 
+import com.medical.homevisits.auth.user.dto.CreateDoctorObject;
 import com.medical.homevisits.auth.user.dto.CreateUserObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ public class UserEventRestRepository {
         this.restTemplate = restTemplate;
     }
 
-    public void createDoctor(CreateUserObject user){
+    public void createDoctor(CreateDoctorObject user){
         restTemplate.postForObject("/api/doctors", user, Void.class);
     }
 

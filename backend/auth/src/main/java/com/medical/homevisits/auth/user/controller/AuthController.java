@@ -4,6 +4,7 @@ import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.entity.User.UserInfoResponse;
 import com.medical.homevisits.auth.user.repository.UserRepository;
 import com.medical.homevisits.auth.user.service.UserService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.persistence.Temporal;
@@ -27,10 +28,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -122,6 +122,86 @@ public class AuthController {
         userService.create(patient);
         return ResponseEntity.ok("User registered successfully");
     }
+
+    /**
+     * function for changing user data
+     * @param request
+     */
+    @PostMapping("/userData")
+    public Map<String, String> changeUserData(
+            @Valid @RequestBody RegisterRequest request,
+            @RequestHeader("Authorization") String authorizationHeader
+    ){
+        String token = authorizationHeader.replace("Bearer ", "");
+
+        String email = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID userID = UUID.fromString(claims.get("id", String.class));
+
+        if (!Objects.equals(email, request.getEmail())){
+            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient with given email already exists");
+            }
+            /**TODO: check if this is necessary.
+            userService.delete(userRepository.findByEmail(email).get());
+             **/
+        }
+        User user = userRepository.findById(userID).get();
+
+        if (user instanceof Patient){
+            user.setEmail(request.getEmail());
+            user.setFirstName(request.getFirstName());
+            ((Patient) user).setAddress(request.getAddress());
+            user.setDateOfBirth(request.getDateOfBirth());
+            user.setPhoneNumber(request.getPhoneNumber());
+            user.setLastName(request.getLastName());
+        }
+        else{
+            user.setEmail(request.getEmail());
+            user.setFirstName(request.getFirstName());
+            user.setDateOfBirth(request.getDateOfBirth());
+            user.setPhoneNumber(request.getPhoneNumber());
+            user.setLastName(request.getLastName());
+        }
+
+        userService.create(user);
+
+        token = generateToken(request.getEmail(), 3600000);
+        String refreshToken = generateToken(request.getEmail(), 4*3600000);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("refresh_token", refreshToken);
+        response.put("role", userRepository.findByEmail(request.getEmail()).get().getRole());
+        return response;
+    }
+
+    @PostMapping("/user/password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        User user = userRepository.findByEmail(request.getEmail()).get();
+
+        //setting up new password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        //saving updates in repository
+        userService.create(user);
+
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
     @GetMapping("/user/info")
     public ResponseEntity<UserInfoResponse> getCurrentUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
@@ -158,6 +238,15 @@ class AuthRequest {
     private String email;
     private String password;
 
+}
+
+@Getter
+@Setter
+@NoArgsConstructor
+class ChangePasswordRequest {
+    private String email;
+    private String password;
+    private String newPassword;
 }
 
 @Getter
