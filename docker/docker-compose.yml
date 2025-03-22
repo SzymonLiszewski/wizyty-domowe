@@ -6,8 +6,14 @@ services:
       - 8082:8082
     networks:
       - spring_mysql
+    environment:
+      - spring.datasource.url=jdbc:mysql://mysqldb:3306/homevisitsdb_appointments
+      - spring.datasource.username=user
+      - spring.datasource.password=password
+      - spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
 
   mysqldb:
     image: "mysql:8.0"
@@ -18,9 +24,14 @@ services:
       - spring_mysql
     environment:
       MYSQL_DATABASE: homevisitsdb_appointments
-      MYSQL_USER: root
-      MYSQL_PASSWORD: <<passwd>>
-      MYSQL_ROOT_PASSWORD: <<passwd>>
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DEFAULT_AUTH: caching_sha2_password
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
 
 networks:
   spring_mysql:
