@@ -1,0 +1,26 @@
+services:
+  appointments:
+    build: ../backend/appointments
+    restart: always
+    ports:
+      - 8082:8082
+    networks:
+      - spring_mysql
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - spring_mysql
+    environment:
+      MYSQL_DATABASE: homevisitsdb_appointments
+      MYSQL_USER: root
+      MYSQL_PASSWORD: <<passwd>>
+      MYSQL_ROOT_PASSWORD: <<passwd>>
+
+networks:
+  spring_mysql:
