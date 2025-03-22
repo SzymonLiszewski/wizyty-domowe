@@ -1,0 +1,1 @@
+1. to build jar use mvn clean package (important - in intellij go to maven->settings->set up jdk and **environment variables**)
