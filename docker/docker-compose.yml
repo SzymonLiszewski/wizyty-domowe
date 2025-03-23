@@ -8,12 +8,18 @@ services:
       - spring_mysql
     environment:
       - spring.datasource.url=jdbc:mysql://mysqldb:3306/homevisitsdb_appointments
-      - spring.datasource.username=user
-      - spring.datasource.password=password
+      - spring.datasource.username=${DB_USER}
+      - spring.datasource.password=${DB_PASSWORD}
       - spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+      - jwt.secret=${JWT_SECRET}
     depends_on:
       mysqldb:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/api/appointments" ]
+      interval: 10s
+      retries: 5
+      start_period: 20s
 
   mysqldb:
     image: "mysql:8.0"
@@ -24,9 +30,46 @@ services:
       - spring_mysql
     environment:
       MYSQL_DATABASE: homevisitsdb_appointments
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DEFAULT_AUTH: caching_sha2_password
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+
+  auth:
+    build: ../backend/auth
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - spring_mysql
+    environment:
+      - spring.datasource.url=jdbc:mysql://auth_db:3306/homevisitsdb_auth
+      - spring.datasource.username=${DB_USER}
+      - spring.datasource.password=${DB_PASSWORD}
+      - spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+      - jwt.secret=${JWT_SECRET}
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      appointments:
+        condition: service_healthy
+
+  auth_db:
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3307:3306
+    networks:
+      - spring_mysql
+    environment:
+      MYSQL_DATABASE: homevisitsdb_auth
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DEFAULT_AUTH: caching_sha2_password
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
