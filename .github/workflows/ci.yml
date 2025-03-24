@@ -97,4 +97,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: spring-boot-app
-          path: target/*.jar
+          path: |
+            backend/appointments/target/*.jar
+            backend/auth/target/*.jar
