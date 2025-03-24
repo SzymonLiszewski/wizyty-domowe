@@ -74,7 +74,7 @@ jobs:
 
       - name: Build auth service with Maven
         run: |
-          cd backend/appointments
+          cd backend/auth
           mvn clean package
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
@@ -84,7 +84,7 @@ jobs:
 
       - name: Run tests for auth service
         run: |
-          cd backend/appointments 
+          cd backend/auth 
           mvn test
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
