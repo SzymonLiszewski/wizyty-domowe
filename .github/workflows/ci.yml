@@ -3,7 +3,7 @@ name: Spring Boot CI
 on:
   push:
     branches:
-      - main
+      - feture/docker
   pull_request:
     branches:
       - main
