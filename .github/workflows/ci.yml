@@ -3,7 +3,7 @@ name: Spring Boot CI
 on:
   push:
     branches:
-      - main
+      - feature/docker
   pull_request:
     branches:
       - main
@@ -100,3 +100,32 @@ jobs:
           path: |
             backend/appointments/target/*.jar
             backend/auth/target/*.jar
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: create docker image for auth
+        run: |
+          cd backend/auth
+          docker build -t auth:latest .
+
+      - name: create docker image for appointments
+        run: |
+          cd backend/appointments
+          docker build -t appointments:latest .
+
+      - name: Tag and push Docker image for auth to GHCR
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]') #github requires lowercase repository name
+          docker tag auth:latest ghcr.io/$OWNER/auth:latest
+          docker push ghcr.io/$OWNER/auth:latest
+
+      - name: Tag and push Docker image for appointments to GHCR
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          docker tag appointments:latest ghcr.io/$OWNER/appointments:latest
+          docker push ghcr.io/$OWNER/appointments:latest

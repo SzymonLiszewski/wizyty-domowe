@@ -1,6 +1,6 @@
 services:
   appointments:
-    image: ghcr.io/adrianzdankowski/appointments:latest
+    build: ../backend/appointments
     restart: always
     ports:
       - 8082:8082
@@ -40,7 +40,7 @@ services:
       retries: 5
 
   auth:
-    image: ghcr.io/adrianzdankowski/auth:latest
+    build: ../backend/auth
     restart: always
     ports:
       - 8081:8081
