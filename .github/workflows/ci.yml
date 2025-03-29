@@ -121,14 +121,11 @@ jobs:
       - name: Tag and push Docker image for auth to GHCR
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]') #github requires lowercase repository name
-          echo "${{ github.repository_owner }}"
-          echo $OWNER
-          echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' 
           docker tag auth:latest ghcr.io/$OWNER/auth:latest
-          docker push ghcr.io/${{ github.repository }}/auth:latest
+          docker push ghcr.io/$OWNER/auth:latest
 
       - name: Tag and push Docker image for appointments to GHCR
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           docker tag appointments:latest ghcr.io/$OWNER/appointments:latest
-          docker push ghcr.io/${{ github.repository }}/appointments:latest
+          docker push ghcr.io/$OWNER/appointments:latest
