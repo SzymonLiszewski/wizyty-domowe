@@ -1,15 +1,16 @@
 name: Spring Boot CI
 
 on:
-  permissions:
-    contents: read
-    packages: write
   push:
     branches:
       - feature/docker
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
