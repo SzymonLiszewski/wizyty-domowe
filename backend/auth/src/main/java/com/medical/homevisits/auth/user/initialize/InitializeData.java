@@ -16,10 +16,12 @@ import com.medical.homevisits.auth.user.service.CustomUserDetailsService;
 import com.medical.homevisits.auth.user.service.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!build") // Won't start if profile = build
 public class InitializeData implements InitializingBean {
 
     private final PasswordEncoder passwordEncoder;

@@ -76,7 +76,7 @@ jobs:
       - name: Build auth service with Maven
         run: |
           cd backend/auth
-          mvn clean package
+          mvn clean package -Dspring.profiles.active=build
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
           SPRING_DATASOURCE_USERNAME: testuser
@@ -86,7 +86,7 @@ jobs:
       - name: Run tests for auth service
         run: |
           cd backend/auth 
-          mvn test
+          mvn test -Dspring.profiles.active=build
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
           SPRING_DATASOURCE_USERNAME: testuser
