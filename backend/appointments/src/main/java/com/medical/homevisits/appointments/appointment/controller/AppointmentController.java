@@ -204,6 +204,11 @@ public class AppointmentController {
         }));
         return ResponseEntity.ok(doctorSet);
     }
+    @DeleteMapping("/{appointmentId}")
+    public ResponseEntity<Void> deleteAppointment(@PathVariable UUID appointmentId) {
+        service.deleteAppointment(appointmentId);
+        return ResponseEntity.noContent().build();
+    }
 }
 
 @Getter
