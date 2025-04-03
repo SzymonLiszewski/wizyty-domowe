@@ -28,6 +28,6 @@ public class EmergencyReport {
             
             this.patient = new Patient();
         }
-        this.patient.setId(patientId);
+        this.patient.setID(patientId);
     }
 }

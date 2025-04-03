@@ -122,7 +122,7 @@ public class EmergencyReportController {
         UUID patientId = UUID.fromString(claims.get("id", String.class));
         EmergencyReport report = service.getReportById(reportId);
 
-        if (report.getPatient().getId().equals(patientId)) {
+        if (report.getPatient().getID().equals(patientId)) {
             return ResponseEntity.ok(report);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);

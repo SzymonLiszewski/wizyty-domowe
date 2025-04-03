@@ -137,7 +137,7 @@ public class PrescriptionController {
         Prescription prescription = service.findPrescriptionById(prescriptionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prescription not found"));
 
-        if (!prescription.getDoctor().getId().equals(doctorId)) {
+        if (!prescription.getDoctor().getID().equals(doctorId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to edit this prescription");
         }
 

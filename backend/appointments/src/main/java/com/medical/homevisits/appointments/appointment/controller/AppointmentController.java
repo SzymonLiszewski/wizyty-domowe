@@ -206,7 +206,7 @@ public class AppointmentController {
     }
     @DeleteMapping("/{appointmentId}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID appointmentId) {
-        service.deleteAppointment(appointmentId);
+        service.delete(appointmentId);
         return ResponseEntity.noContent().build();
     }
 }
