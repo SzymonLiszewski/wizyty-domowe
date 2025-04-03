@@ -40,11 +40,11 @@ public class PrescriptionService {
     }
 
     public List<Prescription> getPrescriptionsByPatient(UUID patientId) {
-        return prescriptionRepository.findByPatientId(patientId);
+        return prescriptionRepository.findByPatientID(patientId);
     }
 
 	public List<Prescription> getPrescriptionsByDoctor(UUID doctorId) {
-		 return prescriptionRepository.findByDoctorId(doctorId);
+		 return prescriptionRepository.findByDoctorID(doctorId);
 		 
 	}
 
