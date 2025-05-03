@@ -8,8 +8,8 @@ data class UserInfoResponse(
     val role: String?,
     val dateOfBirth: String?,
     val address: String?,
-    // Typo in backend so typo has to be in there as well =)
-    val specialisation: String?,
+    val specialization: String?,
     val academicDegree: String?,
+    val doctor: String?,
     val workPlace: String?
 )

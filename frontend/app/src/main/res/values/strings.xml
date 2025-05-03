@@ -18,4 +18,25 @@
         <item>Laryngolog</item>
         <item>Psycholog</item>
     </string-array>
+
+
+    <string name="email">E-mail</string>
+    <string name="login_title">Logowanie</string>
+    <string name="password">Hasło</string>
+    <string name="registration_title">Rejestracja</string>
+    <string name="name">Imię</string>
+    <string name="surname">Nazwisko</string>
+    <string name="phoneNumber">Numer telefonu</string>
+    <string name="birthday">Data urodzenia</string>
+    <string name="passwordConfirmation">Potwierdzenie hasła</string>
+    <string name="city">Miasto</string>
+    <string name="street">Ulica</string>
+    <string name="postalCode">Kod pocztowy</string>
+    <string name="apartmentNumber">Numer lokalu</string>
+    <string name="buildingNumber">Numer budynku</string>
+
+    <string name="editEmail">Edytuj e-mail</string>
+    <string name="editPhoneNumber">Edytuj numer telefonu</string>
+    <string name="editAddress">Edytuj adres</string>
+    <string name="editPassword">Edytuj hasło</string>
 </resources>

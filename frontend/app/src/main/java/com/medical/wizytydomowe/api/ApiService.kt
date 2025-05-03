@@ -14,7 +14,6 @@ import retrofit2.http.POST
 
 interface ApiService {
 
-    // Rejestracja
     @POST("register/patient")
     fun register(@Body registerRequest: RegisterRequest): Call<ResponseBody>
 

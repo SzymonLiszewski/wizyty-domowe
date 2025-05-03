@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.fragments.profile.LoginFragment
 
 
 class VisitsLogoutFragment : Fragment(R.layout.visits_logout_fragment)  {
