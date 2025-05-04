@@ -10,7 +10,7 @@ import com.medical.wizytydomowe.fragments.AddVisitFragment
 import com.medical.wizytydomowe.fragments.PrescriptionsFragment
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
 import com.medical.wizytydomowe.fragments.SearchFragment
-import com.medical.wizytydomowe.fragments.VisitsFragment
+import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 import com.google.android.material.navigation.NavigationBarView
 import com.medical.wizytydomowe.fragments.AddMedicalReportFragment
 import com.medical.wizytydomowe.fragments.AddPrescriptionFragment
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val preferenceManager = PreferenceManager(this)
 
         val searchFragment = SearchFragment()
-        val visitFragment = VisitsFragment()
+        val appointmentFragment = AppointmentsFragment()
         val addVisitFragment = AddVisitFragment()
         val prescriptionsFragment = PrescriptionsFragment()
         val prescriptionsLogoutFragment = PrescriptionsLogoutFragment()
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val availableMedicalReportsFragment = AvailableMedicalReportsFragment()
         val paramedicMedicalReportsFragment = ParamedicMedicalReportsFragment()
 
-        setCurrentFragment(visitLogoutFragment)
+        setCurrentFragment(appointmentFragment)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
@@ -59,14 +59,8 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
                 R.id.bottom_visits -> {
-                    if (preferenceManager.isLoggedIn()) {
-                        setCurrentFragment(visitFragment)
-                        true
-                    }
-                    else {
-                        setCurrentFragment(visitLogoutFragment)
-                        true
-                    }
+                    setCurrentFragment(appointmentFragment)
+                    true
                 }
                 R.id.bottom_search -> {
                     setCurrentFragment(searchFragment)

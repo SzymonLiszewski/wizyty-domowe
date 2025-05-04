@@ -112,9 +112,8 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
 
     private fun moveToRegisterFragment(){
         val registerFragment = RegisterFragment()
-        val transaction = requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, registerFragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(registerFragment)
     }
 }

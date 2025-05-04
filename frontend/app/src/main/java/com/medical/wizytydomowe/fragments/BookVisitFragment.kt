@@ -14,6 +14,8 @@ import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
 import com.medical.wizytydomowe.api.appointments.AppointmentAdapter
 import com.medical.wizytydomowe.api.users.Doctor
+import com.medical.wizytydomowe.api.users.Nurse
+import com.medical.wizytydomowe.api.users.Patient
 import java.util.Calendar
 
 class BookVisitFragment : Fragment(R.layout.book_visits_fragment) {
@@ -43,101 +45,45 @@ class BookVisitFragment : Fragment(R.layout.book_visits_fragment) {
         val appointments = listOf(
             Appointment(
                 id = "23",
-                status = "available",
-                appointmentStartTime = "10.15 2025-05-01",
-                appointmentEndTime = "10.30 2025-05-01",
-                doctor = Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "123 Main Street",
-                notes = null
+                status = "RESERVED",
+                appointmentStartTime = "2025-06-01T10.15",
+                appointmentEndTime = "2025-06-01T10.30",
+                doctor = Doctor("1", "Marcin", "Rogowski", "Ginekolog", "Szpital Miejski we Wrocławiu"),
+                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski we Wrocławiu"),
+                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
+                address = "Warszawa, 10-101, Opolska 12A/4",
+                notes = "Płatność dostępna tylko za pomocą BLIK"
             ),
             Appointment(
                 id = "24",
-                status = "available",
+                status = "CANCELED",
                 appointmentStartTime = "10.30 2025-06-01",
                 appointmentEndTime = "10.45 2025-06-01",
                 doctor = Doctor("2", "Jan", "Kowalski", "ginekolog", "Szpital Miejski w Gdańsku"),
-                patient = null,
+                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski we Wrocławiu"),
+                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
                 address = "456 Elm Street",
                 notes = null
             ),
             Appointment(
                 id = "3",
-                status = "available",
+                status = "RESERVED",
                 appointmentStartTime = "10.15 2025-04-01",
                 appointmentEndTime = "10.30 2025-04-01",
                 doctor = Doctor("3", "Jan", "Kowalski", "urolog", "Szpital Miejski w Gdańsku"),
-                patient = null,
+                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski we Wrocławiu"),
+                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
                 address = "123 Main Street",
                 notes = null
             ),
             Appointment(
                 id = "4",
-                status = "available",
+                status = "reserved",
                 appointmentStartTime = "10.30 2025-03-01",
                 appointmentEndTime = "10.45 2025-03-01",
                 doctor = Doctor("4", "Jan", "Kowalski", "chirurg", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "456 Elm Street",
-                notes = null
-            ),
-            Appointment(
-                id = "2",
-                status = "available",
-                appointmentStartTime = "10.15 2025-02-01",
-                appointmentEndTime = "10.30 2025-02-01",
-                Doctor("5", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "123 Main Street",
-                notes = null
-            ),
-            Appointment(
-                id = "1",
-                status = "available",
-                appointmentStartTime = "10.30 2025-01-01",
-                appointmentEndTime = "10.45 2025-01-01",
-                Doctor("6", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "456 Elm Street",
-                notes = null
-            ),
-            Appointment(
-                id = "12",
-                status = "available",
-                appointmentStartTime = "10.15 2024-12-01",
-                appointmentEndTime = "10.30 2024-12-01",
-                Doctor("7", "Jan", "Kowalski", "pediatra", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "123 Main Street",
-                notes = null
-            ),
-            Appointment(
-                id = "14",
-                status = "available",
-                appointmentStartTime = "10.30 2024-12-12",
-                appointmentEndTime = "10.45 2024-12-12",
-                Doctor("8", "Jan", "Kowalski", "pediatra", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "456 Elm Street",
-                notes = null
-            ),
-            Appointment(
-                id = "123",
-                status = "available",
-                appointmentStartTime = "10.15 2025-06-01",
-                appointmentEndTime = "10.30 2025-06-01",
-                Doctor("9", "Jan", "Kowalski", "pediatra", "Szpital Miejski w Gdańsku"),
-                patient = null,
-                address = "123 Main Street",
-                notes = null
-            ),
-            Appointment(
-                id = "124",
-                status = "available",
-                appointmentStartTime = "10.30 2025-06-02",
-                appointmentEndTime = "10.45 2025-06-02",
-                Doctor("10", "Jan", "Kowalski", "psycholog", "Szpital Miejski w Gdańsku"),
-                patient = null,
+                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski we Wrocławiu"),
+                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
                 address = "456 Elm Street",
                 notes = null
             )

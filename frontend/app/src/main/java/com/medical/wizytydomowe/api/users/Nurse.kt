@@ -1,9 +1,10 @@
 package com.medical.wizytydomowe.api.users
 
-data class Patient(
+import java.io.Serializable
+
+data class Nurse(
     val id: String?,
     val firstName: String?,
     val lastName: String?,
-    val email: String?,
-    val phoneNumber: String?
-)
+    val workPlace: String?
+): Serializable

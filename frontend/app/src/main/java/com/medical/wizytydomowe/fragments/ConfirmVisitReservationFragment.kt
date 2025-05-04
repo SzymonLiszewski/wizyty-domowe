@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
+import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 
 class ConfirmVisitReservationFragment : Fragment(R.layout.confirm_visit_reservation) {
 
@@ -36,9 +37,9 @@ class ConfirmVisitReservationFragment : Fragment(R.layout.confirm_visit_reservat
         yesButton.setOnClickListener{
             //TODO send request to save reservation
             Toast.makeText(context, "Zarezerwowano wizytę ${appointment?.id}", Toast.LENGTH_SHORT).show()
-            val visitsFragment = VisitsFragment()
+            val appointmentsFragment = AppointmentsFragment()
             val activity = activity as? FragmentNavigation
-            activity?.navigateToFragment(visitsFragment)
+            activity?.navigateToFragment(appointmentsFragment)
         }
     }
 }

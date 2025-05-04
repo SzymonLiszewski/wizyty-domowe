@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.1" />
+            app:layout_constraintGuide_percent="0.05" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_between"
@@ -32,17 +32,30 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.25" />
 
-        <TextView
-            android:id="@+id/tv_register_title"
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/titleView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/registration_title"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="40dp"
+            android:foreground="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/guideline_10" />
+            app:layout_constraintTop_toBottomOf="@+id/guideline_10">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:text="@string/registration_title"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="20sp"/>
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/form_container1"

@@ -81,7 +81,7 @@ class AddVisitFragment : Fragment(R.layout.add_visit_fragment)  {
                 //TODO check if doctor/nurse exist; add to the appointment
 
             //}
-            val appointment = Appointment(null, "available", "$selectedDate $selectedStartTime", "$selectedDate $selectedEndTime", doctor, null, null, null)
+            val appointment = Appointment(null, "available", "$selectedDate $selectedStartTime", "$selectedDate $selectedEndTime", doctor, null, null, null, null)
 
             //TODO send appointment to backend
             Toast.makeText(context, "Wizyta jest już widoczna dla pacjentów jako dostępna.", Toast.LENGTH_SHORT).show()

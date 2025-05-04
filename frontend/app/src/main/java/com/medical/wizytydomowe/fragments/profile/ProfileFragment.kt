@@ -5,10 +5,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.material.card.MaterialCardView
+import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.MainActivity
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
@@ -29,7 +32,9 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         val userToken = preferenceManager.getAuthToken()
         val userRole = preferenceManager.getRole()
 
-        val logoutButton = view.findViewById<Button>(R.id.logoutButton)
+        val logoutView = view.findViewById<MaterialCardView>(R.id.logoutView)
+        val editProfileView = view.findViewById<MaterialCardView>(R.id.editProfileView)
+        val editPasswordView = view.findViewById<MaterialCardView>(R.id.editPasswordView)
 
         if (userToken != null) {
             if (userRole == "Patient") setPatientLayout()
@@ -43,7 +48,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             moveToLoginFragment()
         }
 
-        logoutButton.setOnClickListener {
+        logoutView.setOnClickListener {
             preferenceManager.clearAuthToken()
             preferenceManager.clearRole()
 
@@ -53,40 +58,27 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             moveToLoginFragment()
         }
 
-        val emailEditButton = view.findViewById<ImageButton>(R.id.editEmailButton)
-        val phoneNumberEditButton = view.findViewById<ImageButton>(R.id.editPhoneNumberButton)
-        val addressEditButton = view.findViewById<ImageButton>(R.id.editAddressButton)
-        val passwordEditButton = view.findViewById<ImageButton>(R.id.editPasswordButton)
-
-        emailEditButton.setOnClickListener {
-
+        editProfileView.setOnClickListener {
+            Toast.makeText(context, "Kliknięto edycję profilu.", Toast.LENGTH_SHORT).show()
         }
 
-        phoneNumberEditButton.setOnClickListener {
-
-        }
-
-        addressEditButton.setOnClickListener {
-
-        }
-
-        passwordEditButton.setOnClickListener {
-
+        editPasswordView.setOnClickListener {
+            Toast.makeText(context, "Kliknięto edycję hasła.", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun setPatientLayout(){
-        view?.findViewById<LinearLayout>(R.id.hospitalLayout)?.visibility = View.GONE
-        view?.findViewById<LinearLayout>(R.id.specializationLayout)?.visibility = View.GONE
-        view?.findViewById<LinearLayout>(R.id.addreessLayout)?.visibility = View.VISIBLE
-        view?.findViewById<LinearLayout>(R.id.streetLayout)?.visibility = View.VISIBLE
+        view?.findViewById<MaterialCardView>(R.id.specializationView)?.visibility = View.GONE
+        view?.findViewById<MaterialCardView>(R.id.hospitalView)?.visibility = View.GONE
+        view?.findViewById<MaterialCardView>(R.id.dateOfBirthView)?.visibility = View.VISIBLE
+        view?.findViewById<MaterialCardView>(R.id.addressView)?.visibility = View.VISIBLE
     }
 
     private fun setMedicalStaffLayout(){
-        view?.findViewById<LinearLayout>(R.id.hospitalLayout)?.visibility = View.VISIBLE
-        view?.findViewById<LinearLayout>(R.id.specializationLayout)?.visibility = View.VISIBLE
-        view?.findViewById<LinearLayout>(R.id.addreessLayout)?.visibility = View.GONE
-        view?.findViewById<LinearLayout>(R.id.streetLayout)?.visibility = View.GONE
+        view?.findViewById<MaterialCardView>(R.id.specializationView)?.visibility = View.VISIBLE
+        view?.findViewById<MaterialCardView>(R.id.hospitalView)?.visibility = View.VISIBLE
+        view?.findViewById<MaterialCardView>(R.id.dateOfBirthView)?.visibility = View.GONE
+        view?.findViewById<MaterialCardView>(R.id.addressView)?.visibility = View.GONE
     }
 
     private fun sendRequest(requestToken: String, userRole: String?){
@@ -95,12 +87,12 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 override fun onResponse(call: Call<UserInfoResponse>, response: Response<UserInfoResponse>) {
                     if (response.isSuccessful) {
                         val responseBody = response.body()
-                        if (userRole == "Patient"){
-                            setPatientView(responseBody)
-                        }
-                        else{
-                            setMedicalStaffView(responseBody)
-                        }
+
+                        setRole(userRole)
+                        setAppropiateRoleImage(userRole)
+
+                        if (userRole == "Patient") setPatientView(responseBody)
+                        else setMedicalStaffView(responseBody)
                     } else {
                         Log.e("API", "Błąd: ${response.code()} - ${response.message()}")
                     }
@@ -114,10 +106,9 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
     private fun moveToLoginFragment(){
         val loginFragment = LoginFragment()
-        val transaction = requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, loginFragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(loginFragment)
     }
 
     private fun convertToDateFormat(dateString: String?): String? {
@@ -138,33 +129,76 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         if (!address.isNullOrEmpty()){
             val parts = address.split(",".toRegex(), 3)
             if (parts.size == 3) {
-                val city = parts[0].trim()
-                val postalCode = parts[1].trim()
-                val street = parts[2].trim()
-                view?.findViewById<TextView>(R.id.cityAndPostalCodeTextView)?.text = "${city}, ${postalCode}"
-                view?.findViewById<TextView>(R.id.streetTextView)?.text = "ul. ${street}"
+                view?.findViewById<TextView>(R.id.cityTextView)?.text = parts[0].trim()
+                view?.findViewById<TextView>(R.id.postalCodeTextView)?.text = parts[1].trim()
+                view?.findViewById<TextView>(R.id.streetTextView)?.text = "ul. " + parts[2].trim()
             }
         }
         else{
-            view?.findViewById<TextView>(R.id.cityAndPostalCodeTextView)?.text = "None"
+            view?.findViewById<TextView>(R.id.cityTextView)?.text = "None"
+            view?.findViewById<TextView>(R.id.postalCodeTextView)?.text = "None"
             view?.findViewById<TextView>(R.id.streetTextView)?.text = "None"
         }
     }
 
+    private fun setDateOfBirth(dateOfBirth: String?){
+        val dateOfBirthConverted = convertToDateFormat(dateOfBirth)
+        if (!dateOfBirthConverted.isNullOrEmpty()) view?.findViewById<TextView>(R.id.dateOfBirthTextView)?.text = "${dateOfBirthConverted}"
+        else view?.findViewById<TextView>(R.id.dateOfBirthTextView)?.text = "None"
+    }
+
     private fun setPersonalData(userInfo: UserInfoResponse?){
-        view?.findViewById<TextView>(R.id.personalDataTextView)?.text = "${userInfo?.firstName} ${userInfo?.lastName}"
+        view?.findViewById<TextView>(R.id.firstNameTextView)?.text = "${userInfo?.firstName}"
+        view?.findViewById<TextView>(R.id.lastNameTextView)?.text = "${userInfo?.lastName}"
         view?.findViewById<TextView>(R.id.emailTextView)?.text = "${userInfo?.email}"
         view?.findViewById<TextView>(R.id.phoneNumberTextView)?.text = "123-456-789"
+    }
 
-        val dateOfBirth = convertToDateFormat(userInfo?.dateOfBirth)
-        if (!dateOfBirth.isNullOrEmpty()) view?.findViewById<TextView>(R.id.dateOfBirthTextView)?.text = "${dateOfBirth}"
-        else view?.findViewById<TextView>(R.id.dateOfBirthTextView)?.text = "None"
+    private fun setRole(userRole: String?){
+        if (userRole == "Patient") view?.findViewById<TextView>(R.id.roleTextView)?.text = "Pacjent"
+        if (userRole == "Doctor") view?.findViewById<TextView>(R.id.roleTextView)?.text = "Lekarz"
+        if (userRole == "Nurse") view?.findViewById<TextView>(R.id.roleTextView)?.text = "Pielęgniarka"
+        if (userRole == "Paramedic") view?.findViewById<TextView>(R.id.roleTextView)?.text = "Ratownik medyczny"
+    }
 
-        view?.findViewById<TextView>(R.id.passwordTextView)?.text = "*******"
+    private fun setPatientImage(){
+        view?.findViewById<ImageView>(R.id.patientImage)?.visibility = View.VISIBLE
+        view?.findViewById<ImageView>(R.id.doctorImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.nurseImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.paramedicImage)?.visibility = View.GONE
+    }
+
+    private fun setDoctorImage(){
+        view?.findViewById<ImageView>(R.id.patientImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.doctorImage)?.visibility = View.VISIBLE
+        view?.findViewById<ImageView>(R.id.nurseImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.paramedicImage)?.visibility = View.GONE
+    }
+
+    private fun setNurseImage(){
+        view?.findViewById<ImageView>(R.id.patientImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.doctorImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.nurseImage)?.visibility = View.VISIBLE
+        view?.findViewById<ImageView>(R.id.paramedicImage)?.visibility = View.GONE
+    }
+
+    private fun setParamedicImage(){
+        view?.findViewById<ImageView>(R.id.patientImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.doctorImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.nurseImage)?.visibility = View.GONE
+        view?.findViewById<ImageView>(R.id.paramedicImage)?.visibility = View.VISIBLE
+    }
+
+    private fun setAppropiateRoleImage(userRole: String?){
+        if (userRole == "Patient") setPatientImage()
+        if (userRole == "Doctor") setDoctorImage()
+        if (userRole == "Nurse") setNurseImage()
+        if (userRole == "Paramedic") setParamedicImage()
     }
 
     private fun setPatientView(userInfo: UserInfoResponse?){
         setPersonalData(userInfo)
+        setDateOfBirth(userInfo?.dateOfBirth)
         setAddress(userInfo?.address)
     }
 

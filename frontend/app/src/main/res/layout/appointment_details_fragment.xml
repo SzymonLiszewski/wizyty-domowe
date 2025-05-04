@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.01" />
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/titleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="40dp"
+            android:foreground="@color/gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_03">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:text="Wizyta lekarska"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="28sp"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <GridLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:rowCount="2"
+            android:columnCount="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleView"
+            android:layout_margin="8dp">
+
+            <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/doctorView"
+                android:layout_width="160dp"
+                android:layout_height="280dp"
+                app:cardCornerRadius="12dp"
+                android:foreground="@color/gray"
+                app:cardElevation="8dp"
+                android:layout_margin="8dp"
+                android:layout_column="0"
+                android:layout_row="0"
+                android:layout_gravity="center"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/doctor_svgrepo_com"/>
+
+                    <TextView
+                        android:id="@+id/firstNameDoctorTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Jan"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/lastNameDoctorTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Kowalski"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/specializationDoctorTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Laryngolog"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/hospitalDoctorTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="8dp"
+                        android:text="Szpital Miejski w Gdańsku"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/nurseView"
+                android:layout_width="160dp"
+                android:layout_height="280dp"
+                app:cardCornerRadius="12dp"
+                android:foreground="@color/gray"
+                app:cardElevation="8dp"
+                android:layout_margin="8dp"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:layout_gravity="center"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/nurse_person_svgrepo_com"/>
+
+                    <TextView
+                        android:id="@+id/firstNameNurseTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Agnieszka"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/lastNameNurseTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Kowalska"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/specializationNurseTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Pięlegniarka"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/hospitalNurseTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="8dp"
+                        android:text="Szpital Miejski w Gdańsku"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/patientView"
+                android:layout_width="160dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="12dp"
+                android:foreground="@color/gray"
+                app:cardElevation="8dp"
+                android:layout_margin="8dp"
+                android:layout_column="0"
+                android:layout_row="0"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/person_svgrepo_com"/>
+
+                    <TextView
+                        android:id="@+id/firstNamePatientTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="8dp"
+                        android:text="Jan"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/lastNamePatientTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="2dp"
+                        android:text="Kowalski"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/phoneNumberPatientTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="123-456-789"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:layout_marginTop="10dp"/>
+
+                    <TextView
+                        android:id="@+id/emailPatientTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="jankow@gmail.com"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="13sp"
+                        android:layout_marginTop="15dp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/addressVerticalView"
+                android:layout_width="160dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="12dp"
+                android:layout_margin="8dp"
+                android:foreground="@color/gray"
+                app:cardElevation="8dp"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="18dp">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/address_location_map_svgrepo_com"/>
+
+                    <TextView
+                        android:id="@+id/postalCodeVerticalTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="11-078"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:layout_marginTop="14dp"/>
+
+                    <TextView
+                        android:id="@+id/cityVerticalTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Gdańsk"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="22sp"
+                        android:layout_marginTop="12dp"/>
+
+                    <TextView
+                        android:id="@+id/streetVerticalTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="ul. Słoneczna 12A/4"
+                        android:textColor="@color/black"
+                        android:textAlignment="center"
+                        android:textSize="18sp"
+                        android:layout_marginTop="12dp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/startTimeView"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                android:foreground="@color/gray"
+                app:cardElevation="8dp"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:layout_column="0"
+                android:layout_row="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/calendar_alt_svgrepo_com"/>
+
+                    <TextView
+                        android:id="@+id/startDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="03-05-2025"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/startHourTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="10:45"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/endTimeView"
+                android:layout_width="160dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                android:layout_margin="8dp"
+                android:foreground="@color/gray"
+                app:cardElevation="8dp"
+                android:layout_column="1"
+                android:layout_row="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/calendar_alt_svgrepo_com"/>
+
+                    <TextView
+                        android:id="@+id/endDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="03-05-2025"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/endHourTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="11:15"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </GridLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/addressHorizontalView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="18dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/gridLayout"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="18dp">
+
+                <ImageView
+                    android:layout_width="108dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/address_location_map_svgrepo_com"/>
+
+                <TextView
+                    android:id="@+id/postalCodeHorizontalTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="11-078"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/cityHorizontalTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Gdańsk"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/streetHorizontalTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="ul. Słoneczna 12A/4"
+                    android:textColor="@color/black"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:layout_marginTop="8dp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/statusView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginBottom="40dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:layout_marginTop="18dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addressHorizontalView">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="24dp">
+
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:src="@drawable/status_information_svgrepo_com"/>
+
+                <TextView
+                    android:id="@+id/statusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Zarezerwowana"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="20sp"/>
+
+                <TextView
+                    android:id="@+id/notesTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Dodatkowe informacje:\nBrak możliwości płatności kartą"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textAlignment="center"/>
+
+                <Button
+                    android:id="@+id/cancelAppointmentButton"
+                    android:layout_width="160dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Anuluj"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusView"
+            app:layout_constraintVertical_bias="0.119" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

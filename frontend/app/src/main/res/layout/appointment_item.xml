@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/appointmentView"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    android:clickable="true"
+    android:foreground="@color/gray"
+    app:cardElevation="8dp"
+    android:layout_margin="8dp"
+    android:layout_column="0"
+    android:layout_row="0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/calendar_alt_svgrepo_com"/>
+
+        <TextView
+            android:id="@+id/startDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="03-05-2025"
+            android:textColor="@color/black"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/startHourTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="10:45"
+            android:textColor="@color/black"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/statusAppointmentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Zarezerwowana"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="15sp"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

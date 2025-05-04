@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
+import com.medical.wizytydomowe.fragments.appointments.AppointmentDetails
+import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 
 class CancelReservationFragment : Fragment(R.layout.cancel_visit_reservation_fragment) {
 
@@ -26,19 +28,19 @@ class CancelReservationFragment : Fragment(R.layout.cancel_visit_reservation_fra
                 putSerializable("appointment", appointment)
             }
 
-            val visitDetails = VisitDetails().apply {
+            val appointmentDetails = AppointmentDetails().apply {
                 arguments = bundle
             }
             val activity = activity as? FragmentNavigation
-            activity?.navigateToFragment(visitDetails)
+            activity?.navigateToFragment(appointmentDetails)
         }
 
         yesButton.setOnClickListener{
             //TODO send request to cancel reservation
             Toast.makeText(context, "Anulowano wizytę ${appointment?.id}", Toast.LENGTH_SHORT).show()
-            val visitsFragment = VisitsFragment()
+            val appointmentsFragment = AppointmentsFragment()
             val activity = activity as? FragmentNavigation
-            activity?.navigateToFragment(visitsFragment)
+            activity?.navigateToFragment(appointmentsFragment)
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.registration.RegisterRequest
@@ -139,10 +140,9 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
 
     private fun moveToLoginFragment(){
         val loginFragment = LoginFragment()
-        val transaction = requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, loginFragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(loginFragment)
     }
 
     private fun isValidDate(dateString: String?): Boolean {

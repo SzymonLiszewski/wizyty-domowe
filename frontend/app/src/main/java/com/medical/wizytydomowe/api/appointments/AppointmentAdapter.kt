@@ -8,46 +8,64 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 class AppointmentAdapter(
     private var appointments: List<Appointment>,
-    private val onAppointmentDetailsClick: (Appointment) -> Unit
+    private val onAppointmentClick: (Appointment) -> Unit
 ) : RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder>() {
 
     inner class AppointmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvStartTime: TextView = itemView.findViewById(R.id.tvAppointmentStartTime)
-        private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
-        private val btnAppointmentDetails: Button = itemView.findViewById(R.id.btnAppointmentDetails)
+        private val startDateTextView: TextView = itemView.findViewById(R.id.startDateTextView)
+        private val startHourTextView: TextView = itemView.findViewById(R.id.startHourTextView)
+        private val statusAppointmentTextView: TextView = itemView.findViewById(R.id.statusAppointmentTextView)
+        private val appointmentView: MaterialCardView = itemView.findViewById(R.id.appointmentView)
 
         fun bind(appointment: Appointment) {
-            tvStartTime.text = "${appointment.appointmentStartTime}"
+            val parts = appointment.appointmentStartTime?.split("T".toRegex(), 2)
+            if (parts?.size == 2) {
+                val date = convertToDateFormat(parts[0].trim())
+                val time = parts[1].trim()
+                if (!date.isNullOrEmpty()) startDateTextView.text = "${date}"
+                else startDateTextView.text = "None"
+                startHourTextView.text = "${time}"
+            }
+            else{
+                startHourTextView.text = "None"
+                startDateTextView.text = "None"
+            }
 
             when (appointment.status) {
-                "cancelled" -> tvStatus.text = "Anulowana"
-                "completed" -> tvStatus.text = "Odbyta"
-                "reserved" -> tvStatus.text = "Zarezerwowana"
-                "available" -> tvStatus.text = "Dostępna"
+                "CANCELED" -> {
+                    statusAppointmentTextView.text = "Anulowana"
+                    statusAppointmentTextView.setTextColor(Color.RED)
+                }
+                "COMPLETED" -> {
+                    statusAppointmentTextView.text = "Odbyta"
+                    statusAppointmentTextView.setTextColor(Color.BLACK)
+                }
+                "RESERVED" -> {
+                    statusAppointmentTextView.text = "Zarezerwowana"
+                    statusAppointmentTextView.setTextColor(Color.BLACK)
+                }
+                "AVAILABLE" -> {
+                    statusAppointmentTextView.text = "Dostępna"
+                    statusAppointmentTextView.setTextColor(Color.BLACK)
+                }
             }
 
-            when (tvStatus.text) {
-                "Anulowana" -> tvStatus.setTextColor(Color.RED)
-                "Odbyta" -> tvStatus.setTextColor(Color.BLACK)
-                "Zarezerwowana" -> tvStatus.setTextColor(
-                    ContextCompat.getColor(itemView.context, R.color.gray)
-                )
-                else -> tvStatus.setTextColor(Color.BLACK)
-            }
-
-            btnAppointmentDetails.setOnClickListener {
-                onAppointmentDetailsClick(appointment)
+            appointmentView.setOnClickListener {
+                onAppointmentClick(appointment)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.visit_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.appointment_item, parent, false)
         return AppointmentViewHolder(view)
     }
 
@@ -60,5 +78,19 @@ class AppointmentAdapter(
     fun updateAppointments(newAppointments: List<Appointment>) {
         appointments = newAppointments
         notifyDataSetChanged()
+    }
+
+    private fun convertToDateFormat(dateString: String?): String? {
+        try {
+            if (!dateString.isNullOrEmpty()){
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                val date = inputFormat.parse(dateString)
+                return date?.let { outputFormat.format(it) }
+            }
+            return null
+        } catch (e: Exception) {
+            return null
+        }
     }
 }

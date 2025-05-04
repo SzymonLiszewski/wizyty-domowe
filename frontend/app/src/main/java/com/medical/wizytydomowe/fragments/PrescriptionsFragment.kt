@@ -31,7 +31,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "1",
                 prescriptionTime = "2025-05-01",
                 doctor = Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -53,7 +53,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "2",
                 prescriptionTime = "2025-04-01",
                 doctor = Doctor("2", "Jan", "Kowalski", "ginekolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -75,7 +75,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "3",
                 prescriptionTime = "2025-03-01",
                 doctor = Doctor("3", "Jan", "Kowalski", "urolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -97,7 +97,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "4",
                 prescriptionTime = "2025-02-01",
                 doctor = Doctor("4", "Jan", "Kowalski", "chirurg", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -119,7 +119,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "5",
                 prescriptionTime = "2025-05-11",
                 doctor = Doctor("5", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -141,7 +141,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "6",
                 prescriptionTime = "2025-05-11",
                 doctor = Doctor("6", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -163,7 +163,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "7",
                 prescriptionTime = "2025-05-14",
                 doctor = Doctor("7", "Jan", "Kowalski", "pediatra", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -185,7 +185,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "8",
                 prescriptionTime = "2025-05-21",
                 doctor = Doctor("8", "Jan", "Kowalski", "pediatra", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
@@ -207,7 +207,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                 id = "9",
                 prescriptionTime = "2025-05-22",
                 doctor = Doctor("9", "Jan", "Kowalski", "pediatra", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski"),
+                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
                 notes = "Przepisane leki:\n" +
                         "\n" +
                         "Amoksycylina 500 mg\n" +
