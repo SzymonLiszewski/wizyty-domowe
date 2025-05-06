@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!build") // Won't start if profile = build
+@Profile("!build & !test") // Won't start if profile = build
 public class InitializeData implements InitializingBean {
 
     private final PasswordEncoder passwordEncoder;
