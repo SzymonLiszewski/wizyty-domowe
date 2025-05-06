@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.medicalReports.MedicalReport
+import com.medical.wizytydomowe.api.emergency.Emergency
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,7 +66,7 @@ class AddMedicalReportFragment : Fragment(R.layout.add_medical_report)  {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val formattedDate = dateFormat.format(Date())
 
-            val medicalReport = MedicalReport(null, "available", firstName, lastName, formattedDate, address, description)
+            //val medicalReport = MedicalReport(null, "available", firstName, lastName, formattedDate, address, description)
             Toast.makeText(context, "Zgłoszenie zostało zarejestrowane pomyślnie.", Toast.LENGTH_SHORT).show()
             clearForm()
         }

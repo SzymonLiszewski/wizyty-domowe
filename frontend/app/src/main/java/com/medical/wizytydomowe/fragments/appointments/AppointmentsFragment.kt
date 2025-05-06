@@ -28,7 +28,6 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
     private lateinit var logoutView: MaterialCardView
     private lateinit var noAppointmentView: MaterialCardView
     private lateinit var appointmentRecyclerView: RecyclerView
-    private lateinit var titleView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,22 +39,21 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         logoutView = view.findViewById(R.id.logoutView)
         noAppointmentView = view.findViewById(R.id.noAppointmentView)
         appointmentRecyclerView = view.findViewById(R.id.appointmentsRecyclerView)
-        titleView = view.findViewById(R.id.titleView)
 
         val goToLoginButton = view.findViewById<Button>(R.id.goToLoginButton)
         val goToMakeAnAppointmentButton = view.findViewById<Button>(R.id.goToMakeAnAppointmentButton)
         val goToAddAppointmentButton = view.findViewById<Button>(R.id.goToAddAppointmentButton)
 
         goToLoginButton.setOnClickListener {
-            moveToLoginFragment()
+            navigateToLoginFragment()
         }
 
         goToMakeAnAppointmentButton.setOnClickListener {
-            moveToMakeAnAppointmentFragment()
+            navigateToMakeAnAppointmentFragment()
         }
 
         goToAddAppointmentButton.setOnClickListener {
-            moveToAddAnAppointmentFragment()
+            navigateToAddAnAppointmentFragment()
         }
 
         //TODO get user's appointments from backend
@@ -125,7 +123,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
                                         goToMakeAnAppointmentButton: Button){
         appointmentRecyclerView.visibility = View.GONE
         noAppointmentView.visibility = View.VISIBLE
-        titleView.visibility = View.GONE
+
         if (userRole == "Patient"){
             goToAddAppointmentButton.visibility = View.GONE
             goToMakeAnAppointmentButton.visibility = View.VISIBLE
@@ -139,7 +137,6 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
     private fun setAppointmentsLayout(appointments : List<Appointment>){
         appointmentRecyclerView.visibility = View.VISIBLE
         noAppointmentView.visibility = View.GONE
-        titleView.visibility = View.VISIBLE
 
         recyclerView = appointmentRecyclerView
 
@@ -155,24 +152,23 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         logoutView.visibility = View.VISIBLE
         appointmentRecyclerView.visibility = View.GONE
         noAppointmentView.visibility = View.GONE
-        titleView.visibility = View.GONE
     }
 
-    private fun moveToLoginFragment(){
+    private fun navigateToLoginFragment(){
         val loginFragment = LoginFragment()
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(loginFragment)
     }
 
-    private fun moveToMakeAnAppointmentFragment(){
+    private fun navigateToMakeAnAppointmentFragment(){
         val searchFragment = SearchFragment()
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(searchFragment)
     }
 
-    private fun moveToAddAnAppointmentFragment(){
+    private fun navigateToAddAnAppointmentFragment(){
         val addVisitFragment = AddVisitFragment()
 
         val activity = activity as? FragmentNavigation
@@ -184,12 +180,12 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
             putSerializable("appointment", appointment)
         }
 
-        val appointmentDetails = AppointmentDetails().apply {
+        val appointmentDetailsFragment = AppointmentDetailsFragment().apply {
             arguments = bundle
         }
 
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(appointmentDetails)
+        activity?.navigateToFragment(appointmentDetailsFragment)
     }
 
 }

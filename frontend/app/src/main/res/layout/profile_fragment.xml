@@ -23,10 +23,13 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/titleView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
+            app:cardElevation="8dp"
             android:layout_marginBottom="40dp"
+            android:layout_marginRight="19dp"
+            android:layout_marginLeft="18dp"
             android:foreground="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,10 +41,12 @@
                 android:padding="16dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
+                android:textAlignment="center"
                 android:text="Profil użytkownika"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="28sp"/>
+                android:textSize="28sp"
+                android:visibility="visible"/>
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -145,7 +150,7 @@
                         android:id="@+id/patientImage"
                         android:layout_width="96dp"
                         android:layout_height="96dp"
-                        android:src="@drawable/person_svgrepo_com"
+                        android:src="@drawable/patient_with_injured_bandaged_head_standing_with_saline_via_intravenous_line_svgrepo_com"
                         android:visibility="gone"/>
 
                     <ImageView

@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.01" />
+            app:layout_constraintGuide_percent="0.03" />
 
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -41,7 +41,7 @@
                 android:padding="16dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
-                android:text="Wizyta lekarska"
+                android:text="Zgłoszenie medyczne"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="28sp"/>
@@ -53,7 +53,7 @@
             android:id="@+id/gridLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:rowCount="2"
+            android:rowCount="1"
             android:columnCount="2"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
@@ -62,152 +62,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleView">
-
-            <com.google.android.material.card.MaterialCardView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/doctorView"
-                android:layout_width="160dp"
-                android:layout_height="280dp"
-                app:cardCornerRadius="12dp"
-                android:foreground="@color/gray"
-                app:cardElevation="8dp"
-                android:layout_margin="8dp"
-                android:layout_column="0"
-                android:layout_row="0"
-                android:layout_gravity="center"
-                android:visibility="visible">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:padding="20dp">
-
-                    <ImageView
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:src="@drawable/doctor_svgrepo_com"/>
-
-                    <TextView
-                        android:id="@+id/firstNameDoctorTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Jan"
-                        android:layout_marginTop="8dp"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/lastNameDoctorTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Kowalski"
-                        android:layout_marginTop="2dp"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/specializationDoctorTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Laryngolog"
-                        android:layout_marginTop="5dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/hospitalDoctorTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginTop="8dp"
-                        android:text="Szpital Miejski w Gdańsku"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15sp"/>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/nurseView"
-                android:layout_width="160dp"
-                android:layout_height="280dp"
-                app:cardCornerRadius="12dp"
-                android:foreground="@color/gray"
-                app:cardElevation="8dp"
-                android:layout_margin="8dp"
-                android:layout_column="1"
-                android:layout_row="0"
-                android:layout_gravity="center"
-                android:visibility="visible">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:padding="20dp">
-
-                    <ImageView
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:src="@drawable/nurse_person_svgrepo_com"/>
-
-                    <TextView
-                        android:id="@+id/firstNameNurseTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Agnieszka"
-                        android:layout_marginTop="8dp"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/lastNameNurseTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Kowalska"
-                        android:layout_marginTop="2dp"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/specializationNurseTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Pięlegniarka"
-                        android:layout_marginTop="5dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/hospitalNurseTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginTop="8dp"
-                        android:text="Szpital Miejski w Gdańsku"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15sp"/>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -222,7 +76,7 @@
                 android:layout_margin="8dp"
                 android:layout_column="0"
                 android:layout_row="0"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -234,7 +88,8 @@
                     <ImageView
                         android:layout_width="96dp"
                         android:layout_height="96dp"
-                        android:src="@drawable/patient_with_injured_bandaged_head_standing_with_saline_via_intravenous_line_svgrepo_com"/>
+                        android:layout_marginLeft="4dp"
+                        android:src="@drawable/person_call_svgrepo_com"/>
 
                     <TextView
                         android:id="@+id/firstNamePatientTextView"
@@ -285,16 +140,16 @@
             <com.google.android.material.card.MaterialCardView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/addressVerticalView"
+                android:id="@+id/paramedicView"
                 android:layout_width="160dp"
                 android:layout_height="280dp"
-                android:layout_gravity="center"
                 app:cardCornerRadius="12dp"
-                android:layout_margin="8dp"
                 android:foreground="@color/gray"
                 app:cardElevation="8dp"
-                android:layout_column="1"
+                android:layout_margin="8dp"
+                android:layout_column="0"
                 android:layout_row="0"
+                android:layout_gravity="center"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -302,44 +157,54 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:padding="18dp">
+                    android:padding="20dp">
 
                     <ImageView
                         android:layout_width="96dp"
                         android:layout_height="96dp"
-                        android:src="@drawable/address_location_map_svgrepo_com"/>
+                        android:src="@drawable/paramedic_svgrepo_com"/>
 
                     <TextView
-                        android:id="@+id/postalCodeVerticalTextView"
+                        android:id="@+id/firstNameParamedicTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="11-078"
+                        android:text="Jan"
                         android:textColor="@color/black"
-                        android:textSize="20sp"
-                        android:layout_marginTop="14dp"/>
+                        android:textSize="20sp"/>
 
                     <TextView
-                        android:id="@+id/cityVerticalTextView"
+                        android:id="@+id/lastNameParamedicTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Gdańsk"
+                        android:text="Kowalski"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/specializationParamedicTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:text="Ratownik medyczny"
+                        android:layout_marginTop="5dp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:textSize="22sp"
-                        android:layout_marginTop="12dp"/>
+                        android:textSize="18sp"/>
 
                     <TextView
-                        android:id="@+id/streetVerticalTextView"
+                        android:id="@+id/hospitalParamedicTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="ul. Słoneczna 12A/4"
-                        android:textColor="@color/black"
+                        android:layout_marginTop="8dp"
+                        android:text="Szpital Miejski w Gdańsku"
                         android:textAlignment="center"
-                        android:textSize="18sp"
-                        android:layout_marginTop="12dp"/>
+                        android:textColor="@color/black"
+                        android:textSize="15sp"/>
 
                 </LinearLayout>
 
@@ -348,7 +213,7 @@
             <com.google.android.material.card.MaterialCardView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/startTimeView"
+                android:id="@+id/emergencyDateView"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
@@ -356,8 +221,9 @@
                 app:cardElevation="8dp"
                 android:layout_margin="8dp"
                 android:layout_gravity="center"
-                android:layout_column="0"
-                android:layout_row="1">
+                android:layout_column="1"
+                android:layout_row="0"
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -372,10 +238,22 @@
                         android:src="@drawable/calendar_alt_svgrepo_com"/>
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="10dp"
+                        android:text="Data zgłoszenia"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textAlignment="center"
+                        android:textSize="20sp"/>
+
+                    <TextView
                         android:id="@+id/startDateTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:layout_marginTop="16dp"
                         android:text="03-05-2025"
                         android:textColor="@color/black"
                         android:textSize="20sp"/>
@@ -385,55 +263,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:layout_marginTop="6dp"
                         android:text="10:45"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/endTimeView"
-                android:layout_width="160dp"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                android:layout_margin="8dp"
-                android:foreground="@color/gray"
-                app:cardElevation="8dp"
-                android:layout_column="1"
-                android:layout_row="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:padding="24dp">
-
-                    <ImageView
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:src="@drawable/calendar_alt_svgrepo_com"/>
-
-                    <TextView
-                        android:id="@+id/endDateTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="03-05-2025"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"/>
-
-                    <TextView
-                        android:id="@+id/endHourTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="11:15"
                         android:textColor="@color/black"
                         android:textSize="20sp"/>
 
@@ -446,7 +277,7 @@
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/addressHorizontalView"
+            android:id="@+id/addressView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
@@ -473,7 +304,7 @@
                     android:src="@drawable/address_location_map_svgrepo_com"/>
 
                 <TextView
-                    android:id="@+id/postalCodeHorizontalTextView"
+                    android:id="@+id/postalCodeEmergencyTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -483,7 +314,7 @@
                     android:layout_marginTop="8dp"/>
 
                 <TextView
-                    android:id="@+id/cityHorizontalTextView"
+                    android:id="@+id/cityEmergencyTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -494,7 +325,7 @@
                     android:layout_marginTop="8dp"/>
 
                 <TextView
-                    android:id="@+id/streetHorizontalTextView"
+                    android:id="@+id/streetEmergencyTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -511,7 +342,7 @@
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/statusView"
+            android:id="@+id/descriptionView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
@@ -523,7 +354,7 @@
             android:layout_marginTop="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addressHorizontalView">
+            app:layout_constraintTop_toBottomOf="@+id/addressView">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -538,35 +369,118 @@
                     android:src="@drawable/status_information_svgrepo_com"/>
 
                 <TextView
-                    android:id="@+id/statusTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginTop="8dp"
-                    android:text="ZAREZERWOWANA"
+                    android:text="OPIS ZDARZENIA"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="20sp"/>
 
                 <TextView
-                    android:id="@+id/notesTextView"
+                    android:id="@+id/descriptionTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginTop="8dp"
-                    android:text="Dodatkowe informacje:\nBrak możliwości płatności kartą"
+                    android:text="Osoba zasłabła w poczekalni i upadła
+                        na podłogę. Choć jest przytomna, skarży się na silne zawroty głowy, co może
+                        sugerować problem z równowagą lub układem krążenia."
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textAlignment="center"/>
 
-                <Button
-                    android:id="@+id/cancelAppointmentButton"
-                    android:layout_width="160dp"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="12dp"
-                    android:text="Anuluj"
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/takeOnAEmergencyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:clickable="true"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionView"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="18dp">
+
+                <ImageView
+                    android:layout_width="108dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/ambulance_svgrepo_com"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Podejmij się zgłoszenia"
+                    android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/finishEmergencyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:clickable="true"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/takeOnAEmergencyView"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="18dp">
+
+                <ImageView
+                    android:layout_width="108dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/basic_denied_reject_svgrepo_com"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Zakończ zgłoszenie"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"/>
 
             </LinearLayout>
 
@@ -579,7 +493,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/statusView"
+            app:layout_constraintTop_toBottomOf="@id/finishEmergencyView"
             app:layout_constraintVertical_bias="0.119" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

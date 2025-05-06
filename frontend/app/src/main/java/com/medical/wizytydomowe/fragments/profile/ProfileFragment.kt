@@ -3,10 +3,7 @@ package com.medical.wizytydomowe.fragments.profile
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -20,8 +17,7 @@ import retrofit2.Callback
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import retrofit2.Call
 import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.medical.wizytydomowe.api.utils.*
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
@@ -45,7 +41,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
         else{
             (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
-            moveToLoginFragment()
+            navigateToLoginFragment()
         }
 
         logoutView.setOnClickListener {
@@ -55,7 +51,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             Toast.makeText(context, "Wylogowano pomyślnie.", Toast.LENGTH_SHORT).show()
 
             (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
-            moveToLoginFragment()
+            navigateToLoginFragment()
         }
 
         editProfileView.setOnClickListener {
@@ -104,41 +100,19 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             })
     }
 
-    private fun moveToLoginFragment(){
+    private fun navigateToLoginFragment(){
         val loginFragment = LoginFragment()
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(loginFragment)
     }
 
-    private fun convertToDateFormat(dateString: String?): String? {
-        try {
-            if (!dateString.isNullOrEmpty()){
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-                val date = inputFormat.parse(dateString)
-                return date?.let { outputFormat.format(it) }
-            }
-            return null
-        } catch (e: Exception) {
-            return null
-        }
-    }
-
     private fun setAddress(address: String?){
-        if (!address.isNullOrEmpty()){
-            val parts = address.split(",".toRegex(), 3)
-            if (parts.size == 3) {
-                view?.findViewById<TextView>(R.id.cityTextView)?.text = parts[0].trim()
-                view?.findViewById<TextView>(R.id.postalCodeTextView)?.text = parts[1].trim()
-                view?.findViewById<TextView>(R.id.streetTextView)?.text = "ul. " + parts[2].trim()
-            }
-        }
-        else{
-            view?.findViewById<TextView>(R.id.cityTextView)?.text = "None"
-            view?.findViewById<TextView>(R.id.postalCodeTextView)?.text = "None"
-            view?.findViewById<TextView>(R.id.streetTextView)?.text = "None"
-        }
+        val cityTextView = view?.findViewById<TextView>(R.id.cityTextView)
+        val postalCodeTextView = view?.findViewById<TextView>(R.id.cityTextView)
+        val streetTextView = view?.findViewById<TextView>(R.id.cityTextView)
+
+        setAddress(address, cityTextView, postalCodeTextView, streetTextView)
     }
 
     private fun setDateOfBirth(dateOfBirth: String?){

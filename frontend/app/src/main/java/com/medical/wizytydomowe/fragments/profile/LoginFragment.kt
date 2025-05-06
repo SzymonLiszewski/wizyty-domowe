@@ -25,11 +25,11 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         val registerTextView = view.findViewById<TextView>(R.id.tv_register)
-        registerTextView.setOnClickListener {
-            moveToRegisterFragment()
-        }
-
         val loginButton = view.findViewById<Button>(R.id.btn_login)
+
+        registerTextView.setOnClickListener {
+            navigateToRegisterFragment()
+        }
 
         loginButton.setOnClickListener {
             val email = view.findViewById<TextInputEditText>(R.id.textInputEditTextEmail).text.toString()
@@ -56,24 +56,8 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
 
                     Toast.makeText(context, "Logowanie przebiegło pomyślnie.", Toast.LENGTH_LONG).show()
 
-                    val token = loginResponse?.token
-                    val refresh_token = loginResponse?.refresh_token
-                    val role = loginResponse?.role
-
-                    if (token != null && refresh_token != null && role != null) {
-                        val preferenceManager = PreferenceManager(requireContext())
-                        preferenceManager.saveAuthToken(token)
-                        preferenceManager.saveRefreshAuthToken(refresh_token)
-                        preferenceManager.saveRole(role)
-                    }
-                    else{
-                        Toast.makeText(context, "Wystąpił bład podczas logowania.", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-
-                    val activity = activity as? FragmentNavigation
-                    (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
-                    activity?.navigateToFragment(ProfileFragment())
+                    if (setTokenAndRole(loginResponse)) navigateToProfileFragment()
+                    else Toast.makeText(context, "Wystąpił bład podczas logowania.", Toast.LENGTH_SHORT).show()
                 }
                 else {
                     Toast.makeText(context, "Logowanie nie powiodło się.", Toast.LENGTH_SHORT).show()
@@ -84,6 +68,21 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
                 Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun setTokenAndRole(loginResponse: LoginResponse?) : Boolean{
+        val token = loginResponse?.token
+        val refresh_token = loginResponse?.refresh_token
+        val role = loginResponse?.role
+
+        if (token != null && refresh_token != null && role != null) {
+            val preferenceManager = PreferenceManager(requireContext())
+            preferenceManager.saveAuthToken(token)
+            preferenceManager.saveRefreshAuthToken(refresh_token)
+            preferenceManager.saveRole(role)
+            return true
+        }
+        return false
     }
 
     private fun validateInputs(email: String, password: String): Boolean {
@@ -110,10 +109,17 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
         return true
     }
 
-    private fun moveToRegisterFragment(){
+    private fun navigateToRegisterFragment(){
         val registerFragment = RegisterFragment()
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(registerFragment)
+    }
+
+    private fun navigateToProfileFragment(){
+        val activity = activity as? FragmentNavigation
+
+        (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
+        activity?.navigateToFragment(ProfileFragment())
     }
 }

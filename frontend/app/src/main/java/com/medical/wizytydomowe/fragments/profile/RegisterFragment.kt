@@ -6,14 +6,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.registration.RegisterRequest
+import com.medical.wizytydomowe.api.utils.*
 import okhttp3.ResponseBody
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -43,11 +44,11 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val page1 = view.findViewById<ConstraintLayout>(R.id.form_container1)
-        val page2 = view.findViewById<ConstraintLayout>(R.id.form_container2)
-        val page3 = view.findViewById<ConstraintLayout>(R.id.form_container3)
+        val formView1 = view.findViewById<MaterialCardView>(R.id.formView1)
+        val formView2 = view.findViewById<MaterialCardView>(R.id.formView2)
+        val formView3 = view.findViewById<MaterialCardView>(R.id.formView3)
 
-        setPage(page1, page2, page3, pageNumber)
+        setPage(formView1, formView2, formView3, pageNumber)
 
         val buttonNextAtPage1 = view.findViewById<Button>(R.id.btn_next1)
         val buttonNextAtPage2 = view.findViewById<Button>(R.id.btn_next2)
@@ -64,7 +65,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
 
             if (validateFieldsPage1(firstName, lastName, email, phoneNumber, dateOfBirth)){
                 pageNumber += 1
-                setPage(page1, page2, page3, pageNumber)
+                setPage(formView1, formView2, formView3, pageNumber)
             }
         }
 
@@ -77,18 +78,18 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
 
             if (validateFieldsPage2(city, street, postalCode, buildingNumber)){
                 pageNumber += 1
-                setPage(page1, page2, page3, pageNumber)
+                setPage(formView1, formView2, formView3, pageNumber)
             }
         }
 
         buttonNextAtPrev2.setOnClickListener {
             pageNumber -= 1
-            setPage(page1, page2, page3, pageNumber)
+            setPage(formView1, formView2, formView3, pageNumber)
         }
 
         buttonNextAtPrev3.setOnClickListener {
             pageNumber -= 1
-            setPage(page1, page2, page3, pageNumber)
+            setPage(formView1, formView2, formView3, pageNumber)
         }
 
         buttonRegister.setOnClickListener {
@@ -124,7 +125,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Rejestracja przebiegła pomyślnie.", Toast.LENGTH_LONG).show()
-                    moveToLoginFragment()
+                    navigateToLoginFragment()
                 }
                 else {
                     val errorMessage = response.errorBody()?.string()
@@ -138,7 +139,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         })
     }
 
-    private fun moveToLoginFragment(){
+    private fun navigateToLoginFragment(){
         val loginFragment = LoginFragment()
 
         val activity = activity as? FragmentNavigation
@@ -159,39 +160,35 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         }
     }
 
-    private fun convertToDateFormat(dateString: String?): String? {
-        try {
-            if (!dateString.isNullOrEmpty()){
-                val inputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-                val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val date = inputFormat.parse(dateString)
-                return date?.let { outputFormat.format(it) }
+    private fun setPage(formView1 : MaterialCardView, formView2 : MaterialCardView,
+                        formView3 : MaterialCardView, pageNumber: Int){
+        when{
+            pageNumber == 1 -> {
+                formView1.visibility = View.VISIBLE
+                formView2.visibility = View.GONE
+                formView3.visibility = View.GONE
             }
-            return null
-        } catch (e: Exception) {
-            return null
+            pageNumber == 2 -> {
+                formView1.visibility = View.GONE
+                formView2.visibility = View.VISIBLE
+                formView3.visibility = View.GONE
+            }
+            pageNumber == 3 -> {
+                formView1.visibility = View.GONE
+                formView2.visibility = View.GONE
+                formView3.visibility = View.VISIBLE
+            }
         }
     }
 
-    private fun setPage(page1 : ConstraintLayout, page2 : ConstraintLayout, page3 : ConstraintLayout,
-                        pageNumber: Int){
-        when{
-            pageNumber == 1 -> {
-                page1.visibility = View.VISIBLE
-                page2.visibility = View.GONE
-                page3.visibility = View.GONE
-            }
-            pageNumber == 2 -> {
-                page1.visibility = View.GONE
-                page2.visibility = View.VISIBLE
-                page3.visibility = View.GONE
-            }
-            pageNumber == 3 -> {
-                page1.visibility = View.GONE
-                page2.visibility = View.GONE
-                page3.visibility = View.VISIBLE
-            }
-        }
+    private fun resetErrorsPage1(firstNameLayout: TextInputLayout?, lastNameLayout: TextInputLayout?,
+                                 emailLayout: TextInputLayout?, phoneNumberLayout: TextInputLayout?,
+                                 dateOfBirthLayout: TextInputLayout?){
+        firstNameLayout?.error = null
+        lastNameLayout?.error = null
+        emailLayout?.error = null
+        phoneNumberLayout?.error = null
+        dateOfBirthLayout?.error = null
     }
 
     private fun validateFieldsPage1(firstName: String?, lastName: String?, email: String?,
@@ -202,11 +199,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         val phoneNumberLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPhoneNumber)
         val dateOfBirthLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutDateOfBirth)
 
-        firstNameLayout?.error = null
-        lastNameLayout?.error = null
-        emailLayout?.error = null
-        phoneNumberLayout?.error = null
-        dateOfBirthLayout?.error = null
+        resetErrorsPage1(firstNameLayout, lastNameLayout, emailLayout, phoneNumberLayout, dateOfBirthLayout)
 
         when{
             firstName.isNullOrEmpty() -> {
@@ -249,6 +242,14 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         return true
     }
 
+    private fun resetErrorsPage2(cityLayout: TextInputLayout?, streetLayout: TextInputLayout?,
+                                 postalCodeLayout: TextInputLayout?, buildingNumberLayout: TextInputLayout?){
+        cityLayout?.error = null
+        streetLayout?.error = null
+        postalCodeLayout?.error = null
+        buildingNumberLayout?.error = null
+    }
+
     private fun validateFieldsPage2(city: String?, street: String?, postalCode: String?,
                                     buildingNumber: String?): Boolean{
         val cityLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutCity)
@@ -256,10 +257,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         val postalCodeLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPostalCode)
         val buildingNumberLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutBuildingNumber)
 
-        cityLayout?.error = null
-        streetLayout?.error = null
-        postalCodeLayout?.error = null
-        buildingNumberLayout?.error = null
+        resetErrorsPage2(cityLayout, streetLayout, postalCodeLayout, buildingNumberLayout)
 
         when{
             city.isNullOrEmpty() -> {
@@ -286,12 +284,16 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         return true
     }
 
+    private fun resetErrorsOnPage3(passwordLayout: TextInputLayout?, passwordConfirmationLayout: TextInputLayout?){
+        passwordLayout?.error = null
+        passwordConfirmationLayout?.error = null
+    }
+
     private fun validateFieldsPage3(password: String?, passwordConfirmation : String?): Boolean{
         val passwordConfirmationLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPasswordConfirmation)
         val passwordLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPassword)
 
-        passwordLayout?.error = null
-        passwordConfirmationLayout?.error = null
+        resetErrorsOnPage3(passwordLayout, passwordConfirmationLayout)
 
         when{
             password.isNullOrEmpty() -> {

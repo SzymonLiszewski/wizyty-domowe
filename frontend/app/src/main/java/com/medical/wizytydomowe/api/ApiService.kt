@@ -3,7 +3,6 @@ package com.medical.wizytydomowe.api
 import com.medical.wizytydomowe.api.login.LoginRequest
 import com.medical.wizytydomowe.api.login.LoginResponse
 import com.medical.wizytydomowe.api.registration.RegisterRequest
-import com.medical.wizytydomowe.api.registration.RegisterResponse
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import okhttp3.ResponseBody
 import retrofit2.Call

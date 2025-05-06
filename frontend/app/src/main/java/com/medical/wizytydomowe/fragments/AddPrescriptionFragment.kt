@@ -1,16 +1,12 @@
 package com.medical.wizytydomowe.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.medicalReports.MedicalReport
 import com.medical.wizytydomowe.api.prescriptions.Prescription
 import com.medical.wizytydomowe.api.users.Doctor
 import com.medical.wizytydomowe.api.users.Patient

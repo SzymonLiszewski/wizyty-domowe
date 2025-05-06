@@ -12,490 +12,580 @@
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_10"
+            android:id="@+id/guidelineForm1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.05" />
+            app:layout_constraintGuide_percent="0.01" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_between"
+            android:id="@+id/guidelineForm2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.20" />
+            app:layout_constraintGuide_percent="0.07" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_between2"
+            android:id="@+id/guidelineForm3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.25" />
+            app:layout_constraintGuide_percent="0.2" />
 
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/titleView"
-            android:layout_width="wrap_content"
+            android:id="@+id/formView1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
+            android:padding="16dp"
             android:layout_marginBottom="40dp"
+            android:layout_margin="24dp"
+            app:cardElevation="8dp"
             android:foreground="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_10">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="16dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:text="@string/registration_title"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="20sp"/>
-        </com.google.android.material.card.MaterialCardView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/form_container1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_between"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineForm1"
             android:visibility="visible">
 
             <LinearLayout
-                android:id="@+id/layoutTextFieldFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical">
 
-                <ImageView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/person_svgrepo_com"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="15dp"/>
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="@string/registration_title"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutFirstName"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/person_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/name"
+                        app:errorEnabled="true"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextFirstName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldFirstName"
                     app:boxStrokeColor="@color/black"
                     app:hintTextColor="@color/black"
-                    android:hint="@string/name"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:hint="@string/surname"
                     app:errorEnabled="true"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextFirstName"
+                        android:id="@+id/textInputEditTextLastName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldFirstName"
-                app:boxStrokeColor="@color/black"
-                app:hintTextColor="@color/black"
-                android:hint="@string/surname"
-                app:errorEnabled="true"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditTextLastName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutTextFieldEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayoutLastName">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/email_svgrepo_com"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="15dp"/>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutEmail"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintTextColor="@color/black"
-                    android:hint="@string/email"
-                    app:errorEnabled="true"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutLastName">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextEmail"
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/email_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/email"
+                        app:errorEnabled="true"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            </LinearLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/layoutTextFieldPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldEmail">
+                </LinearLayout>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/phone_svgrepo_com"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="15dp"/>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutPhoneNumber"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldPhoneNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintTextColor="@color/black"
-                    android:hint="@string/phoneNumber"
-                    app:errorEnabled="true"
-                    app:helperText="Zastosuj format: XXXXXXXXX"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldEmail">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextPhoneNumber"
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/phone_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutPhoneNumber"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/phoneNumber"
+                        app:errorEnabled="true"
+                        app:helperText="Zastosuj format: XXXXXXXXX"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            </LinearLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextPhoneNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/layoutTextFieldBirthday"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPhoneNumber">
+                </LinearLayout>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/calendar_alt_svgrepo_com"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="15dp"/>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutDateOfBirth"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldBirthday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintTextColor="@color/black"
-                    android:hint="@string/birthday"
-                    app:errorEnabled="true"
-                    app:helperText="Zastosuj format: DD-MM-RRRR"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPhoneNumber">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextDateOfBirth"
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/calendar_alt_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutDateOfBirth"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/birthday"
+                        app:errorEnabled="true"
+                        app:helperText="Zastosuj format: DD-MM-RRRR"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextDateOfBirth"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_next1"
+                    android:layout_width="200dp"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="24dp"
+                    android:textColor="@color/black"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:layout_gravity="center"
+                    android:text="Przejdź dalej"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldBirthday" />
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btn_next1"
-                android:layout_width="200dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="24dp"
-                android:textColor="@color/black"
-                android:text="Przejdź dalej"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldBirthday" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/form_container2"
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/formView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:cardCornerRadius="12dp"
+            android:padding="16dp"
+            android:layout_marginBottom="40dp"
+            android:layout_margin="24dp"
+            app:cardElevation="8dp"
+            android:foreground="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_between"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineForm2"
             android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/layoutTextFieldAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical">
 
-                <ImageView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/address_location_map_svgrepo_com"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="15dp"/>
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="@string/registration_title"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutCity"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/address_location_map_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/city"
+                        app:errorEnabled="true"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextCity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutStreet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldAddress"
                     app:boxStrokeColor="@color/black"
                     app:hintTextColor="@color/black"
-                    android:hint="@string/city"
+                    android:hint="@string/street"
                     app:errorEnabled="true"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextCity"
+                        android:id="@+id/textInputEditTextStreet"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutStreet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldAddress"
-                app:boxStrokeColor="@color/black"
-                app:hintTextColor="@color/black"
-                android:hint="@string/street"
-                app:errorEnabled="true"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditTextStreet"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldBuilding"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutStreet">
 
-            <LinearLayout
-                android:id="@+id/layoutTextFieldBuilding"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayoutStreet">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutBuildingNumber"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/buildingNumber"
+                        android:layout_marginEnd="10dp"
+                        app:errorEnabled="true"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextBuildingNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutApartmentNumber"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/apartmentNumber"
+                        app:helperText="Opcjonalne"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextApartmentNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutBuildingNumber"
-                    android:layout_width="160dp"
+                    android:id="@+id/textInputLayoutPostalCode"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="27dp"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldBuilding"
                     app:boxStrokeColor="@color/black"
                     app:hintTextColor="@color/black"
-                    android:hint="@string/buildingNumber"
+                    android:hint="@string/postalCode"
                     app:errorEnabled="true"
+                    app:helperText="Zastosuj format: XX-XXX"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextBuildingNumber"
+                        android:id="@+id/textInputEditTextPostalCode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutApartmentNumber"
-                    android:layout_width="160dp"
-                    android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintTextColor="@color/black"
-                    android:hint="@string/apartmentNumber"
-                    app:helperText="Opcjonalne"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextApartmentNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPostalCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldBuilding"
-                app:boxStrokeColor="@color/black"
-                app:hintTextColor="@color/black"
-                android:hint="@string/postalCode"
-                app:errorEnabled="true"
-                app:helperText="Zastosuj format: XX-XXX"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditTextPostalCode"
+                <LinearLayout
+                    android:id="@+id/linearLayoutButtons2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutPostalCode">
 
-            <LinearLayout
-                android:id="@+id/linearLayoutButtons2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayoutPostalCode">
+                    <Button
+                        android:id="@+id/btn_prev2"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/black"
+                        android:text="Wróć"/>
 
-                <Button
-                    android:id="@+id/btn_prev2"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
-                    android:layout_marginRight="48dp"
-                    android:textColor="@color/black"
-                    android:text="Wróć"/>
+                    <Button
+                        android:id="@+id/btn_next2"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:textColor="@color/black"
+                        android:text="Przejdź dalej"/>
 
-                <Button
-                    android:id="@+id/btn_next2"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
-                    android:textColor="@color/black"
-                    android:text="Przejdź dalej"/>
+                </LinearLayout>
 
-            </LinearLayout>
+        </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/form_container3"
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/formView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:cardCornerRadius="12dp"
+            android:padding="16dp"
+            android:layout_marginBottom="40dp"
+            android:layout_margin="24dp"
+            app:cardElevation="8dp"
+            android:foreground="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_between2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineForm3"
             android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/layoutTextFieldPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical">
 
-                <ImageView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/password_lock_svgrepo_com"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="15dp"/>
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="@string/registration_title"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutPassword"
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/password_lock_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/password"
+                        app:errorEnabled="true"
+                        app:endIconMode="password_toggle"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutPasswordConfirmation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPassword"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_marginTop="16dp"
                     app:boxStrokeColor="@color/black"
                     app:hintTextColor="@color/black"
-                    android:hint="@string/password"
+                    android:hint="@string/passwordConfirmation"
                     app:errorEnabled="true"
                     app:endIconMode="password_toggle"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextPassword"
+                        android:id="@+id/textInputEditTextPasswordConfirmation"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPasswordConfirmation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPassword"
-                android:layout_marginTop="32dp"
-                app:boxStrokeColor="@color/black"
-                app:hintTextColor="@color/black"
-                android:hint="@string/passwordConfirmation"
-                app:errorEnabled="true"
-                app:endIconMode="password_toggle"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditTextPasswordConfirmation"
+                <LinearLayout
+                    android:id="@+id/linearLayoutButtons3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutPasswordConfirmation">
 
-            <LinearLayout
-                android:id="@+id/linearLayoutButtons3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayoutPasswordConfirmation">
+                    <Button
+                        android:id="@+id/btn_prev3"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/black"
+                        android:text="Wróć"/>
 
-                <Button
-                    android:id="@+id/btn_prev3"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
-                    android:layout_marginRight="48dp"
-                    android:textColor="@color/black"
-                    android:text="Wróć"/>
+                    <Button
+                        android:id="@+id/btn_register"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:textColor="@color/black"
+                        android:text="Załóż konto"/>
 
-                <Button
-                    android:id="@+id/btn_register"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
-                    android:textColor="@color/black"
-                    android:text="Załóż konto"/>
+                </LinearLayout>
 
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

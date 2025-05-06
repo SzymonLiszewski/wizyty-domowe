@@ -1,6 +1,5 @@
 package com.medical.wizytydomowe.fragments.appointments
 
-import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -8,19 +7,16 @@ import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
-import com.medical.wizytydomowe.fragments.profile.LoginFragment
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.medical.wizytydomowe.api.utils.*
 
-class AppointmentDetails : Fragment(R.layout.appointment_details_fragment) {
+
+class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragment) {
 
     private var appointment: Appointment? = null
 
@@ -47,17 +43,11 @@ class AppointmentDetails : Fragment(R.layout.appointment_details_fragment) {
         addressHorizontalView = view.findViewById(R.id.addressHorizontalView)
 
         preferenceManager = PreferenceManager(requireContext())
-        val userToken = preferenceManager.getAuthToken()
         val userRole = preferenceManager.getRole()
 
-        if (userToken != null) {
-            if (userRole == "Patient") setPatientLayout()
-            else if (userRole == "Doctor") setDoctorLayout()
-            else setNurseLayout()
-        }
-        else{
-            moveToLoginFragment()
-        }
+        if (userRole == "Patient") setPatientLayout()
+        else if (userRole == "Doctor") setDoctorLayout()
+        else setNurseLayout()
 
         cancelAppointmentButton.setOnClickListener {
             showCancelAppointmentDialog()
@@ -65,20 +55,15 @@ class AppointmentDetails : Fragment(R.layout.appointment_details_fragment) {
 
     }
 
+    private fun cancelAppointment(){
+        //TODO send request to the backend and toast
+        Toast.makeText(requireContext(), "Anulowano wizytę.", Toast.LENGTH_SHORT).show()
+    }
+
     private fun showCancelAppointmentDialog(){
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Uwaga!")
-            .setIcon(R.drawable.status_information_svgrepo_com)
-            .setMessage("Czy na pewno chcesz anulować wizytę?")
-            .setPositiveButton("Tak") { dialog, which ->
-                //TODO send request to the backend and toast
-            }
-            .setNegativeButton("Nie") { dialog, which ->
-                dialog.dismiss()
-            }
-            .show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+        showDialog(requireContext(),"Czy na pewno chcesz anulować wizytę?"){
+            cancelAppointment()
+        }
     }
 
     private fun setStatus(){
@@ -86,103 +71,55 @@ class AppointmentDetails : Fragment(R.layout.appointment_details_fragment) {
 
         when (appointment?.status) {
             "CANCELED" -> {
-                statusTextView?.text = "Anulowana"
+                statusTextView?.text = "ANULOWANA"
                 statusTextView?.setTextColor(Color.RED)
             }
             "COMPLETED" -> {
-                statusTextView?.text = "Odbyta"
+                statusTextView?.text = "ODBYTA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
             "RESERVED" -> {
-                statusTextView?.text = "Zarezerwowana"
+                statusTextView?.text = "ZAREZERWOWANA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
             "AVAILABLE" -> {
-                statusTextView?.text = "Dostępna"
+                statusTextView?.text = "DOSTĘPNA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
         }
 
-        if (!appointment?.notes.isNullOrEmpty()){
-            view?.findViewById<TextView>(R.id.notesTextView)?.text = "Dodatkowe informacje:\n" + "${appointment?.notes}"
-        }
+        if (!appointment?.notes.isNullOrEmpty()) view?.findViewById<TextView>(R.id.notesTextView)?.text = "Dodatkowe informacje:\n" + "${appointment?.notes}"
 
-        cancelAppointmentButton.visibility = if (statusTextView?.text == "Zarezerwowana" && preferenceManager?.getRole() == "Patient") {
-            View.VISIBLE
-        } else {
-            View.GONE
+        if (appointment?.status == "RESERVED" && preferenceManager.getRole() == "Patient") {
+            cancelAppointmentButton.visibility = View.VISIBLE
         }
-    }
-
-    private fun splitAddress(address: String?) : List<String>{
-        val splitAddress = mutableListOf<String>()
-        val parts = address?.split(",".toRegex(), 3)
-        if (parts?.size == 3) {
-            splitAddress.add(parts[0].trim())
-            splitAddress.add(parts[1].trim())
-            splitAddress.add("ul. " + parts[2].trim())
-        }
-        return splitAddress
-    }
-
-    private fun setAddressAsUnknown(){
-        view?.findViewById<TextView>(R.id.cityVerticalTextView)?.text = "None"
-        view?.findViewById<TextView>(R.id.postalCodeVerticalTextView)?.text = "None"
-        view?.findViewById<TextView>(R.id.streetVerticalTextView)?.text = "None"
-        view?.findViewById<TextView>(R.id.cityHorizontalTextView)?.text = "None"
-        view?.findViewById<TextView>(R.id.postalCodeHorizontalTextView)?.text = "None"
-        view?.findViewById<TextView>(R.id.streetHorizontalTextView)?.text = "None"
+        else cancelAppointmentButton.visibility = View.GONE
     }
 
     private fun setAddressData(){
-        if (!appointment?.address.isNullOrEmpty()){
-            val parts = splitAddress(appointment?.address)
-            if (parts.size == 3){
-                view?.findViewById<TextView>(R.id.cityVerticalTextView)?.text = parts[0]
-                view?.findViewById<TextView>(R.id.postalCodeVerticalTextView)?.text = parts[1]
-                view?.findViewById<TextView>(R.id.streetVerticalTextView)?.text = parts[2]
-                view?.findViewById<TextView>(R.id.cityHorizontalTextView)?.text = parts[0]
-                view?.findViewById<TextView>(R.id.postalCodeHorizontalTextView)?.text = parts[1]
-                view?.findViewById<TextView>(R.id.streetHorizontalTextView)?.text = parts[2]
-            }
-            else setAddressAsUnknown()
-        }
-        else setAddressAsUnknown()
-    }
+        val cityVerticalTextView = view?.findViewById<TextView>(R.id.cityVerticalTextView)
+        val postalCodeVerticalTextView = view?.findViewById<TextView>(R.id.postalCodeVerticalTextView)
+        val streetVerticalTextView = view?.findViewById<TextView>(R.id.streetVerticalTextView)
+        val cityHorizontalTextView = view?.findViewById<TextView>(R.id.cityHorizontalTextView)
+        val postalCodeHorizontalTextView = view?.findViewById<TextView>(R.id.postalCodeHorizontalTextView)
+        val streetHorizontalTextView = view?.findViewById<TextView>(R.id.streetHorizontalTextView)
 
-    private fun setDataAsUnknown(dateTextView: TextView?, hourTextView : TextView?){
-        hourTextView?.text = "None"
-        dateTextView?.text = "None"
-    }
-
-    private fun splitData(dateTextView: TextView?, hourTextView : TextView?, dateString: String?){
-        val parts = dateString?.split("T".toRegex(), 2)
-        if (parts?.size == 2) {
-            val date = convertToDateFormat(parts[0].trim())
-            val time = parts[1].trim()
-            if (!date.isNullOrEmpty()) {
-                dateTextView?.text = "${date}"
-                hourTextView?.text = "${time}"
-            }
-            else setDataAsUnknown(dateTextView, hourTextView)
-
-        }
-        else setDataAsUnknown(dateTextView, hourTextView)
+        setAddress(appointment?.address, cityVerticalTextView, postalCodeVerticalTextView, streetVerticalTextView)
+        setAddress(appointment?.address, cityHorizontalTextView, postalCodeHorizontalTextView, streetHorizontalTextView)
     }
 
     private fun setEndData(){
         val endDateTextView: TextView? = view?.findViewById(R.id.endDateTextView)
         val endHourTextView : TextView? = view?.findViewById(R.id.endHourTextView)
 
-        splitData(endDateTextView, endHourTextView, appointment?.appointmentEndTime)
+        setDate(endDateTextView, endHourTextView, appointment?.appointmentEndTime)
     }
-
 
     private fun setStartData(){
         val startDateTextView: TextView? = view?.findViewById(R.id.startDateTextView)
         val startHourTextView : TextView? = view?.findViewById(R.id.startHourTextView)
 
-        splitData(startDateTextView, startHourTextView, appointment?.appointmentStartTime)
+        setDate(startDateTextView, startHourTextView, appointment?.appointmentStartTime)
     }
 
     private fun setPatientData(){
@@ -389,26 +326,4 @@ class AppointmentDetails : Fragment(R.layout.appointment_details_fragment) {
             setNurseLayoutWithoutDoctor()
         }
     }
-
-    private fun convertToDateFormat(dateString: String?): String? {
-        try {
-            if (!dateString.isNullOrEmpty()){
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-                val date = inputFormat.parse(dateString)
-                return date?.let { outputFormat.format(it) }
-            }
-            return null
-        } catch (e: Exception) {
-            return null
-        }
-    }
-
-    private fun moveToLoginFragment(){
-        val loginFragment = LoginFragment()
-
-        val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(loginFragment)
-    }
-
 }

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
-import com.medical.wizytydomowe.fragments.appointments.AppointmentDetails
+import com.medical.wizytydomowe.fragments.appointments.AppointmentDetailsFragment
 import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 
 class CancelReservationFragment : Fragment(R.layout.cancel_visit_reservation_fragment) {
@@ -28,11 +28,11 @@ class CancelReservationFragment : Fragment(R.layout.cancel_visit_reservation_fra
                 putSerializable("appointment", appointment)
             }
 
-            val appointmentDetails = AppointmentDetails().apply {
+            val appointmentDetailsFragment = AppointmentDetailsFragment().apply {
                 arguments = bundle
             }
             val activity = activity as? FragmentNavigation
-            activity?.navigateToFragment(appointmentDetails)
+            activity?.navigateToFragment(appointmentDetailsFragment)
         }
 
         yesButton.setOnClickListener{
