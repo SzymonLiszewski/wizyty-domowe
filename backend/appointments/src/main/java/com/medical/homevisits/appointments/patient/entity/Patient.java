@@ -19,4 +19,6 @@ import java.util.UUID;
 public class Patient {
     @Id
     private UUID ID;
+    private String email;
+    private String phoneNumber;
 }

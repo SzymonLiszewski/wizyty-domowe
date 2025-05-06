@@ -24,7 +24,7 @@ public class UserService {
         if (user instanceof Doctor){
             userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization(), ((Doctor) user).getWorkPlace()));
         } else if (user instanceof Patient) {
-            userEventRestRepository.createPatient(new CreateUserObject(user.getID()));
+            userEventRestRepository.createPatient(new CreateUserObject(user.getID(), user.getEmail(), user.getPhoneNumber()));
         }
         //TODO: extend for other classes, use in initialize file
     }

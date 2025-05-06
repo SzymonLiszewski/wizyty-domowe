@@ -12,4 +12,6 @@ dto object used for communication between auth and appointments microservices
 @AllArgsConstructor
 public class CreateUserObject{
     private UUID id;
+    private String email;
+    private String phoneNumber;
 }
