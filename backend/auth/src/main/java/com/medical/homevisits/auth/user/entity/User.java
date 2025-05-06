@@ -63,7 +63,8 @@ public class User {
             null, 
             null,
             null, 
-            null  
+            null,
+                this.phoneNumber
         );
 
         if (this instanceof Doctor) {
@@ -110,6 +111,7 @@ public class User {
         private String academicDegree; 
         private String doctor; 
         private String workPlace;
+        private String phoneNumber;
     }
 
 
