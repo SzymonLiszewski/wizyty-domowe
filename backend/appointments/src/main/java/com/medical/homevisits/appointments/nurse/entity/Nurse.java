@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name="doctors")
+@Table(name="nurses")
 public class Nurse {
     @Id
     private UUID ID;
