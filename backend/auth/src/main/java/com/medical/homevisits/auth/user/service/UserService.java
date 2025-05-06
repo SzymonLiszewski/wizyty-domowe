@@ -1,8 +1,10 @@
 package com.medical.homevisits.auth.user.service;
 
 import com.medical.homevisits.auth.doctor.entity.Doctor;
+import com.medical.homevisits.auth.nurse.entity.Nurse;
 import com.medical.homevisits.auth.patient.entity.Patient;
 import com.medical.homevisits.auth.user.dto.CreateDoctorObject;
+import com.medical.homevisits.auth.user.dto.CreateNurseObject;
 import com.medical.homevisits.auth.user.dto.CreateUserObject;
 import com.medical.homevisits.auth.user.entity.User;
 import com.medical.homevisits.auth.user.event.repository.UserEventRestRepository;
@@ -25,6 +27,9 @@ public class UserService {
             userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization(), ((Doctor) user).getWorkPlace()));
         } else if (user instanceof Patient) {
             userEventRestRepository.createPatient(new CreateUserObject(user.getID(), user.getEmail(), user.getPhoneNumber()));
+        }
+        else if (user instanceof Nurse) {
+            userEventRestRepository.createNurse(new CreateNurseObject(user.getID(), user.getFirstName(), user.getLastName(), ((Nurse) user).getWorkPlace()));
         }
         //TODO: extend for other classes, use in initialize file
     }

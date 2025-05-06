@@ -97,7 +97,7 @@ public class InitializeData implements InitializingBean {
                     .workPlace("clinic")
                     .doctor("doctor@test.com")
                     .build();
-            userRepository.save(nurse);
+            userService.create(nurse);
             System.out.println("Nurse user has been created!");
         }
         if (userRepository.findByEmail("paramedic@test.com").isEmpty()) {
