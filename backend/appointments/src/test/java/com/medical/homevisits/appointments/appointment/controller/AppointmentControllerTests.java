@@ -96,8 +96,9 @@ public class AppointmentControllerTests {
         doctorService.create(testDoctor2);
         patientService.create(testPatient);
         //create test appointments
+        //todo: add nurse to test appointments
         appointmentService.createAvailableAppoitnments(testDoctor.getID(), null ,DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
-        appointmentService.createAvailableAppoitnments(testDoctor2.getID(), testNurse.getID(),DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
+        appointmentService.createAvailableAppoitnments(testDoctor2.getID(), null,DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
 
 
     }
