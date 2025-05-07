@@ -6,6 +6,7 @@ import com.medical.homevisits.appointments.appointment.service.AppointmentServic
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.service.DoctorService;
 import com.medical.homevisits.appointments.patient.entity.Patient;
+import com.medical.homevisits.appointments.nurse.entity.Nurse;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import com.medical.homevisits.appointments.patient.service.PatientService;
 import io.jsonwebtoken.Jwts;
@@ -83,14 +84,20 @@ public class AppointmentControllerTests {
                 .specialization("test2")
                 .workPlace("test2")
                 .build();
+        Nurse testNurse = Nurse.builder()
+                .ID(UUID.fromString("64c7448c-0f65-4ceb-aa94-e09590dccaf3"))
+                .firstName("test2")
+                .firstName("test2")
+                .workPlace("test2")
+                .build();
         Patient testPatient = Patient.builder().ID(UUID.fromString("875e5515-d6a0-45f0-b1a0-00e624186164")).build();
 
         doctorService.create(testDoctor);
         doctorService.create(testDoctor2);
         patientService.create(testPatient);
         //create test appointments
-        appointmentService.createAvailableAppoitnments(testDoctor.getID(), DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
-        appointmentService.createAvailableAppoitnments(testDoctor2.getID(), DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
+        appointmentService.createAvailableAppoitnments(testDoctor.getID(), null ,DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
+        appointmentService.createAvailableAppoitnments(testDoctor2.getID(), testNurse.getID(),DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), Duration.ofHours(1));
 
 
     }
