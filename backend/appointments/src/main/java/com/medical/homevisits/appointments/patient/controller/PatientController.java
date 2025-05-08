@@ -19,7 +19,7 @@ public class PatientController {
 
     @PostMapping("/api/patients")
     public void createPatient(@RequestBody createRequest request){
-        Patient patient = new Patient(request.getId(), request.getEmail(), request.getPhoneNumber());
+        Patient patient = new Patient(request.getId(), request.getEmail(), request.getPhoneNumber(), request.getFirstName(), request.getLastName());
         patientService.create(patient);
     }
 
@@ -30,4 +30,6 @@ class   createRequest{
     private UUID id;
     private String email;
     private String phoneNumber;
+    private String firstName;
+    private String lastName;
 }

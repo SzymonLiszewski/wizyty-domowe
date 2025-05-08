@@ -26,7 +26,7 @@ public class UserService {
         if (user instanceof Doctor){
             userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization(), ((Doctor) user).getWorkPlace()));
         } else if (user instanceof Patient) {
-            userEventRestRepository.createPatient(new CreateUserObject(user.getID(), user.getEmail(), user.getPhoneNumber()));
+            userEventRestRepository.createPatient(new CreateUserObject(user.getID(), user.getEmail(), user.getPhoneNumber(), user.getFirstName(), user.getLastName()));
         }
         else if (user instanceof Nurse) {
             userEventRestRepository.createNurse(new CreateNurseObject(user.getID(), user.getFirstName(), user.getLastName(), ((Nurse) user).getWorkPlace()));
