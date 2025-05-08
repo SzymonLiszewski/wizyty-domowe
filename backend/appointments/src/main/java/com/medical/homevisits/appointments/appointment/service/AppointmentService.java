@@ -5,6 +5,8 @@ import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
 import com.medical.homevisits.appointments.appointment.repository.AppointmentRepository;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
+import com.medical.homevisits.appointments.nurse.entity.Nurse;
+import com.medical.homevisits.appointments.nurse.repository.NurseRepository;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,14 @@ public class AppointmentService {
     private final AppointmentRepository repository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
+    private final NurseRepository nurseRepository;
 
     @Autowired
-    public AppointmentService(AppointmentRepository repository, DoctorRepository doctorRepository, PatientRepository patientRepository){
+    public AppointmentService(AppointmentRepository repository, DoctorRepository doctorRepository, PatientRepository patientRepository, NurseRepository nurseRepository){
         this.repository = repository;
         this.doctorRepository = doctorRepository;
         this.patientRepository = patientRepository;
+        this.nurseRepository = nurseRepository;
     }
     public void delete(UUID id){
         Appointment appointment = repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "appointment not found"));
@@ -89,7 +93,11 @@ public class AppointmentService {
      * @param dayOfWeek - appointments are created for every week on the same hours
      * @param appointmentsDuration - duration of appointment (each patient can only reserve whole time slot)
      */
-    public void createAvailableAppoitnments(UUID doctorId,DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, Duration appointmentsDuration){
+    public void createAvailableAppoitnments(UUID doctorId, UUID nurseId, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, Duration appointmentsDuration){
+        //function do not allow to create appointments without doctor or nurse
+        if (doctorId == null && nurseId == null){
+            throw new IllegalArgumentException();
+        }
         if (appointmentsDuration == null){
             appointmentsDuration=Duration.ofHours(1);
         }
@@ -100,11 +108,20 @@ public class AppointmentService {
 
         while (!nextDate.isAfter(oneMonthLater)) {
             while (!currentTime.isAfter(endTime)) {
+                Doctor doctor = null;
+                Nurse nurse = null;
+                if (doctorId != null){
+                    doctor = doctorRepository.findById(doctorId).get();
+                }
+                if (nurseId != null){
+                    nurse = nurseRepository.findById(nurseId).get();
+                }
                 repository.save(Appointment.builder()
                         .appointmentStartTime(LocalDateTime.of(nextDate, currentTime))
                         .appointmentEndTime(LocalDateTime.of(nextDate, currentTime.plus(appointmentsDuration)))
                         .status(AppointmentStatus.AVAILABLE)
-                        .doctor(doctorRepository.findById(doctorId).get())
+                        .doctor(doctor)
+                        .nurse(nurse)
                         .build());
                 currentTime = currentTime.plus(appointmentsDuration);
             }

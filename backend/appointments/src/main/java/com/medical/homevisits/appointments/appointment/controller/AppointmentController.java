@@ -173,8 +173,16 @@ public class AppointmentController {
                 .parseClaimsJws(token)
                 .getBody();
 
-        UUID doctorId = UUID.fromString(claims.get("id", String.class));
-        service.createAvailableAppoitnments(doctorId, request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
+        if (Objects.equals(claims.get("role", String.class), "Doctor")){
+            UUID doctorId = UUID.fromString(claims.get("id", String.class));
+            service.createAvailableAppoitnments(doctorId, null, request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
+            return;
+        } else if (Objects.equals(claims.get("role", String.class), "Nurse")) {
+            UUID nurseId = UUID.fromString(claims.get("id", String.class));
+            service.createAvailableAppoitnments(null,nurseId, request.getDayOfWeek(), request.getStartTime(), request.getEndTime(), request.getAppointmentsDuration());
+            return;
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized for this action");
     }
 
     /**

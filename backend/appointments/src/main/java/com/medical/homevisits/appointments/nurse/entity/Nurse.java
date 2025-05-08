@@ -1,4 +1,4 @@
-package com.medical.homevisits.appointments.patient.entity;
+package com.medical.homevisits.appointments.nurse.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,12 +15,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name="patients")
-public class Patient {
+@Table(name="nurses")
+public class Nurse {
     @Id
     private UUID ID;
-    private String email;
-    private String phoneNumber;
     private String firstName;
     private String lastName;
+    private String workPlace;
 }
