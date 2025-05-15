@@ -15,5 +15,5 @@ public class CreateNurseObject{
     private UUID id;
     private String firstName;
     private String lastName;
-    private Workplace workPlace;
+    private UUID workPlaceId;
 }

@@ -1,5 +1,6 @@
 package com.medical.homevisits.appointments.doctor.entity;
 
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,5 +23,8 @@ public class Doctor {
     private String firstName;
     private String lastName;
     private String specialization;
-    private String workPlace;
+
+    @ManyToOne
+    @JoinColumn(name="workPlace", nullable = true)
+    private Workplace workPlace;
 }

@@ -1,18 +1,17 @@
-package com.medical.homevisits.appointments.workplace.entity.controller;
+package com.medical.homevisits.appointments.workplace.controller;
 
-import com.medical.homevisits.appointments.doctor.service.DoctorService;
 import com.medical.homevisits.appointments.workplace.entity.Workplace;
-import com.medical.homevisits.appointments.workplace.entity.WorkplaceType;
-import com.medical.homevisits.appointments.workplace.entity.service.WorkplaceService;
+import com.medical.homevisits.appointments.workplace.service.WorkplaceService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
+@RestController
 public class WorkplaceController {
     private final WorkplaceService workplaceService;
 

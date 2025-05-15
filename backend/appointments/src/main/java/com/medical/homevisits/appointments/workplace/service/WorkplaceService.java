@@ -1,7 +1,7 @@
-package com.medical.homevisits.appointments.workplace.entity.service;
+package com.medical.homevisits.appointments.workplace.service;
 
 import com.medical.homevisits.appointments.workplace.entity.Workplace;
-import com.medical.homevisits.appointments.workplace.entity.repository.WorkplaceRepository;
+import com.medical.homevisits.appointments.workplace.repository.WorkplaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

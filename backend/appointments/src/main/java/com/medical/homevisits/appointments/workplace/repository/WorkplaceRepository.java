@@ -1,6 +1,5 @@
-package com.medical.homevisits.appointments.workplace.entity.repository;
+package com.medical.homevisits.appointments.workplace.repository;
 
-import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.workplace.entity.Workplace;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
