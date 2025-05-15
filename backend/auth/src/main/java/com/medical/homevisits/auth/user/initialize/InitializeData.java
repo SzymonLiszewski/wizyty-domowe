@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 
 import com.medical.homevisits.auth.user.service.CustomUserDetailsService;
 import com.medical.homevisits.auth.user.service.UserService;
+import com.medical.homevisits.auth.workplace.entity.Workplace;
+import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -29,6 +31,11 @@ public class InitializeData implements InitializingBean {
     private final UserRepository userRepository;
     private final UserEventRestRepository userEventRestRepository;
     private final UserService userService;
+    private Workplace workplace = Workplace.builder()
+            .street("street 123")
+            .city("Gdansk")
+            .country("Poland")
+            .build();
 
     @Autowired
     public InitializeData(
@@ -75,7 +82,7 @@ public class InitializeData implements InitializingBean {
                     .phoneNumber("012345678")
                     .specialization("General Practitioner")
                     .academicDegree("YES")
-                    .workPlace("clinic")
+                    .workPlace(workplace)
                     .dateOfBirth(new SimpleDateFormat("dd-MM-yyyy").parse("06-05-2025"))
                     .build();
             userService.create(doctor);
@@ -94,7 +101,7 @@ public class InitializeData implements InitializingBean {
                     .dateOfBirth(new SimpleDateFormat("dd-MM-yyyy").parse("06-05-2025"))
                     .specialization("General Practitioner")
                     .academicDegree("YES")
-                    .workPlace("clinic")
+                    .workPlace(workplace)
                     .doctor("doctor@test.com")
                     .build();
             userService.create(nurse);
@@ -110,7 +117,7 @@ public class InitializeData implements InitializingBean {
                     .phoneNumber("012345678")
                     .specialization("General Practitioner")
                     .academicDegree("YES")
-                    .workPlace("clinic")
+                    .workPlace(workplace)
                     .build();
             userRepository.save(paramedic);
             System.out.println("Paramedic user has been created!");

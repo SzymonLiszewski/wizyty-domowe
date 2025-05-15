@@ -24,7 +24,7 @@ public class Workplace {
     private String name;
     private WorkplaceType type;
 
-    private String address;
+    private String street;
     private String city;
     private String postalCode;
     private String country;
