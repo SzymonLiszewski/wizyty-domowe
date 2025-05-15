@@ -4,6 +4,7 @@ import com.medical.homevisits.auth.doctor.entity.Doctor;
 import com.medical.homevisits.auth.nurse.entity.Nurse;
 import com.medical.homevisits.auth.paramedic.entity.Paramedic;
 import com.medical.homevisits.auth.patient.entity.Patient;
+import com.medical.homevisits.auth.workplace.entity.Workplace;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -110,7 +111,7 @@ public class User {
         private String specialization; 
         private String academicDegree; 
         private String doctor; 
-        private String workPlace;
+        private Workplace workPlace;
         private String phoneNumber;
     }
 

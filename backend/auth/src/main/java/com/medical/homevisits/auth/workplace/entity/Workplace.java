@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -34,8 +35,8 @@ public class Workplace {
 
     @OneToMany
     @JoinColumn(name="doctors", nullable = true)
-    private Doctor doctor;
+    private List<Doctor> doctor;
     @OneToMany
     @JoinColumn(name="nurses", nullable = true)
-    private Nurse nurse;
+    private List<Nurse> nurse;
 }
