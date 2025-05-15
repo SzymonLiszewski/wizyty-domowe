@@ -9,6 +9,8 @@ import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.nurse.entity.Nurse;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import com.medical.homevisits.appointments.patient.service.PatientService;
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
+import com.medical.homevisits.appointments.workplace.service.WorkplaceService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,29 +68,38 @@ public class AppointmentControllerTests {
     @Autowired
     PatientService patientService;
 
+    @Autowired
+    WorkplaceService workplaceService;
+
+    Workplace workplace = Workplace.builder()
+            .ID(UUID.fromString("806654e3-daa5-47da-a675-37382b707ea1"))
+            .build();
 
     @BeforeEach
     void setup() {
+        //create test workplace
+        workplaceService.create(workplace);
+
         //create test users
         Doctor testDoctor = Doctor.builder()
                 .ID(UUID.fromString("9b2a1d84-4f74-41c8-9bc5-7d73c0a1cb69"))
                 .firstName("test")
                 .firstName("test")
                 .specialization("test")
-                .workPlace("test")
+                .workPlace(workplace)
                 .build();
         Doctor testDoctor2 = Doctor.builder()
                 .ID(UUID.fromString("2d8cc08f-d1f9-4d76-8ac6-8abde976dc9a"))
                 .firstName("test2")
                 .firstName("test2")
                 .specialization("test2")
-                .workPlace("test2")
+                .workPlace(workplace)
                 .build();
         Nurse testNurse = Nurse.builder()
                 .ID(UUID.fromString("64c7448c-0f65-4ceb-aa94-e09590dccaf3"))
                 .firstName("test2")
                 .firstName("test2")
-                .workPlace("test2")
+                .workPlace(workplace)
                 .build();
         Patient testPatient = Patient.builder().ID(UUID.fromString("875e5515-d6a0-45f0-b1a0-00e624186164")).build();
 
@@ -182,7 +193,7 @@ public class AppointmentControllerTests {
                 .firstName("test")
                 .firstName("test")
                 .specialization("test")
-                .workPlace("test")
+                .workPlace(workplace)
                 .build();
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", testDoctor.getID());
