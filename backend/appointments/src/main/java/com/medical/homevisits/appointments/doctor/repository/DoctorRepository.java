@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, UUID> {
-	 List<Doctor> findByWorkplace(String workplace);
+	 List<Doctor> findByWorkPlace(String workplace);
 }
 

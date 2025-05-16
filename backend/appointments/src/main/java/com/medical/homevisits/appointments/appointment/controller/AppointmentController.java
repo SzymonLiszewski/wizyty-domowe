@@ -270,7 +270,7 @@ public class AppointmentController {
         Appointment appointment = service.find(id);
         if (role.equals("Doctor") && appointment.getDoctor().getID().equals(userId) ||
             role.equals("Nurse") && appointment.getNurse().getID().equals(userId)) {
-            service.delete(id);
+            appointment.setStatus(AppointmentStatus.CANCELED);
         }
 
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this appointment");
