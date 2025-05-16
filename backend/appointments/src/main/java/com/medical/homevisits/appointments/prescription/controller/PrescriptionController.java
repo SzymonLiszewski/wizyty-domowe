@@ -4,6 +4,8 @@ import com.medical.homevisits.appointments.prescription.entity.Prescription;
 import com.medical.homevisits.appointments.prescription.service.PrescriptionService;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
+import com.medical.homevisits.appointments.nurse.entity.Nurse;
+import com.medical.homevisits.appointments.nurse.repository.NurseRepository;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import io.jsonwebtoken.Claims;
@@ -149,6 +151,20 @@ public class PrescriptionController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+    private NurseRepository nurseRepository;
+    @GetMapping("/doctors/from-workplace")
+    public ResponseEntity<List<Doctor>> getDoctorsFromSameHospital(@RequestHeader("Authorization") String token) {
+        String jwt = token.replace("Bearer ", "");
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+
+        UUID nurseId = UUID.fromString(claims.get("id", String.class));
+        Nurse nurse = nurseRepository.findById(nurseId).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Nurse not found"));
+
+        List<Doctor> doctors = doctorRepository.findByWorkplace(nurse.getWorkPlace());
+        return ResponseEntity.ok(doctors);
+    }
+
 }
 
 @Getter

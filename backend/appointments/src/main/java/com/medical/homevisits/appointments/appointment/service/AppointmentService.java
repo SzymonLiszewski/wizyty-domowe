@@ -142,4 +142,5 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.RESERVED);
         this.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
     }
+	
 }
