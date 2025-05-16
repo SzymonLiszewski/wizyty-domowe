@@ -36,6 +36,7 @@ public class InitializeData implements InitializingBean {
     private final UserEventRestRepository userEventRestRepository;
     private final UserService userService;
     private Workplace workplace = Workplace.builder()
+            .name("testWorkplace")
             .street("street 123")
             .city("Gdansk")
             .country("Poland")

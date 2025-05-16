@@ -74,9 +74,10 @@ public class AppointmentController {
     @GetMapping("")
     public ResponseEntity<List<Appointment>> getAvailableAppointments(
             @RequestParam(required = false) UUID doctorId,
-            @RequestParam(required = false) LocalDate appointmentDate
+            @RequestParam(required = false) LocalDate appointmentDate,
+            @RequestParam(required = false) String city
             ){
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null, city);
         return ResponseEntity.ok(appointments);
     }
 
@@ -102,7 +103,7 @@ public class AppointmentController {
 
         UUID doctorId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate, null);
+        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate, null, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -128,7 +129,7 @@ public class AppointmentController {
 
         UUID patientId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, patientId);
+        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, patientId, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -186,7 +187,8 @@ public class AppointmentController {
     }
 
     /**
-     * function returns all available doctors - currently only their ids TODO: think about not returning doctorId
+     * function returns all available doctors
+     * TODO: change way of finding doctors (create 'isAvailable' field in doctor class?)
      * @param appointmentDate
      * @param preferredSpecialization - filtering doctors based on their specialization
      * @return
@@ -195,16 +197,16 @@ public class AppointmentController {
     public ResponseEntity<Set<Doctor>> getAvailableDoctors(
             @RequestParam(required = false) LocalDate appointmentDate,
             @RequestParam(required = false) String preferredSpecialization,
-            @RequestParam(required = false) String preferredWorkPlace,
+            @RequestParam(required = false) String preferredCity,
             @RequestParam(required = false) String preferredFirstName,
             @RequestParam(required = false) String preferredLastName
     ){
         Set<Doctor> doctorSet = new HashSet<>();
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null, preferredCity);
         appointments.forEach((appointment -> {
             // adding doctor to set if his specialization matches preferred one
             if ((preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)) &&
-                    (preferredWorkPlace == null || Objects.equals(appointment.getDoctor().getWorkPlace(), preferredWorkPlace)) &&
+                    (preferredCity == null || Objects.equals(appointment.getDoctor().getWorkPlace().getCity(), preferredCity)) &&
                     (preferredFirstName == null || Objects.equals(appointment.getDoctor().getFirstName(), preferredFirstName)) &&
                     (preferredLastName == null || Objects.equals(appointment.getDoctor().getLastName(), preferredLastName))){
                 doctorSet.add(appointment.getDoctor());
