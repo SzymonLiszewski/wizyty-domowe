@@ -142,4 +142,46 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.RESERVED);
         this.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
     }
+	public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId, UUID nurseId) {
+		
+	        Specification<Appointment> spec = Specification.where(null);
+	        if (status != null){
+	            spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("status"), status));
+	        }
+	        if (doctorId!=null){
+	            if (doctorRepository.findById(doctorId).isPresent()){
+	                Doctor doctor = doctorRepository.findById(doctorId).get();
+	                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("doctor"), doctor));
+	            }
+	            else{
+	                return new ArrayList<>();
+	            }
+	        }
+	        if (patientId!=null){
+	            if (patientRepository.findById(patientId).isPresent()){
+	                Patient patient = patientRepository.findById(patientId).get();
+	                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("patient"), patient));
+	            }
+	            else{
+	                return new ArrayList<>();
+	            }
+	        }
+	        if (nurseId!=null){
+	            if (nurseRepository.findById(nurseId).isPresent()){
+	                Nurse nurse = nurseRepository.findById(nurseId).get();
+	                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("nurse"), nurse));
+	            }
+	            else{
+	                return new ArrayList<>();
+	            }
+	        }
+	        if (date != null){
+	            LocalDateTime startOfDay = date.atStartOfDay();
+	            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+	            spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.between(root.get("appointmentStartTime"), startOfDay, endOfDay));
+	        }
+	        return repository.findAll(spec);
+	    
+	}
+	
 }

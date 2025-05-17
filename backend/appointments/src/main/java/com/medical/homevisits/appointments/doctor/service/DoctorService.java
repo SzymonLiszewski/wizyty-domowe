@@ -2,8 +2,13 @@ package com.medical.homevisits.appointments.doctor.service;
 
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 public class DoctorService {
@@ -13,7 +18,11 @@ public class DoctorService {
     public DoctorService(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
+    public List<Doctor> getDoctorsByWorkPlace(String place) {
+        return doctorRepository.findByWorkPlace(place);
+    }
 
+    
     public void create(Doctor doctor){
         doctorRepository.save(doctor);
     }
