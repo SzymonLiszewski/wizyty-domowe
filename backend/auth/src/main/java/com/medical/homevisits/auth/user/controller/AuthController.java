@@ -157,20 +157,28 @@ public class AuthController {
         }
         User user = userRepository.findById(userID).get();
 
+        //if some field is null in request, then old user data is left
+        String newEmail = (request.getEmail() == null) ? user.getEmail() : request.getEmail();
+        String newFirstName = (request.getFirstName() == null) ? user.getFirstName() : request.getFirstName();
+        String newLastName = (request.getFirstName() == null) ? user.getLastName() : request.getLastName();
+        Date newDateOfBirth = (request.getDateOfBirth() == null) ? user.getDateOfBirth() : request.getDateOfBirth();
+        String newPhoneNumber = (request.getPhoneNumber() == null) ? user.getPhoneNumber() : request.getPhoneNumber();
+
         if (user instanceof Patient){
-            user.setEmail(request.getEmail());
-            user.setFirstName(request.getFirstName());
-            ((Patient) user).setAddress(request.getAddress());
-            user.setDateOfBirth(request.getDateOfBirth());
-            user.setPhoneNumber(request.getPhoneNumber());
-            user.setLastName(request.getLastName());
+            String newAddress = (request.getAddress() == null) ? ((Patient) user).getAddress() : request.getAddress();
+            user.setEmail(newEmail);
+            user.setFirstName(newFirstName);
+            ((Patient) user).setAddress(newAddress);
+            user.setDateOfBirth(newDateOfBirth);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setLastName(newLastName);
         }
         else{
-            user.setEmail(request.getEmail());
-            user.setFirstName(request.getFirstName());
-            user.setDateOfBirth(request.getDateOfBirth());
-            user.setPhoneNumber(request.getPhoneNumber());
-            user.setLastName(request.getLastName());
+            user.setEmail(newEmail);
+            user.setFirstName(newFirstName);
+            user.setDateOfBirth(newDateOfBirth);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setLastName(newLastName);
         }
 
         userService.create(user);
