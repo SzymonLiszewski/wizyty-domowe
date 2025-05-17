@@ -229,7 +229,20 @@ public class AppointmentController {
     @Autowired
     private NurseRepository nurseRepository;
 
-   
+    @GetMapping("/nurses")
+    public ResponseEntity<List<Appointment>> getNurseAppointments(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) LocalDate appointmentDate
+    ) {
+        String jwt = token.replace("Bearer ", "");
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+        UUID nurseId = UUID.fromString(claims.get("id", String.class));
+
+        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, null, nurseId);
+        return ResponseEntity.ok(appointments);
+    }
+
 
     @GetMapping("/nurses/available")
     public ResponseEntity<Set<Nurse>> getAvailableNurses(
