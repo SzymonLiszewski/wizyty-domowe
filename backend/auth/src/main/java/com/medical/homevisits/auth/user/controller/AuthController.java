@@ -129,7 +129,7 @@ public class AuthController {
      */
     @PostMapping("/userData")
     public Map<String, String> changeUserData(
-            @Valid @RequestBody RegisterRequest request,
+            @Valid @RequestBody ChangeDataRequest request,
             @RequestHeader("Authorization") String authorizationHeader
     ){
         String token = authorizationHeader.replace("Bearer ", "");
@@ -268,6 +268,33 @@ class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "\\d{9,15}", message = "Phone number must be between 9 and 15 digits")
+    private String phoneNumber;
+
+    @Temporal(TemporalType.DATE)
+    @Past(message = "Date of birth must be in the past")
+    private Date dateOfBirth;
+
+    private String address;
+}
+
+@Getter
+@Setter
+@NoArgsConstructor
+class ChangeDataRequest {
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    private String lastName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    private String email;
 
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "\\d{9,15}", message = "Phone number must be between 9 and 15 digits")
