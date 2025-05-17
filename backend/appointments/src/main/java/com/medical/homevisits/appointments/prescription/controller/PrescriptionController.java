@@ -152,6 +152,7 @@ public class PrescriptionController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     private NurseRepository nurseRepository;
+    
     @GetMapping("/doctors/from-workplace")
     public ResponseEntity<List<Doctor>> getDoctorsFromSameHospital(@RequestHeader("Authorization") String token) {
         String jwt = token.replace("Bearer ", "");
@@ -161,7 +162,7 @@ public class PrescriptionController {
         Nurse nurse = nurseRepository.findById(nurseId).orElseThrow(() ->
             new ResponseStatusException(HttpStatus.NOT_FOUND, "Nurse not found"));
 
-        List<Doctor> doctors = doctorRepository.findByWorkplace(nurse.getWorkPlace());
+        List<Doctor> doctors = doctorRepository.findByWorkPlace(nurse.getWorkPlace());
         return ResponseEntity.ok(doctors);
     }
 

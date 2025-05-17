@@ -229,19 +229,7 @@ public class AppointmentController {
     @Autowired
     private NurseRepository nurseRepository;
 
-    @GetMapping("/nurses")
-    public ResponseEntity<List<Appointment>> getNurseAppointments(
-            @RequestHeader("Authorization") String token,
-            @RequestParam(required = false) AppointmentStatus status,
-            @RequestParam(required = false) LocalDate appointmentDate
-    ) {
-        String jwt = token.replace("Bearer ", "");
-        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
-        UUID nurseId = UUID.fromString(claims.get("id", String.class));
-
-        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, nurseId);
-        return ResponseEntity.ok(appointments);
-    }
+   
 
     @GetMapping("/nurses/available")
     public ResponseEntity<Set<Nurse>> getAvailableNurses(
@@ -271,6 +259,7 @@ public class AppointmentController {
         if (role.equals("Doctor") && appointment.getDoctor().getID().equals(userId) ||
             role.equals("Nurse") && appointment.getNurse().getID().equals(userId)) {
             appointment.setStatus(AppointmentStatus.CANCELED);
+            return ResponseEntity.noContent().build();
         }
 
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this appointment");
