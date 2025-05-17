@@ -15,6 +15,7 @@ import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.login.LoginRequest
 import com.medical.wizytydomowe.api.login.LoginResponse
+import com.medical.wizytydomowe.api.utils.validateLoginInputs
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -89,36 +90,17 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
         val emailLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutEmail)
         val passwordLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPassword)
 
-        emailLayout?.error = null
-        passwordLayout?.error = null
-
-        when {
-            email.isEmpty() -> {
-                emailLayout?.error = "Pole 'E-mail' jest wymagane"
-                return false
-            }
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                emailLayout?.error = "Nieprawidłowy format pola 'E-mail'"
-                return false
-            }
-            password.isEmpty() -> {
-                passwordLayout?.error = "Pole 'Hasło' jest wymagane"
-                return false
-            }
-        }
+        if (!validateLoginInputs(email, password, emailLayout, passwordLayout)) return false
         return true
     }
 
     private fun navigateToRegisterFragment(){
-        val registerFragment = RegisterFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(registerFragment)
+        activity?.navigateToFragment(RegisterFragment())
     }
 
     private fun navigateToProfileFragment(){
         val activity = activity as? FragmentNavigation
-
         (activity as? MainActivity)?.setMenuForUser(PreferenceManager(requireContext()))
         activity?.navigateToFragment(ProfileFragment())
     }

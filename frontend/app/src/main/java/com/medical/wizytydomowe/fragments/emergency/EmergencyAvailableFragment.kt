@@ -101,15 +101,9 @@ class EmergencyAvailableFragment : Fragment(R.layout.emergency_available_fragmen
     }
 
     private fun navigateToEmergencyDetailsFragment(emergency: Emergency){
-        val bundle = Bundle().apply {
-            putSerializable("emergency", emergency)
-        }
-
-        val emergencyDetailsFragment = EmergencyDetailsFragment().apply {
-            arguments = bundle
-        }
+        val bundle = Bundle().apply { putSerializable("emergency", emergency) }
 
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(emergencyDetailsFragment)
+        activity?.navigateToFragment(EmergencyDetailsFragment().apply { arguments = bundle })
     }
 }

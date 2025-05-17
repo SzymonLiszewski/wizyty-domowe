@@ -14,10 +14,12 @@ import com.medical.wizytydomowe.api.utils.*
 class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
 
     private var emergency: Emergency? = null
+    private var addNewEmergencyFlag: Boolean? = null
     private lateinit var preferenceManager: PreferenceManager
 
     private lateinit var finishEmergencyView: MaterialCardView
     private lateinit var takeOnAEmergencyView: MaterialCardView
+    private lateinit var sendEmergencyView: MaterialCardView
     private lateinit var patientView: MaterialCardView
     private lateinit var paramedicView: MaterialCardView
 
@@ -25,11 +27,14 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         emergency = arguments?.getSerializable("emergency") as? Emergency
+        addNewEmergencyFlag = arguments?.getSerializable("addNewEmergencyFlag") as? Boolean
+
         preferenceManager = PreferenceManager(requireContext())
         val userRole = preferenceManager.getRole()
 
         finishEmergencyView = view.findViewById(R.id.finishEmergencyView)
         takeOnAEmergencyView = view.findViewById(R.id.takeOnAEmergencyView)
+        sendEmergencyView = view.findViewById(R.id.sendEmergencyView)
         patientView = view.findViewById(R.id.patientView)
         paramedicView = view.findViewById(R.id.paramedicView)
 
@@ -41,9 +46,12 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
             showTakeOnEmergencyDialog()
         }
 
-        if (userRole == "Patient") setPatientLayout()
-        else setParamedicLayout()
+        sendEmergencyView.setOnClickListener {
+            showAddNewEmergencyDialog()
+        }
 
+        if (userRole == "Paramedic") setParamedicLayout()
+        else setPatientLayout()
     }
 
     private fun setMainView(){
@@ -54,18 +62,24 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     }
 
     private fun setParamedicView(){
-        setPatientData()
-    }
-
-    private fun setPatientView(){
         setParamedicData()
     }
 
-    private fun setPatientLayout(){
-        patientView.visibility = View.GONE
-        paramedicView.visibility = View.VISIBLE
+    private fun setPatientView(){
+        setPatientData()
+    }
 
-        setPatientView()
+    private fun setPatientLayout(){
+        if (addNewEmergencyFlag == true){
+            setPatientView()
+            patientView.visibility = View.VISIBLE
+            paramedicView.visibility = View.GONE
+        }
+        else {
+            setParamedicView()
+            patientView.visibility = View.GONE
+            paramedicView.visibility = View.VISIBLE
+        }
         setMainView()
     }
 
@@ -73,7 +87,7 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
         patientView.visibility = View.VISIBLE
         paramedicView.visibility = View.GONE
 
-        setParamedicView()
+        setPatientView()
         setMainView()
     }
 
@@ -121,6 +135,12 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
             finishEmergencyView.visibility = View.VISIBLE
         }
         else finishEmergencyView.visibility = View.GONE
+
+        if (emergency?.status == "AVAILABLE" && preferenceManager.getRole() != "Paramedic"
+            && addNewEmergencyFlag == true){
+            sendEmergencyView.visibility = View.VISIBLE
+        }
+        else sendEmergencyView.visibility = View.GONE
     }
 
     private fun takeOnEmergency(){
@@ -142,6 +162,17 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     private fun showFinishEmergencyDialog(){
         showDialog(requireContext(),"Czy na pewno zgłoszenie można uznać za zakończone?"){
             finishEmergency()
+        }
+    }
+
+    private fun addNewEmergency(){
+        //TODO send request to the backend and navigate to the emergency view
+        Toast.makeText(requireContext(), "Wysłano zgłoszenie pomyślnie.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showAddNewEmergencyDialog(){
+        showDialog(requireContext(),"Czy na pewno chcesz dodać te zgłoszenie?"){
+            addNewEmergency()
         }
     }
 }

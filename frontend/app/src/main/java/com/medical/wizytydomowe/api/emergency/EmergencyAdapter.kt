@@ -34,7 +34,7 @@ class EmergencyAdapter(
             when (emergency.status) {
                 "AVAILABLE" -> {
                     statusEmergencyTextView.text = "DOSTĘPNE"
-                    statusEmergencyTextView.setTextColor(Color.GREEN)
+                    statusEmergencyTextView.setTextColor(Color.rgb(80,200,120))
                 }
                 "IN PROGRESS" -> {
                     statusEmergencyTextView.text = "W TOKU"

@@ -45,7 +45,7 @@
                 android:padding="16dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
-                android:text="Wizyty"
+                android:text="Wizyty lekarskie"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="28sp"/>
@@ -198,6 +198,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:layout_marginTop="8dp"
+            android:clipToPadding="false"
             android:visibility="visible"
             android:contentDescription="Appointment items"
             app:layout_constraintStart_toStartOf="parent"

@@ -16,8 +16,6 @@ import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.registration.RegisterRequest
 import com.medical.wizytydomowe.api.utils.*
 import okhttp3.ResponseBody
-import java.text.SimpleDateFormat
-import java.util.Locale
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -97,8 +95,8 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
             password = view.findViewById<TextInputEditText>(R.id.textInputEditTextPassword).text.toString()
 
             if (validateFieldsPage3(password, passwordConfirmation)){
-                val dateOfBirthRequest = convertToDateFormat(dateOfBirth)
-                if (dateOfBirth == null) {
+                val dateOfBirthRequest = convertToDateFormat(dateOfBirth, "dd-MM-yyyy", "yyyy-MM-dd")
+                if (dateOfBirthRequest == null) {
                     Toast.makeText(context, "Wystąpił błąd podczas rejestracji.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
@@ -115,6 +113,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
                     dateOfBirth = dateOfBirthRequest.toString(),
                     address = address.toString()
                 )
+
                 sendRegisterRequest(registerRequest)
             }
         }
@@ -140,24 +139,8 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
     }
 
     private fun navigateToLoginFragment(){
-        val loginFragment = LoginFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(loginFragment)
-    }
-
-    private fun isValidDate(dateString: String?): Boolean {
-        try {
-            if (!dateString.isNullOrEmpty()){
-                val format = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-                format.isLenient = false
-                format.parse(dateString)
-                return true
-            }
-            return false
-        } catch (e: Exception) {
-            return false
-        }
+        activity?.navigateToFragment(LoginFragment())
     }
 
     private fun setPage(formView1 : MaterialCardView, formView2 : MaterialCardView,
@@ -181,16 +164,6 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         }
     }
 
-    private fun resetErrorsPage1(firstNameLayout: TextInputLayout?, lastNameLayout: TextInputLayout?,
-                                 emailLayout: TextInputLayout?, phoneNumberLayout: TextInputLayout?,
-                                 dateOfBirthLayout: TextInputLayout?){
-        firstNameLayout?.error = null
-        lastNameLayout?.error = null
-        emailLayout?.error = null
-        phoneNumberLayout?.error = null
-        dateOfBirthLayout?.error = null
-    }
-
     private fun validateFieldsPage1(firstName: String?, lastName: String?, email: String?,
                                     phoneNumber: String?, dateOfBirth: String?): Boolean{
         val firstNameLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutFirstName)
@@ -199,55 +172,10 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         val phoneNumberLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPhoneNumber)
         val dateOfBirthLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutDateOfBirth)
 
-        resetErrorsPage1(firstNameLayout, lastNameLayout, emailLayout, phoneNumberLayout, dateOfBirthLayout)
-
-        when{
-            firstName.isNullOrEmpty() -> {
-                firstNameLayout?.error = "Pole 'Imię' jest wymagane"
-                return false
-            }
-            lastName.isNullOrEmpty() -> {
-                lastNameLayout?.error = "Pole 'Nazwisko' jest wymagane"
-                return false
-            }
-            email.isNullOrEmpty() -> {
-                emailLayout?.error = "Pole 'E-mail' jest wymagane"
-                return false
-            }
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                emailLayout?.error = "Nieprawidłowy format pola 'E-mail'"
-                return false
-            }
-            phoneNumber.isNullOrEmpty() -> {
-                phoneNumberLayout?.error = "Pole 'Numer telefonu' jest wymagane"
-                return false
-            }
-            !phoneNumber.matches("^\\d{9}\$".toRegex()) -> {
-                phoneNumberLayout?.error = "Nieprawidłowy format pola 'Numer telefonu'"
-                return false
-            }
-            dateOfBirth.isNullOrEmpty() -> {
-                dateOfBirthLayout?.error = "Pole 'Data urodzenia' jest wymagane"
-                return false
-            }
-            !dateOfBirth.matches("^\\d{2}-\\d{2}-\\d{4}\$".toRegex()) -> {
-                dateOfBirthLayout?.error = "Nieprawidłowy format pola 'Data urodzenia'"
-                return false
-            }
-            !isValidDate(dateOfBirth) -> {
-                dateOfBirthLayout?.error = "Nieprawidłowy format pola 'Data urodzenia'"
-                return false
-            }
-        }
+        if (!validatePersonalDataFields(firstName, lastName, firstNameLayout, lastNameLayout)) return false
+        if (!validateContactFields(email, phoneNumber, emailLayout, phoneNumberLayout)) return false
+        if (!validateDateOfBirth(dateOfBirth, dateOfBirthLayout)) return false
         return true
-    }
-
-    private fun resetErrorsPage2(cityLayout: TextInputLayout?, streetLayout: TextInputLayout?,
-                                 postalCodeLayout: TextInputLayout?, buildingNumberLayout: TextInputLayout?){
-        cityLayout?.error = null
-        streetLayout?.error = null
-        postalCodeLayout?.error = null
-        buildingNumberLayout?.error = null
     }
 
     private fun validateFieldsPage2(city: String?, street: String?, postalCode: String?,
@@ -257,62 +185,17 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
         val postalCodeLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPostalCode)
         val buildingNumberLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutBuildingNumber)
 
-        resetErrorsPage2(cityLayout, streetLayout, postalCodeLayout, buildingNumberLayout)
-
-        when{
-            city.isNullOrEmpty() -> {
-                cityLayout?.error = "Pole 'Miasto' jest wymagane"
-                return false
-            }
-            street.isNullOrEmpty() -> {
-                streetLayout?.error = "Pole 'Ulica' jest wymagane"
-                return false
-            }
-            buildingNumber.isNullOrEmpty() -> {
-                buildingNumberLayout?.error = "Pole 'Numer budynku' jest wymagane"
-                return false
-            }
-            postalCode.isNullOrEmpty() -> {
-                postalCodeLayout?.error = "Pole 'Kod pocztowy' jest wymagane"
-                return false
-            }
-            !postalCode.matches("^\\d{2}-\\d{3}\$".toRegex()) -> {
-                postalCodeLayout?.error = "Nieprawidłowy format pola 'Kod pocztowy'"
-                return false
-            }
-        }
+        if (!validateAddress(city, street, buildingNumber, postalCode, cityLayout,
+                streetLayout, postalCodeLayout, buildingNumberLayout)) return false
         return true
-    }
-
-    private fun resetErrorsOnPage3(passwordLayout: TextInputLayout?, passwordConfirmationLayout: TextInputLayout?){
-        passwordLayout?.error = null
-        passwordConfirmationLayout?.error = null
     }
 
     private fun validateFieldsPage3(password: String?, passwordConfirmation : String?): Boolean{
         val passwordConfirmationLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPasswordConfirmation)
         val passwordLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPassword)
 
-        resetErrorsOnPage3(passwordLayout, passwordConfirmationLayout)
-
-        when{
-            password.isNullOrEmpty() -> {
-                passwordLayout?.error = "Pole 'Hasło' jest wymagane"
-                return false
-            }
-            password.length < 6 -> {
-                passwordLayout?.error = "Pole 'Hasło' powinno zawierać min. 6 znaków"
-                return false
-            }
-            passwordConfirmation.isNullOrEmpty() -> {
-                passwordConfirmationLayout?.error = "Pole 'Potwierdzenie hasła' jest wymagane"
-                return false
-            }
-            !password.equals(passwordConfirmation) -> {
-                passwordConfirmationLayout?.error = "Wprowadzone hasła nie są jednakowe"
-                return false
-            }
-        }
+        if (!validateNewPassword(password, passwordConfirmation,
+                passwordLayout, passwordConfirmationLayout)) return false
         return true
     }
 

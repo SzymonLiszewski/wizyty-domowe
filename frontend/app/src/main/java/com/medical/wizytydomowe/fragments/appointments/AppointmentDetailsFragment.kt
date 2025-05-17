@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
 import android.widget.GridLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -20,8 +19,6 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
     private var appointment: Appointment? = null
 
-    private lateinit var cancelAppointmentButton : Button
-
     private lateinit var preferenceManager : PreferenceManager
 
     private lateinit var doctorView: MaterialCardView
@@ -29,13 +26,14 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private lateinit var patientView: MaterialCardView
     private lateinit var addressVerticalView: MaterialCardView
     private lateinit var addressHorizontalView: MaterialCardView
+    private lateinit var cancelAppointmentView : MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         appointment = arguments?.getSerializable("appointment") as? Appointment
 
-        cancelAppointmentButton = view.findViewById(R.id.cancelAppointmentButton)
+        cancelAppointmentView = view.findViewById(R.id.cancelAppointmentView)
         doctorView = view.findViewById(R.id.doctorView)
         nurseView = view.findViewById(R.id.nurseView)
         patientView = view.findViewById(R.id.patientView)
@@ -49,7 +47,7 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         else if (userRole == "Doctor") setDoctorLayout()
         else setNurseLayout()
 
-        cancelAppointmentButton.setOnClickListener {
+        cancelAppointmentView.setOnClickListener {
             showCancelAppointmentDialog()
         }
 
@@ -91,9 +89,9 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         if (!appointment?.notes.isNullOrEmpty()) view?.findViewById<TextView>(R.id.notesTextView)?.text = "Dodatkowe informacje:\n" + "${appointment?.notes}"
 
         if (appointment?.status == "RESERVED" && preferenceManager.getRole() == "Patient") {
-            cancelAppointmentButton.visibility = View.VISIBLE
+            cancelAppointmentView.visibility = View.VISIBLE
         }
-        else cancelAppointmentButton.visibility = View.GONE
+        else cancelAppointmentView.visibility = View.GONE
     }
 
     private fun setAddressData(){

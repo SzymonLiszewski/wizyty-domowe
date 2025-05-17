@@ -7,18 +7,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.fragments.AddVisitFragment
-import com.medical.wizytydomowe.fragments.PrescriptionsFragment
+import com.medical.wizytydomowe.fragments.prescriptions.PrescriptionsFragment
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
 import com.medical.wizytydomowe.fragments.SearchFragment
 import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 import com.google.android.material.navigation.NavigationBarView
-import com.medical.wizytydomowe.fragments.AddMedicalReportFragment
+import com.medical.wizytydomowe.fragments.emergency.AddEmergencyFragment
 import com.medical.wizytydomowe.fragments.AddPrescriptionFragment
 import com.medical.wizytydomowe.fragments.emergency.EmergencyAvailableFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
-import com.medical.wizytydomowe.fragments.emergency.EmergencyParamedicFragment
-import com.medical.wizytydomowe.fragments.PrescriptionsLogoutFragment
-import com.medical.wizytydomowe.fragments.VisitsLogoutFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyPatientMenuFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigation {
 
@@ -40,13 +39,12 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         val appointmentFragment = AppointmentsFragment()
         val addVisitFragment = AddVisitFragment()
         val prescriptionsFragment = PrescriptionsFragment()
-        val prescriptionsLogoutFragment = PrescriptionsLogoutFragment()
         val profileFragment = ProfileFragment()
         val loginFragment = LoginFragment()
-        val addMedicalReport = AddMedicalReportFragment()
         val addPrescriptionFragment = AddPrescriptionFragment()
         val emergencyAvailableFragment = EmergencyAvailableFragment()
-        val emergencyParamedicFragment = EmergencyParamedicFragment()
+        val emergencyFragment = EmergencyFragment()
+        val emergencyPatientMenuFragment = EmergencyPatientMenuFragment()
 
         setStartFragment(preferenceManager)
 
@@ -69,14 +67,8 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     true
                 }
                 R.id.bottom_prescriptions -> {
-                    if (preferenceManager.isLoggedIn()) {
-                        setCurrentFragment(prescriptionsFragment)
-                        true
-                    }
-                    else {
-                        setCurrentFragment(prescriptionsLogoutFragment)
-                        true
-                    }
+                    setCurrentFragment(prescriptionsFragment)
+                    true
                 }
                 R.id.bottom_profile -> {
                     if (preferenceManager.isLoggedIn()) {
@@ -89,7 +81,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     }
                 }
                 R.id.bottom_medical_report -> {
-                    setCurrentFragment(addMedicalReport)
+                    setCurrentFragment(emergencyPatientMenuFragment)
                     true
                 }
                 R.id.bottom_add_prescription -> {
@@ -101,7 +93,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     true
                 }
                 R.id.bottom_pramedic_medical_reports -> {
-                    setCurrentFragment(emergencyParamedicFragment)
+                    setCurrentFragment(emergencyFragment)
                     true
                 }
                 else -> false
@@ -154,16 +146,16 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
     private fun setStartFragment(preferenceManager: PreferenceManager){
         if (!preferenceManager.isLoggedIn() || preferenceManager.getRole() == "Patient"){
-            navigateToFragment(SearchFragment())
+            setCurrentFragment(SearchFragment())
         }
         else if (preferenceManager.getRole() == "Doctor"){
-            navigateToFragment(AppointmentsFragment())
+            setCurrentFragment(AppointmentsFragment())
         }
         else if (preferenceManager.getRole() == "Nurse"){
-            navigateToFragment(AppointmentsFragment())
+            setCurrentFragment(AppointmentsFragment())
         }
         else if (preferenceManager.getRole() == "Paramedic"){
-            navigateToFragment(EmergencyParamedicFragment())
+            setCurrentFragment(EmergencyFragment())
         }
     }
 

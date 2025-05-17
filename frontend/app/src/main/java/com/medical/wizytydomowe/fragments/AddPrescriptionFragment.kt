@@ -40,7 +40,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val formattedDate = dateFormat.format(Date())
 
-            val prescription = Prescription(null, formattedDate, Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"), Patient("1", firstName, lastName, "a", "a"), description)
+            //val prescription = Prescription(null, formattedDate, Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"), Patient("1", firstName, lastName, "a", "a"), description)
 
             //TODO send prescription to backend
             Toast.makeText(context, "$formattedDate Recepta została dodana pomyślnie.", Toast.LENGTH_SHORT).show()

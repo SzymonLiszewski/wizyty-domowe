@@ -155,37 +155,25 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
     }
 
     private fun navigateToLoginFragment(){
-        val loginFragment = LoginFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(loginFragment)
+        activity?.navigateToFragment(LoginFragment())
     }
 
     private fun navigateToMakeAnAppointmentFragment(){
-        val searchFragment = SearchFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(searchFragment)
+        activity?.navigateToFragment(SearchFragment())
     }
 
     private fun navigateToAddAnAppointmentFragment(){
-        val addVisitFragment = AddVisitFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(addVisitFragment)
+        activity?.navigateToFragment(AddVisitFragment())
     }
 
     private fun navigateToAppointmentDetails(appointment: Appointment){
-        val bundle = Bundle().apply {
-            putSerializable("appointment", appointment)
-        }
-
-        val appointmentDetailsFragment = AppointmentDetailsFragment().apply {
-            arguments = bundle
-        }
+        val bundle = Bundle().apply { putSerializable("appointment", appointment) }
 
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(appointmentDetailsFragment)
+        activity?.navigateToFragment(AppointmentDetailsFragment().apply { arguments = bundle })
     }
 
 }

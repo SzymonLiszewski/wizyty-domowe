@@ -10,11 +10,11 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-fun convertToDateFormat(dateString: String?): String? {
+fun convertToDateFormat(dateString: String?, inputFormatDate: String, outputFormatDate: String): String? {
     try {
         if (!dateString.isNullOrEmpty()){
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+            val inputFormat = SimpleDateFormat(inputFormatDate, Locale.getDefault())
+            val outputFormat = SimpleDateFormat(outputFormatDate, Locale.getDefault())
             val date = inputFormat.parse(dateString)
             return date?.let { outputFormat.format(it) }
         }
@@ -55,6 +55,19 @@ fun setAddress(address: String?, cityTextView: TextView?, postalCodeTextView: Te
     else setAddressAsUnknown(cityTextView, postalCodeTextView, streetTextView)
 }
 
+fun isValidDate(dateString: String?): Boolean {
+    try {
+        if (!dateString.isNullOrEmpty()){
+            val format = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+            format.isLenient = false
+            format.parse(dateString)
+            return true
+        }
+        return false
+    } catch (e: Exception) {
+        return false
+    }
+}
 
 fun setDateAsUnknown(dateTextView: TextView?, hourTextView : TextView?){
     hourTextView?.text = "None"
@@ -64,7 +77,7 @@ fun setDateAsUnknown(dateTextView: TextView?, hourTextView : TextView?){
 fun setDate(dateTextView: TextView?, hourTextView : TextView?, dateString: String?){
     val parts = dateString?.split("T".toRegex(), 2)
     if (parts?.size == 2) {
-        val date = convertToDateFormat(parts[0].trim())
+        val date = convertToDateFormat(parts[0].trim(), "yyyy-MM-dd", "dd-MM-yyyy")
         val time = parts[1].trim()
         if (!date.isNullOrEmpty()) {
             dateTextView?.text = "${date}"

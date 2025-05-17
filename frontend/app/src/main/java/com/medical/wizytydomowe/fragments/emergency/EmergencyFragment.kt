@@ -8,29 +8,42 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.FragmentNavigation
+import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.emergency.Emergency
 import com.medical.wizytydomowe.api.emergency.EmergencyAdapter
 import com.medical.wizytydomowe.api.users.Paramedic
 import com.medical.wizytydomowe.api.users.Patient
 
-class EmergencyParamedicFragment  : Fragment(R.layout.emergency_paramedic_fragment) {
+class EmergencyFragment  : Fragment(R.layout.emergency_fragment) {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EmergencyAdapter
 
+    private lateinit var preferenceManager: PreferenceManager
+
     private lateinit var noEmergencyView: MaterialCardView
     private lateinit var emergencyRecyclerView: RecyclerView
+    private lateinit var goToAddEmergencyButton: Button
+    private lateinit var goToAvailableEmergencyButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        preferenceManager = PreferenceManager(requireContext())
+        val userRole = preferenceManager.getRole()
+
         emergencyRecyclerView = view.findViewById(R.id.emergencyRecyclerView)
         noEmergencyView = view.findViewById(R.id.noEmergencyView)
-        val goToAvailableEmergencyButton = view.findViewById<Button>(R.id.goToAvailableEmergencyButton)
+        goToAvailableEmergencyButton = view.findViewById(R.id.goToAvailableEmergencyButton)
+        goToAddEmergencyButton = view.findViewById(R.id.goToAddEmergencyButton)
 
         goToAvailableEmergencyButton.setOnClickListener {
             navigateToAvailableFragment()
+        }
+
+        goToAddEmergencyButton.setOnClickListener {
+            navigateToAddEmergencyFragment()
         }
 
         //TODO get medical reports
@@ -82,34 +95,34 @@ class EmergencyParamedicFragment  : Fragment(R.layout.emergency_paramedic_fragme
                         "Osoba osłabiona, blada, spocona."),
         )
 
-        if (emergencies.size == 0) setNoEmergenciesLayout()
+        if (emergencies.size == 0) setNoEmergenciesLayout(userRole)
         else setEmergenciesLayout(emergencies)
-
     }
 
     private fun navigateToEmergencyDetailsFragment(emergency: Emergency){
-        val bundle = Bundle().apply {
-            putSerializable("emergency", emergency)
-        }
-
-        val emergencyDetailsFragment = EmergencyDetailsFragment().apply {
-            arguments = bundle
-        }
+        val bundle = Bundle().apply { putSerializable("emergency", emergency) }
 
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(emergencyDetailsFragment)
+        activity?.navigateToFragment(EmergencyDetailsFragment().apply { arguments = bundle })
     }
 
     private fun navigateToAvailableFragment(){
-        val emergencyAvailableFragment = EmergencyAvailableFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(emergencyAvailableFragment)
+        activity?.navigateToFragment(EmergencyAvailableFragment())
     }
 
-    private fun setNoEmergenciesLayout(){
+    private fun setNoEmergenciesLayout(userRole: String?){
         emergencyRecyclerView.visibility = View.GONE
         noEmergencyView.visibility = View.VISIBLE
+
+        if (userRole == "Patient"){
+            goToAddEmergencyButton.visibility = View.VISIBLE
+            goToAvailableEmergencyButton.visibility = View.GONE
+        }
+        else{
+            goToAddEmergencyButton.visibility = View.GONE
+            goToAvailableEmergencyButton.visibility = View.VISIBLE
+        }
     }
 
     private fun setEmergenciesLayout(emergencies: List<Emergency>){
@@ -124,5 +137,10 @@ class EmergencyParamedicFragment  : Fragment(R.layout.emergency_paramedic_fragme
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+    }
+
+    private fun navigateToAddEmergencyFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(AddEmergencyFragment())
     }
 }

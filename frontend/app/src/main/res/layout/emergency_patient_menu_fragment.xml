@@ -16,14 +16,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.03" />
+            app:layout_constraintGuide_percent="0.01" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.22" />
+            app:layout_constraintGuide_percent="0.15" />
 
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -45,7 +45,7 @@
                 android:padding="16dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
-                android:text="Recepty"
+                android:text="Zgłoszenia medyczne"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="28sp"/>
@@ -55,13 +55,14 @@
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/logoutView"
+            android:id="@+id/addEmergencyView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
             android:layout_margin="24dp"
             android:foreground="@color/gray"
             app:cardElevation="8dp"
+            android:clickable="true"
             android:layout_marginTop="14dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,6 +75,95 @@
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 android:padding="24dp"
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="108dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/add_circle_svgrepo_com"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginTop="12dp"
+                    android:text="Dodaj zgłoszenie"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="32sp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/patientEmergencyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:clickable="true"
+            android:layout_marginTop="36dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addEmergencyView"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="24dp"
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="108dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/ambulance_svgrepo_com"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginTop="12dp"
+                    android:text="Moje zgłoszenia"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="32sp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/logoutView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:layout_marginTop="13dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addEmergencyView"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="16dp"
                 android:layout_margin="8dp">
 
                 <ImageView
@@ -99,7 +189,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginTop="12dp"
-                    android:text="Zaloguj się, aby zobaczyć swoje recepty"
+                    android:text="Zaloguj się, aby zobaczyć swoje zgłoszenia"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textAlignment="center"/>
@@ -117,94 +207,16 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/noPrescriptionView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            android:layout_margin="24dp"
-            android:foreground="@color/gray"
-            app:cardElevation="8dp"
-            android:layout_marginTop="14dp"
+        <View
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_30"
-            android:visibility="gone">
+            app:layout_constraintTop_toBottomOf="@id/logoutView"
+            app:layout_constraintVertical_bias="0.119" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:padding="24dp"
-                android:layout_margin="8dp">
-
-                <ImageView
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:src="@drawable/status_information_svgrepo_com"/>
-
-                <TextView
-                    android:id="@+id/statusNoPrescriptionTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginTop="12dp"
-                    android:text="BRAK RECEPT"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="24sp"/>
-
-                <TextView
-                    android:id="@+id/additionalInformationNoPrescriptionTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginTop="12dp"
-                    android:text="Nie otrzymałeś jeszcze żadnej recepty"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textAlignment="center"/>
-
-                <Button
-                    android:id="@+id/goToMakeAnAppointmentButton"
-                    android:layout_width="250dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Umów wizytę"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:visibility="visible"/>
-
-                <Button
-                    android:id="@+id/goToAddPrescriptionButton"
-                    android:layout_width="250dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Dodaj receptę"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:visibility="gone"/>
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/prescriptionsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:paddingBottom="24dp"
-            android:clipToPadding="false"
-            android:visibility="visible"
-            android:contentDescription="Prescription items"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleView"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

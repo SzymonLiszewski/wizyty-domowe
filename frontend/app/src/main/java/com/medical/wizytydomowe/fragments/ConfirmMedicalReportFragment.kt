@@ -9,7 +9,7 @@ import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.emergency.Emergency
 import com.medical.wizytydomowe.fragments.emergency.EmergencyDetailsFragment
-import com.medical.wizytydomowe.fragments.emergency.EmergencyParamedicFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyFragment
 
 class ConfirmMedicalReportFragment : Fragment(R.layout.confirm_medical_report) {
 
@@ -38,9 +38,9 @@ class ConfirmMedicalReportFragment : Fragment(R.layout.confirm_medical_report) {
         yesButton.setOnClickListener{
             //TODO send request to save medical report
             Toast.makeText(context, "Podjęto się do zgłoszenia ${medicalReport?.id}", Toast.LENGTH_SHORT).show()
-            val emergencyParamedicFragment = EmergencyParamedicFragment()
+            val emergencyFragment = EmergencyFragment()
             val activity = activity as? FragmentNavigation
-            activity?.navigateToFragment(emergencyParamedicFragment)
+            activity?.navigateToFragment(emergencyFragment)
         }
     }
 }

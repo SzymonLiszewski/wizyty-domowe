@@ -3,37 +3,58 @@ package com.medical.wizytydomowe.api.prescriptions
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.utils.*
 
 
 class PrescriptionAdapter(
     private var prescriptions: List<Prescription>,
-    private val onPrescriptionDetailsClick: (Prescription) -> Unit
+    private val onPrescriptionClick: (Prescription) -> Unit
 ) : RecyclerView.Adapter<PrescriptionAdapter.PrescriptionViewHolder>() {
 
     inner class PrescriptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvPrescriptionTime: TextView = itemView.findViewById(R.id.tvPrescriptionTime)
-        private val tvPrescriptionDoctor: TextView = itemView.findViewById(R.id.tvPrescriptionPerson)
-        private val btnPrescriptionDetails: Button = itemView.findViewById(R.id.btnPrescriptionDetails)
+        private val prescriptionDateTextView: TextView = itemView.findViewById(R.id.prescriptionDateTextView)
+        private val prescriptionHourTextView: TextView = itemView.findViewById(R.id.prescriptionHourTextView)
+        private val prescriptionRoleTextView: TextView = itemView.findViewById(R.id.prescriptionRoleTextView)
+        private val prescriptionFirstNameTextView: TextView = itemView.findViewById(R.id.prescriptionFirstNameTextView)
+        private val prescriptionLastNameTextView: TextView = itemView.findViewById(R.id.prescriptionLastNameTextView)
+        private val prescriptionView: MaterialCardView = itemView.findViewById(R.id.prescriptionView)
 
         fun bind(prescription: Prescription) {
-            tvPrescriptionTime.text = "${prescription.prescriptionTime}"
             val preferenceManager = PreferenceManager(itemView.context)
 
             if (preferenceManager.getRole() == "Patient"){
-                tvPrescriptionDoctor.text = "Wystawił: ${prescription.doctor?.firstName} ${prescription.doctor?.lastName}"
+                setDoctorData(prescription)
             }
             else {
-                tvPrescriptionDoctor.text = "Pacjent: ${prescription.patient?.firstName} ${prescription.patient?.lastName}"
+                setPatientData(prescription)
             }
 
-            btnPrescriptionDetails.setOnClickListener {
-                onPrescriptionDetailsClick(prescription)
+            setPrescriptionDate(prescription)
+
+            prescriptionView.setOnClickListener {
+                onPrescriptionClick(prescription)
             }
+        }
+
+        private fun setPatientData(prescription: Prescription){
+            prescriptionRoleTextView.text = "Pacjent:"
+            prescriptionFirstNameTextView.text = "${prescription.patient?.firstName}"
+            prescriptionLastNameTextView.text = "${prescription.patient?.lastName}"
+        }
+
+        private fun setDoctorData(prescription: Prescription){
+            prescriptionRoleTextView.text = "Lekarz:"
+            prescriptionFirstNameTextView.text = "${prescription.doctor?.firstName}"
+            prescriptionLastNameTextView.text = "${prescription.doctor?.lastName}"
+        }
+
+        private fun setPrescriptionDate(prescription: Prescription){
+            setDate(prescriptionDateTextView, prescriptionHourTextView, prescription.date)
         }
     }
 

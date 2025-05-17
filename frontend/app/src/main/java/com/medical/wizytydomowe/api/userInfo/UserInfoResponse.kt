@@ -11,5 +11,6 @@ data class UserInfoResponse(
     val specialization: String?,
     val academicDegree: String?,
     val doctor: String?,
-    val workPlace: String?
+    val workPlace: String?,
+    val phoneNumber: String?
 )

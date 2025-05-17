@@ -18,8 +18,12 @@ import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import retrofit2.Call
 import retrofit2.Response
 import com.medical.wizytydomowe.api.utils.*
+import com.medical.wizytydomowe.fragments.editProfile.EditPasswordFragment
+import com.medical.wizytydomowe.fragments.editProfile.EditProfileFragment
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
+
+    private var userEmail: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,11 +59,11 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
 
         editProfileView.setOnClickListener {
-            Toast.makeText(context, "Kliknięto edycję profilu.", Toast.LENGTH_SHORT).show()
+            navigateToEditProfileFragment()
         }
 
         editPasswordView.setOnClickListener {
-            Toast.makeText(context, "Kliknięto edycję hasła.", Toast.LENGTH_SHORT).show()
+            navigateToEditPasswordFragment()
         }
     }
 
@@ -85,7 +89,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                         val responseBody = response.body()
 
                         setRole(userRole)
-                        setAppropiateRoleImage(userRole)
+                        setAppropriateRoleImage(userRole)
+                        userEmail = responseBody?.email
 
                         if (userRole == "Patient") setPatientView(responseBody)
                         else setMedicalStaffView(responseBody)
@@ -101,22 +106,25 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     }
 
     private fun navigateToLoginFragment(){
-        val loginFragment = LoginFragment()
-
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(loginFragment)
+        activity?.navigateToFragment(LoginFragment())
+    }
+
+    private fun navigateToEditProfileFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(EditProfileFragment())
     }
 
     private fun setAddress(address: String?){
         val cityTextView = view?.findViewById<TextView>(R.id.cityTextView)
-        val postalCodeTextView = view?.findViewById<TextView>(R.id.cityTextView)
-        val streetTextView = view?.findViewById<TextView>(R.id.cityTextView)
+        val postalCodeTextView = view?.findViewById<TextView>(R.id.postalCodeTextView)
+        val streetTextView = view?.findViewById<TextView>(R.id.streetTextView)
 
         setAddress(address, cityTextView, postalCodeTextView, streetTextView)
     }
 
     private fun setDateOfBirth(dateOfBirth: String?){
-        val dateOfBirthConverted = convertToDateFormat(dateOfBirth)
+        val dateOfBirthConverted = convertToDateFormat(dateOfBirth, "yyyy-MM-dd", "dd-MM-yyyy")
         if (!dateOfBirthConverted.isNullOrEmpty()) view?.findViewById<TextView>(R.id.dateOfBirthTextView)?.text = "${dateOfBirthConverted}"
         else view?.findViewById<TextView>(R.id.dateOfBirthTextView)?.text = "None"
     }
@@ -163,7 +171,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         view?.findViewById<ImageView>(R.id.paramedicImage)?.visibility = View.VISIBLE
     }
 
-    private fun setAppropiateRoleImage(userRole: String?){
+    private fun setAppropriateRoleImage(userRole: String?){
         if (userRole == "Patient") setPatientImage()
         if (userRole == "Doctor") setDoctorImage()
         if (userRole == "Nurse") setNurseImage()
@@ -184,6 +192,13 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private fun setMedicalStaffView(userInfo: UserInfoResponse?){
         setPersonalData(userInfo)
         setMedicalData(userInfo)
+    }
+
+    private fun navigateToEditPasswordFragment(){
+        val bundle = Bundle().apply { putSerializable("userEmail", userEmail) }
+
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(EditPasswordFragment().apply { arguments = bundle })
     }
 
 }

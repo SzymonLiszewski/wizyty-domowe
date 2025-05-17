@@ -23,14 +23,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.15" />
+            app:layout_constraintGuide_percent="0.2" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineForm2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.18" />
+            app:layout_constraintGuide_percent="0.13" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineForm3"
@@ -46,8 +46,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
-            android:layout_margin="24dp"
             app:cardElevation="8dp"
+            android:layout_marginBottom="40dp"
+            android:layout_marginRight="19dp"
+            android:layout_marginLeft="18dp"
             android:foreground="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,17 +61,19 @@
                 android:padding="16dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
-                android:text="Rejestracja"
+                android:textAlignment="center"
+                android:text="Edycja profilu"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="28sp"/>
+                android:textSize="28sp"
+                android:visibility="visible"/>
 
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/formView1"
+            android:id="@+id/editPersonalDataView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
@@ -88,12 +92,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="Edycja danych osobowych"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
+
                 <LinearLayout
                     android:id="@+id/layoutTextFieldFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -129,6 +144,7 @@
                     android:id="@+id/textInputLayoutLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/layoutTextFieldFirstName"
@@ -147,131 +163,35 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
-                    android:id="@+id/layoutTextFieldEmail"
+                    android:id="@+id/linearLayoutButtonsEditPersonalData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputLayoutLastName">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/email_svgrepo_com"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="15dp"/>
+                    <Button
+                        android:id="@+id/buttonPrevEditPersonalData"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/black"
+                        android:text="Wróć"/>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
-                        android:hint="@string/email"
-                        app:errorEnabled="true"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/textInputEditTextEmail"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:id="@+id/buttonResetPersonalData"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:textColor="@color/black"
+                        android:text="Zmień dane"/>
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layoutTextFieldPhoneNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldEmail">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/phone_svgrepo_com"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="15dp"/>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutPhoneNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
-                        android:hint="@string/phoneNumber"
-                        app:errorEnabled="true"
-                        app:helperText="Zastosuj format: XXXXXXXXX"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/textInputEditTextPhoneNumber"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layoutTextFieldBirthday"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPhoneNumber">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/calendar_alt_svgrepo_com"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="15dp"/>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutDateOfBirth"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
-                        android:hint="@string/birthday"
-                        app:errorEnabled="true"
-                        app:helperText="Zastosuj format: DD-MM-RRRR"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/textInputEditTextDateOfBirth"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/btn_next1"
-                    android:layout_width="200dp"
-                    android:layout_height="64dp"
-                    android:layout_marginTop="16dp"
-                    android:textColor="@color/black"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="8dp"
-                    android:layout_marginBottom="16dp"
-                    android:layout_gravity="center"
-                    android:text="Przejdź dalej"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldBirthday" />
 
             </LinearLayout>
 
@@ -280,7 +200,7 @@
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/formView2"
+            android:id="@+id/editAddressFormView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
@@ -298,6 +218,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="Edycja adresu"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
 
                 <LinearLayout
                     android:id="@+id/layoutTextFieldAddress"
@@ -430,7 +361,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayoutButtons2"
+                    android:id="@+id/linearLayoutButtons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
@@ -444,7 +375,7 @@
                     app:layout_constraintTop_toBottomOf="@id/textInputLayoutPostalCode">
 
                     <Button
-                        android:id="@+id/btn_prev2"
+                        android:id="@+id/buttonPrevEditAddress"
                         android:layout_width="150dp"
                         android:layout_height="64dp"
                         android:layout_marginEnd="16dp"
@@ -452,22 +383,165 @@
                         android:text="Wróć"/>
 
                     <Button
-                        android:id="@+id/btn_next2"
+                        android:id="@+id/buttonResetAddress"
                         android:layout_width="150dp"
                         android:layout_height="64dp"
                         android:textColor="@color/black"
-                        android:text="Przejdź dalej"/>
+                        android:text="Zmień adres"/>
 
                 </LinearLayout>
 
-        </LinearLayout>
+            </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/formView3"
+            android:id="@+id/editContactDataView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:padding="16dp"
+            android:layout_marginBottom="40dp"
+            android:layout_margin="24dp"
+            app:cardElevation="8dp"
+            android:foreground="@color/gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineForm1"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="Edycja danych kontaktowych"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
+
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutLastName">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/email_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/email"
+                        app:errorEnabled="true"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutTextFieldPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldEmail">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/phone_svgrepo_com"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxStrokeColor="@color/black"
+                        app:hintTextColor="@color/black"
+                        android:hint="@string/phoneNumber"
+                        app:errorEnabled="true"
+                        app:helperText="Zastosuj format: XXXXXXXXX"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textInputEditTextPhoneNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutButtonsEditContactData"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPhoneNumber">
+
+                    <Button
+                        android:id="@+id/buttonPrevEditContactData"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/black"
+                        android:text="Wróć"/>
+
+                    <Button
+                        android:id="@+id/buttonResetContactData"
+                        android:layout_width="150dp"
+                        android:layout_height="64dp"
+                        android:textColor="@color/black"
+                        android:text="Zmień dane"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/editDateOfBirthView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
@@ -486,74 +560,60 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="Edycja daty urodzenia"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
+
                 <LinearLayout
-                    android:id="@+id/layoutTextFieldPassword"
+                    android:id="@+id/layoutTextFieldBirthday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="30dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPhoneNumber">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:src="@drawable/password_lock_svgrepo_com"
+                        android:src="@drawable/calendar_alt_svgrepo_com"
                         android:layout_marginEnd="15dp"
                         android:layout_marginBottom="15dp"/>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutPassword"
+                        android:id="@+id/textInputLayoutDateOfBirth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:boxStrokeColor="@color/black"
                         app:hintTextColor="@color/black"
-                        android:hint="@string/password"
+                        android:hint="@string/birthday"
                         app:errorEnabled="true"
-                        app:endIconMode="password_toggle"
+                        app:helperText="Zastosuj format: DD-MM-RRRR"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/textInputEditTextPassword"
+                            android:id="@+id/textInputEditTextDateOfBirth"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPassword"/>
+                            android:layout_height="wrap_content" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutPasswordConfirmation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldPassword"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_marginTop="16dp"
-                    app:boxStrokeColor="@color/black"
-                    app:hintTextColor="@color/black"
-                    android:hint="@string/passwordConfirmation"
-                    app:errorEnabled="true"
-                    app:endIconMode="password_toggle"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextPasswordConfirmation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <LinearLayout
-                    android:id="@+id/linearLayoutButtons3"
+                    android:id="@+id/linearLayoutButtonsEditDateOfBirth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="36dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="8dp"
@@ -561,10 +621,10 @@
                     android:gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutPasswordConfirmation">
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldBirthday">
 
                     <Button
-                        android:id="@+id/btn_prev3"
+                        android:id="@+id/buttonPrevEditDateOfBirth"
                         android:layout_width="150dp"
                         android:layout_height="64dp"
                         android:layout_marginEnd="16dp"
@@ -572,18 +632,17 @@
                         android:text="Wróć"/>
 
                     <Button
-                        android:id="@+id/btn_register"
+                        android:id="@+id/buttonResetDateOfBirth"
                         android:layout_width="150dp"
                         android:layout_height="64dp"
                         android:textColor="@color/black"
-                        android:text="Załóż konto"/>
+                        android:text="Zmień datę"/>
 
                 </LinearLayout>
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
