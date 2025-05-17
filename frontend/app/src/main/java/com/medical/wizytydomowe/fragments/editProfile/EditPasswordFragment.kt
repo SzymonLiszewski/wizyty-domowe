@@ -10,10 +10,15 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.userInfo.EditPasswordRequest
 import com.medical.wizytydomowe.api.utils.validateNewPassword
 import com.medical.wizytydomowe.api.utils.validateOldPassword
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EditPasswordFragment: Fragment(R.layout.edit_password_fragment) {
 
@@ -44,10 +49,30 @@ class EditPasswordFragment: Fragment(R.layout.edit_password_fragment) {
 
         if (validateInput(oldPassword, newPassword, newPasswordConfirmation)){
             val editPasswordRequest = EditPasswordRequest(email, oldPassword, newPassword)
-            //TODO sent request to the backend and navigate to the profile fragment
-            Toast.makeText(requireContext(), "Zmieniono hasło.", Toast.LENGTH_SHORT).show()
+            sendEditPasswordRequest(editPasswordRequest)
         }
     }
+
+    private fun sendEditPasswordRequest(editPasswordRequest: EditPasswordRequest){
+        RetrofitInstance.apiService.editPassword(editPasswordRequest).enqueue(object :
+            Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Hasło zostało zmienione", Toast.LENGTH_LONG).show()
+                    navigateToProfileFragment()
+                }
+                else {
+                    val errorMessage = response.errorBody()?.string()
+                    Toast.makeText(context, "Zmiana hasła nie powiodła się: $errorMessage", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
     private fun validateInput(oldPassword: String?, newPassword: String?,
                               newPasswordConfirmation: String?): Boolean{

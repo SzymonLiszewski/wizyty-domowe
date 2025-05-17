@@ -128,7 +128,19 @@ fun validateDescription(description: String?, descriptionLayout: TextInputLayout
 
     when{
         description.isNullOrEmpty() -> {
-            descriptionLayout?.error = "Pole 'Opis zgłoszenia' nie powinno być puste"
+            descriptionLayout?.error = "Pole 'Opis' nie powinno być puste"
+            return false
+        }
+    }
+    return true
+}
+
+fun validateFilterText(filterText: String?, filterTextLayout: TextInputLayout?): Boolean{
+    filterTextLayout?.error = null
+
+    when{
+        filterText.isNullOrEmpty() -> {
+            filterTextLayout?.error = "Pole 'Filtracja' nie powinno być puste"
             return false
         }
     }
@@ -171,6 +183,24 @@ fun validateNewPassword(password: String?, passwordConfirmation : String?, passw
         }
         !password.equals(passwordConfirmation) -> {
             passwordConfirmationLayout?.error = "Wprowadzone hasła nie są jednakowe"
+            return false
+        }
+    }
+    return true
+}
+
+fun validateNewMedication(name: String?, dosage : String?, nameLayout: TextInputLayout?,
+                          dosageLayout: TextInputLayout?): Boolean{
+    nameLayout?.error = null
+    dosageLayout?.error = null
+
+    when{
+        name.isNullOrEmpty() -> {
+            nameLayout?.error = "Pole 'Nazwa lekarstwa' jest wymagana"
+            return false
+        }
+        dosage.isNullOrEmpty() -> {
+            dosageLayout?.error = "Pole 'Dawkowanie' jest wymagane"
             return false
         }
     }

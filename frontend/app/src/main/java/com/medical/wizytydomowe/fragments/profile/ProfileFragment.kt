@@ -133,7 +133,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         view?.findViewById<TextView>(R.id.firstNameTextView)?.text = "${userInfo?.firstName}"
         view?.findViewById<TextView>(R.id.lastNameTextView)?.text = "${userInfo?.lastName}"
         view?.findViewById<TextView>(R.id.emailTextView)?.text = "${userInfo?.email}"
-        view?.findViewById<TextView>(R.id.phoneNumberTextView)?.text = "123-456-789"
+        val phoneNumberConverted = "${userInfo?.phoneNumber?.substring(0,3)}-${userInfo?.phoneNumber?.substring(3,6)}-${userInfo?.phoneNumber?.substring(6)}"
+        view?.findViewById<TextView>(R.id.phoneNumberTextView)?.text = "${phoneNumberConverted}"
     }
 
     private fun setRole(userRole: String?){

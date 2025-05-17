@@ -3,6 +3,7 @@ package com.medical.wizytydomowe.fragments.prescriptions
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.PreferenceManager
@@ -14,26 +15,38 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
 
     private var prescription: Prescription? = null
     private lateinit var preferenceManager: PreferenceManager
+    private var addNewPrescriptionFlag: Boolean? = null
 
     private lateinit var patientView: MaterialCardView
     private lateinit var doctorView: MaterialCardView
     private lateinit var prescriptionDateView: MaterialCardView
     private lateinit var medicationView: MaterialCardView
     private lateinit var notesView: MaterialCardView
+    private lateinit var addPrescriptionView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         prescription = arguments?.getSerializable("prescription") as? Prescription
+        addNewPrescriptionFlag = arguments?.getSerializable("addNewPrescriptionFlag") as? Boolean
 
         patientView = view.findViewById(R.id.patientView)
         doctorView = view.findViewById(R.id.doctorView)
         prescriptionDateView = view.findViewById(R.id.prescriptionDateView)
         medicationView = view.findViewById(R.id.medicationView)
         notesView = view.findViewById(R.id.notesView)
+        addPrescriptionView = view.findViewById(R.id.addPrescriptionView)
+
+        addPrescriptionView.setOnClickListener {
+            Toast.makeText(requireContext(), "Dodano receptę", Toast.LENGTH_SHORT).show()
+            //TODO send request to the backend and add dialog
+        }
 
         preferenceManager = PreferenceManager(requireContext())
         val userRole = preferenceManager.getRole()
+
+        if (addNewPrescriptionFlag != null && addNewPrescriptionFlag == true) addPrescriptionView.visibility = View.VISIBLE
+        else addPrescriptionView.visibility = View.GONE
 
         if (userRole == "Patient") setPatientLayout()
         else setDoctorLayout()

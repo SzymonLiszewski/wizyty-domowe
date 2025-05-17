@@ -3,6 +3,9 @@ package com.medical.wizytydomowe.api
 import com.medical.wizytydomowe.api.login.LoginRequest
 import com.medical.wizytydomowe.api.login.LoginResponse
 import com.medical.wizytydomowe.api.registration.RegisterRequest
+import com.medical.wizytydomowe.api.userInfo.EditPasswordRequest
+import com.medical.wizytydomowe.api.userInfo.EditUserInfoResponse
+import com.medical.wizytydomowe.api.userInfo.EditUserInfoRequest
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -21,4 +24,10 @@ interface ApiService {
 
     @GET("user/info")
     fun getUserInfo(@Header("Authorization") token: String): Call<UserInfoResponse>
+
+    @POST("user/password")
+    fun editPassword(@Body editPasswordRequest: EditPasswordRequest): Call<ResponseBody>
+
+    @POST("userData")
+    fun editUserData(@Body editUserInfoRequest: EditUserInfoRequest?, @Header("Authorization") token: String): Call<EditUserInfoResponse>
 }

@@ -16,9 +16,7 @@ import com.medical.wizytydomowe.api.users.Patient
 import com.medical.wizytydomowe.api.utils.validateContactFields
 import com.medical.wizytydomowe.api.utils.validateDescription
 import com.medical.wizytydomowe.api.utils.validatePersonalDataFields
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.medical.wizytydomowe.api.utils.*
 
 class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
@@ -125,12 +123,6 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
         if (!validateDescription(description, descriptionLayout)) return false
         return true
-    }
-
-    private fun setActualDate(): String{
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH.mm", Locale.getDefault())
-        val currentDate = Date()
-        return outputFormat.format(currentDate)
     }
 
     private fun navigateToConfirmEmergency(){

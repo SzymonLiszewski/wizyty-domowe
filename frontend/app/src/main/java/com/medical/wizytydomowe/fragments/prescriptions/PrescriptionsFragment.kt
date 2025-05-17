@@ -14,7 +14,6 @@ import com.medical.wizytydomowe.api.prescriptions.Prescription
 import com.medical.wizytydomowe.api.prescriptions.PrescriptionAdapter
 import com.medical.wizytydomowe.api.users.Doctor
 import com.medical.wizytydomowe.api.users.Patient
-import com.medical.wizytydomowe.fragments.AddPrescriptionFragment
 import com.medical.wizytydomowe.fragments.SearchFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
 

@@ -2,9 +2,9 @@ package com.medical.wizytydomowe.api.users
 
 import java.io.Serializable
 
-data class Paramedic(
-    val id: String?,
-    val firstName: String?,
-    val lastName: String?,
+class Paramedic(
+    id: String?,
+    firstName: String?,
+    lastName: String?,
     val workPlace: String?
-): Serializable
+): Serializable, User(id, firstName, lastName)

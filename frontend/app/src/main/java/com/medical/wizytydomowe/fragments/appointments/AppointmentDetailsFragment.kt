@@ -27,6 +27,7 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private lateinit var addressVerticalView: MaterialCardView
     private lateinit var addressHorizontalView: MaterialCardView
     private lateinit var cancelAppointmentView : MaterialCardView
+    private lateinit var finishAppointmentView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,6 +35,7 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         appointment = arguments?.getSerializable("appointment") as? Appointment
 
         cancelAppointmentView = view.findViewById(R.id.cancelAppointmentView)
+        finishAppointmentView = view.findViewById(R.id.finishAppointmentView)
         doctorView = view.findViewById(R.id.doctorView)
         nurseView = view.findViewById(R.id.nurseView)
         patientView = view.findViewById(R.id.patientView)
@@ -49,6 +51,10 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
         cancelAppointmentView.setOnClickListener {
             showCancelAppointmentDialog()
+        }
+
+        finishAppointmentView.setOnClickListener {
+            //TODO send request to the backend
         }
 
     }
@@ -88,10 +94,11 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
         if (!appointment?.notes.isNullOrEmpty()) view?.findViewById<TextView>(R.id.notesTextView)?.text = "Dodatkowe informacje:\n" + "${appointment?.notes}"
 
-        if (appointment?.status == "RESERVED" && preferenceManager.getRole() == "Patient") {
-            cancelAppointmentView.visibility = View.VISIBLE
-        }
+        if (appointment?.status == "RESERVED" && preferenceManager.getRole() == "Patient") cancelAppointmentView.visibility = View.VISIBLE
         else cancelAppointmentView.visibility = View.GONE
+
+        if (appointment?.status == "RESERVED" && preferenceManager.getRole() != "Patient") finishAppointmentView.visibility = View.VISIBLE
+        else finishAppointmentView.visibility = View.GONE
     }
 
     private fun setAddressData(){

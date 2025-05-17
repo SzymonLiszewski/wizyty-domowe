@@ -2,9 +2,9 @@ package com.medical.wizytydomowe.api.users
 
 import java.io.Serializable
 
-data class Nurse(
-    val id: String?,
-    val firstName: String?,
-    val lastName: String?,
+class Nurse(
+    id: String?,
+    firstName: String?,
+    lastName: String?,
     val workPlace: String?
-): Serializable
+): Serializable, User(id, firstName, lastName)

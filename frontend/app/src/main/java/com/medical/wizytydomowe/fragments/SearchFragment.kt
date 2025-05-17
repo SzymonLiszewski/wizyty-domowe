@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.users.Doctor
-import com.medical.wizytydomowe.api.users.DoctorAdapter
+import com.medical.wizytydomowe.api.users.UserAdapter
 
 class SearchFragment : Fragment(R.layout.search_fragment) {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: DoctorAdapter
+    private lateinit var adapter: UserAdapter
     private lateinit var doctorsDisplayed: MutableList<Doctor>
     private lateinit var allDoctors: List<Doctor>
 
@@ -48,7 +48,7 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
         allDoctors = exampleDoctors
 
         // Initialize adapter
-        adapter = DoctorAdapter(doctorsDisplayed) { doctor ->
+        adapter = UserAdapter(doctorsDisplayed) { doctor ->
             val bundle = Bundle().apply {
                 putSerializable("doctor", doctor)
             }
@@ -90,7 +90,7 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
                 }
             }
 
-            adapter.updateDoctors(doctorsDisplayed)
+            adapter.updateUsers(doctorsDisplayed)
 
             if (doctorsDisplayed.isEmpty()) {
                 Toast.makeText(requireContext(), "Nie znaleziono lekarzy.", Toast.LENGTH_SHORT).show()

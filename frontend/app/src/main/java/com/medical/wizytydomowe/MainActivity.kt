@@ -12,8 +12,7 @@ import com.medical.wizytydomowe.fragments.profile.ProfileFragment
 import com.medical.wizytydomowe.fragments.SearchFragment
 import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 import com.google.android.material.navigation.NavigationBarView
-import com.medical.wizytydomowe.fragments.emergency.AddEmergencyFragment
-import com.medical.wizytydomowe.fragments.AddPrescriptionFragment
+import com.medical.wizytydomowe.fragments.prescriptions.AddPrescriptionFragment
 import com.medical.wizytydomowe.fragments.emergency.EmergencyAvailableFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
 import com.medical.wizytydomowe.fragments.emergency.EmergencyFragment

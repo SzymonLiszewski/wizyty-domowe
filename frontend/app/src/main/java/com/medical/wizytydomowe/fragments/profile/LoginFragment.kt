@@ -22,9 +22,12 @@ import retrofit2.Response
 
 class LoginFragment : Fragment(R.layout.login_fragment) {
 
+    private lateinit var preferenceManager: PreferenceManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        preferenceManager = PreferenceManager(requireContext())
         val registerTextView = view.findViewById<TextView>(R.id.tv_register)
         val loginButton = view.findViewById<Button>(R.id.btn_login)
 
@@ -55,9 +58,11 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
 
-                    Toast.makeText(context, "Logowanie przebiegło pomyślnie.", Toast.LENGTH_LONG).show()
-
-                    if (setTokenAndRole(loginResponse)) navigateToProfileFragment()
+                    if (preferenceManager.setTokenAndRole(loginResponse?.token,
+                        loginResponse?.refresh_token, loginResponse?.role)){
+                        Toast.makeText(context, "Logowanie przebiegło pomyślnie.", Toast.LENGTH_LONG).show()
+                        navigateToProfileFragment()
+                    }
                     else Toast.makeText(context, "Wystąpił bład podczas logowania.", Toast.LENGTH_SHORT).show()
                 }
                 else {
@@ -69,21 +74,6 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
                 Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    private fun setTokenAndRole(loginResponse: LoginResponse?) : Boolean{
-        val token = loginResponse?.token
-        val refresh_token = loginResponse?.refresh_token
-        val role = loginResponse?.role
-
-        if (token != null && refresh_token != null && role != null) {
-            val preferenceManager = PreferenceManager(requireContext())
-            preferenceManager.saveAuthToken(token)
-            preferenceManager.saveRefreshAuthToken(refresh_token)
-            preferenceManager.saveRole(role)
-            return true
-        }
-        return false
     }
 
     private fun validateInputs(email: String, password: String): Boolean {

@@ -1,6 +1,7 @@
 package com.medical.wizytydomowe
 
 import android.content.Context
+import com.medical.wizytydomowe.api.login.LoginResponse
 
 class PreferenceManager(context: Context) {
 
@@ -46,5 +47,15 @@ class PreferenceManager(context: Context) {
 
     fun isLoggedIn(): Boolean {
         return !getAuthToken().isNullOrEmpty()
+    }
+
+    fun setTokenAndRole(token: String?, refresh_token: String?, role: String?) : Boolean{
+        if (token != null && refresh_token != null && role != null) {
+            saveAuthToken(token)
+            saveRefreshAuthToken(refresh_token)
+            saveRole(role)
+            return true
+        }
+        return false
     }
 }

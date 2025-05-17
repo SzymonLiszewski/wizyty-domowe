@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.medical.wizytydomowe.R
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -103,4 +104,10 @@ fun showDialog(context: Context, message: String, onConfirm: () -> Unit){
         .show()
     dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(context, android.R.color.black))
     dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(context, android.R.color.black))
+}
+
+fun setActualDate(): String{
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH.mm", Locale.getDefault())
+    val currentDate = Date()
+    return outputFormat.format(currentDate)
 }

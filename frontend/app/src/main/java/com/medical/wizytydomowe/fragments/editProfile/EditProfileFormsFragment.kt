@@ -1,6 +1,7 @@
 package com.medical.wizytydomowe.fragments.editProfile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -9,13 +10,23 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
+import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.RetrofitInstance
 import com.medical.wizytydomowe.api.userInfo.EditUserInfoResponse
+import com.medical.wizytydomowe.api.userInfo.EditUserInfoRequest
+import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import com.medical.wizytydomowe.api.utils.*
+import com.medical.wizytydomowe.fragments.profile.ProfileFragment
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) {
 
-    private lateinit var editUserInfoResponse: EditUserInfoResponse
+    private var editUserInfoRequest: EditUserInfoRequest? = null
+    private lateinit var preferenceManager: PreferenceManager
+    private lateinit var requestToken: String
 
     private lateinit var editType: String
     private lateinit var editPersonalDataView: MaterialCardView
@@ -38,10 +49,11 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO send request for userInfo to backend
-        editUserInfoResponse = EditUserInfoResponse("0", "Jan", "Rogowski", "jan@rogowski.pl",
-            "Patient", "10-10-2000", null, null, null, null, null, null)
         editType = arguments?.getSerializable("editType") as String
+
+        preferenceManager = PreferenceManager(requireContext())
+        requestToken = "Bearer ${preferenceManager.getAuthToken()}"
+        sendUserInfoRequest(requestToken)
 
         editPersonalDataView = view.findViewById(R.id.editPersonalDataView)
         editAddressFormView = view.findViewById(R.id.editAddressFormView)
@@ -111,10 +123,11 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
         lastName = view?.findViewById<TextInputEditText>(R.id.textInputEditTextLastName)?.text.toString()
 
         if (validateNewPersonalData(firstName, lastName)){
-            editUserInfoResponse.firstName = firstName
-            editUserInfoResponse.lastName = lastName
-            //TODO send changed data to the backend and navigate to profile
-            Toast.makeText(requireContext(), "Zmieniono dane osobowe.", Toast.LENGTH_SHORT).show()
+            editUserInfoRequest?.firstName = firstName
+            editUserInfoRequest?.lastName = lastName
+
+            if (editUserInfoRequest != null) sendEditUserDataRequest(editUserInfoRequest)
+            else Toast.makeText(requireContext(), "Wystąpił błąd podczas zmiany danych.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -136,9 +149,9 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
             if (apartmentNumber.isNullOrEmpty()) address = "${city}, ${postalCode}, ${street} ${buildingNumber}"
             else address = "${city}, ${postalCode}, ${street} ${buildingNumber}/${apartmentNumber}"
 
-            editUserInfoResponse.address = address
-            //TODO send changed data to the backend and navigate to profile
-            Toast.makeText(requireContext(), "Zmieniono adres.", Toast.LENGTH_SHORT).show()
+            editUserInfoRequest?.address = address
+            if (editUserInfoRequest != null) sendEditUserDataRequest(editUserInfoRequest)
+            else Toast.makeText(requireContext(), "Wystąpił błąd podczas zmiany danych.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -158,10 +171,11 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
         phoneNumber = view?.findViewById<TextInputEditText>(R.id.textInputEditTextPhoneNumber)?.text.toString()
 
         if (validateNewContactFields(email, phoneNumber)){
-            editUserInfoResponse.email = email
-            editUserInfoResponse.phoneNumber = phoneNumber
-            //TODO send changed data to the backend and navigate to profile
-            Toast.makeText(requireContext(), "Zmieniono dane kontaktowe.", Toast.LENGTH_SHORT).show()
+            editUserInfoRequest?.email = email
+            editUserInfoRequest?.phoneNumber = phoneNumber
+
+            if (editUserInfoRequest != null) sendEditUserDataRequest(editUserInfoRequest)
+            else Toast.makeText(requireContext(), "Wystąpił błąd podczas zmiany danych.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -178,12 +192,13 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
         if (validateNewDateOfBirth(dateOfBirth)){
             val dateOfBirthRequest = convertToDateFormat(dateOfBirth, "dd-MM-yyyy", "yyyy-MM-dd")
             if (dateOfBirthRequest == null) {
-                Toast.makeText(context, "Wystąpił błąd podczas edycji.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Wystąpił błąd podczas zmiany danych.", Toast.LENGTH_SHORT).show()
             }
             else{
-                editUserInfoResponse.dateOfBirth = dateOfBirthRequest
-                //TODO send changed data to the backend and navigate to profile
-                Toast.makeText(requireContext(), "Zmieniono datę urodzenia.", Toast.LENGTH_SHORT).show()
+                editUserInfoRequest?.dateOfBirth = dateOfBirthRequest
+
+                if (editUserInfoRequest != null) sendEditUserDataRequest(editUserInfoRequest)
+                else Toast.makeText(requireContext(), "Wystąpił błąd podczas zmiany danych.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -192,5 +207,58 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
         val dateOfBirthLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutDateOfBirth)
 
         return validateDateOfBirth(dateOfBirth, dateOfBirthLayout)
+    }
+
+    private fun navigateToProfileFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(ProfileFragment())
+    }
+
+    private fun sendUserInfoRequest(requestToken: String) {
+        RetrofitInstance.apiService.getUserInfo(requestToken)
+            .enqueue(object : Callback<UserInfoResponse> {
+                override fun onResponse(
+                    call: Call<UserInfoResponse>,
+                    response: Response<UserInfoResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        editUserInfoRequest = EditUserInfoRequest(responseBody?.firstName,
+                            responseBody?.lastName, responseBody?.email, responseBody?.phoneNumber,
+                            responseBody?.dateOfBirth, responseBody?.address)
+                    } else {
+                        Log.e("API", "Błąd: ${response.code()} - ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<UserInfoResponse>, t: Throwable) {
+                    Log.e("API", "Niepowodzenie: ${t.message}")
+                }
+            })
+    }
+
+    private fun sendEditUserDataRequest(editUserInfoRequest: EditUserInfoRequest?){
+        RetrofitInstance.apiService.editUserData(editUserInfoRequest, requestToken).enqueue(object :
+            Callback<EditUserInfoResponse> {
+            override fun onResponse(call: Call<EditUserInfoResponse>, response: Response<EditUserInfoResponse>) {
+                if (response.isSuccessful) {
+                    val editUserInfoResponse = response.body()
+
+                    if (preferenceManager.setTokenAndRole(editUserInfoResponse?.token,
+                        editUserInfoResponse?.refresh_token, editUserInfoResponse?.role)){
+                        Toast.makeText(context, "Zmiana danych przebiegła pomyślnie.", Toast.LENGTH_LONG).show()
+                        navigateToProfileFragment()
+                    }
+                    else Toast.makeText(context, "Zmiana danych nie powiodła się.", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    Toast.makeText(context, "Zmiana danych nie powiodła się.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<EditUserInfoResponse>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
