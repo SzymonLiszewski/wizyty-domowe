@@ -5,6 +5,8 @@ import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
 import com.medical.homevisits.appointments.appointment.service.AppointmentService;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
+import com.medical.homevisits.appointments.nurse.entity.Nurse;
+import com.medical.homevisits.appointments.nurse.repository.NurseRepository;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import io.jsonwebtoken.Claims;
@@ -42,6 +44,10 @@ public class AppointmentController {
     @PostMapping("")
     public void addAppointment(@RequestBody AddAppointmentRequest request){
         Doctor doctor = doctorRepository.findById(request.getDoctor()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor with given ID does not exist"));
+        Nurse nurse = null;
+        if (request.getNurse() != null) {
+            nurse = nurseRepository.findById(request.getNurse()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Nurse with given ID does not exist"));
+        }
         if (request.getPatient() != null){
             Patient patient = patientRepository.findById(request.getPatient()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient with given ID does not exist"));
             service.create(Appointment.builder()
@@ -51,6 +57,7 @@ public class AppointmentController {
                     .address(request.getAddress())
                     .status(request.getStatus())
                     .doctor(doctor)
+                    .nurse(nurse)
                     .notes(request.getNotes())
                     .build());
         }else {
@@ -76,8 +83,9 @@ public class AppointmentController {
             @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) LocalDate appointmentDate,
             @RequestParam(required = false) String city
+            //TODO: add nurse in params
             ){
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null, city);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null, city, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -103,7 +111,7 @@ public class AppointmentController {
 
         UUID doctorId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate, null, null);
+        List<Appointment> appointments = service.getAppointments(status, doctorId, appointmentDate, null, null, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -129,7 +137,7 @@ public class AppointmentController {
 
         UUID patientId = UUID.fromString(claims.get("id", String.class));
 
-        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, patientId, null);
+        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, patientId, null, null);
         return ResponseEntity.ok(appointments);
     }
 
@@ -202,8 +210,10 @@ public class AppointmentController {
             @RequestParam(required = false) String preferredLastName
     ){
         Set<Doctor> doctorSet = new HashSet<>();
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null, preferredCity);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null, preferredCity, null);
         appointments.forEach((appointment -> {
+            //TODO: implement finding doctor in separate function
+
             // adding doctor to set if his specialization matches preferred one
             if ((preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)) &&
                     (preferredCity == null || Objects.equals(appointment.getDoctor().getWorkPlace().getCity(), preferredCity)) &&
@@ -219,6 +229,59 @@ public class AppointmentController {
         service.delete(appointmentId);
         return ResponseEntity.noContent().build();
     }
+    @Autowired
+    private NurseRepository nurseRepository;
+
+    @GetMapping("/nurses")
+    public ResponseEntity<List<Appointment>> getNurseAppointments(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) LocalDate appointmentDate
+    ) {
+        String jwt = token.replace("Bearer ", "");
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+        UUID nurseId = UUID.fromString(claims.get("id", String.class));
+
+        List<Appointment> appointments = service.getAppointments(status, null, appointmentDate, null, null,nurseId);
+        return ResponseEntity.ok(appointments);
+    }
+
+
+    @GetMapping("/nurses/available")
+    public ResponseEntity<Set<Nurse>> getAvailableNurses(
+            @RequestParam(required = false) LocalDate appointmentDate
+    ) {
+        Set<Nurse> nurseSet = new HashSet<>();
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null, null, null);
+        appointments.forEach((appointment -> {
+            if (appointment.getNurse() != null) {
+                nurseSet.add(appointment.getNurse());
+            }
+        }));
+        return ResponseEntity.ok(nurseSet);
+    }
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelAppointment(
+            @PathVariable UUID id,
+            @RequestHeader("Authorization") String token
+    ) {
+        String jwt = token.replace("Bearer ", "");
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+
+        UUID userId = UUID.fromString(claims.get("id", String.class));
+        String role = claims.get("role", String.class);
+
+        Appointment appointment = service.find(id);
+        if (role.equals("Doctor") && appointment.getDoctor().getID().equals(userId) ||
+            role.equals("Nurse") && appointment.getNurse().getID().equals(userId)) {
+            appointment.setStatus(AppointmentStatus.CANCELED);
+            return ResponseEntity.noContent().build();
+        }
+
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this appointment");
+    }
+
+
 }
 
 @Getter
@@ -228,6 +291,7 @@ class AddAppointmentRequest{
     private LocalDateTime appointmentStartTime;
     private LocalDateTime appointmentEndTime;
     private UUID doctor;
+    private UUID nurse;
     private UUID patient;
     private String address;
     private String notes;

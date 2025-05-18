@@ -60,7 +60,7 @@ public class AppointmentService {
      * @param patientId - patients id
      * @return - list of appointments which fit specification
      */
-    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId, String city){
+    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId, String city, UUID nurseId){
         Specification<Appointment> spec = Specification.where(null);
         if (status != null){
             spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("status"), status));
@@ -92,6 +92,15 @@ public class AppointmentService {
             if (workplaceRepository.findByCity(city).isPresent()){
                 Workplace workplace = workplaceRepository.findByCity(city).get();
                 spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("doctor").get("workPlace"), workplace));
+            }
+            else{
+                return new ArrayList<>();
+            }
+        }
+        if (nurseId!=null){
+            if (nurseRepository.findById(nurseId).isPresent()){
+                Nurse nurse = nurseRepository.findById(nurseId).get();
+                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("nurse"), nurse));
             }
             else{
                 return new ArrayList<>();
