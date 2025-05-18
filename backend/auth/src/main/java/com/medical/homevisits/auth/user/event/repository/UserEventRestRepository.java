@@ -1,6 +1,7 @@
 package com.medical.homevisits.auth.user.event.repository;
 
 import com.medical.homevisits.auth.user.dto.CreateDoctorObject;
+import com.medical.homevisits.auth.user.dto.CreateParamedicObject;
 import com.medical.homevisits.auth.user.dto.CreateNurseObject;
 import com.medical.homevisits.auth.user.dto.CreateUserObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,4 +26,5 @@ public class UserEventRestRepository {
     }
 
     public void createNurse(CreateNurseObject user) { restTemplate.postForObject("/api/nurses", user, Void.class); }
+    public void createParamedic(CreateParamedicObject user) { restTemplate.postForObject("/api/paramedic", user, Void.class); }
 }

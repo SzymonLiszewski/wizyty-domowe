@@ -10,9 +10,10 @@ import java.util.UUID;
  **/
 @Getter
 @AllArgsConstructor
-public class CreateNurseObject{
+public class CreateParamedicObject{
     private UUID id;
     private String firstName;
     private String lastName;
+    private String specialization;
     private String workPlace;
 }
