@@ -3,6 +3,7 @@ package com.medical.homevisits.appointments.emergency.controller;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyReport;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyStatus;
 import com.medical.homevisits.appointments.emergency.service.EmergencyReportService;
+import com.medical.homevisits.appointments.paramedic.entity.Paramedic;
 import com.medical.homevisits.appointments.paramedic.repository.ParamedicRepository;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
@@ -74,12 +75,8 @@ public class EmergencyReportController {
             }
 
             report.setStatus(EmergencyStatus.Available);
-
-            if (report.getParamedic() != null && report.getParamedic().getID() != null) {
-                UUID paramedicId = report.getParamedic().getID();
-                paramedicRepository.findById(paramedicId)
-                        .ifPresent(report::setParamedic);
-            }
+            report.setParamedic(null);;
+            
 
             service.create(report);
             return ResponseEntity.ok("Emergency report created successfully.");
@@ -147,5 +144,47 @@ public class EmergencyReportController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
     }
+    @PutMapping("/{reportId}/assign")
+    public ResponseEntity<String> assignParamedicToReport(
+            @RequestHeader("Authorization") String token,
+            @PathVariable UUID reportId
+    ) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID paramedicId = UUID.fromString(claims.get("id", String.class));
+
+        EmergencyReport report = service.getReportById(reportId);
+        if (report == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Emergency report not found.");
+        }
+
+        if (report.getStatus() != EmergencyStatus.Available) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Emergency report is already assigned.");
+        }
+
+        Paramedic paramedic = paramedicRepository.findById(paramedicId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Paramedic not found"));
+
+        report.setParamedic(paramedic);
+        report.setStatus(EmergencyStatus.In_progress);
+
+        service.update(report); 
+
+        return ResponseEntity.ok("Report assigned to paramedic.");
+    }
+    @GetMapping("/available")
+    public ResponseEntity<List<EmergencyReport>> getAvailableEmergencyReports() {
+        List<EmergencyReport> reports = service.getReportsByStatus(EmergencyStatus.Available);
+        return ResponseEntity.ok(reports);
+    }
+
+
 }
 
