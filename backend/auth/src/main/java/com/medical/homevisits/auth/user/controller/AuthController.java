@@ -129,7 +129,7 @@ public class AuthController {
      */
     @PostMapping("/userData")
     public Map<String, String> changeUserData(
-            @Valid @RequestBody RegisterRequest request,
+            @Valid @RequestBody ChangeDataRequest request,
             @RequestHeader("Authorization") String authorizationHeader
     ){
         String token = authorizationHeader.replace("Bearer ", "");
@@ -157,20 +157,28 @@ public class AuthController {
         }
         User user = userRepository.findById(userID).get();
 
+        //if some field is null in request, then old user data is left
+        String newEmail = (request.getEmail() == null) ? user.getEmail() : request.getEmail();
+        String newFirstName = (request.getFirstName() == null) ? user.getFirstName() : request.getFirstName();
+        String newLastName = (request.getFirstName() == null) ? user.getLastName() : request.getLastName();
+        Date newDateOfBirth = (request.getDateOfBirth() == null) ? user.getDateOfBirth() : request.getDateOfBirth();
+        String newPhoneNumber = (request.getPhoneNumber() == null) ? user.getPhoneNumber() : request.getPhoneNumber();
+
         if (user instanceof Patient){
-            user.setEmail(request.getEmail());
-            user.setFirstName(request.getFirstName());
-            ((Patient) user).setAddress(request.getAddress());
-            user.setDateOfBirth(request.getDateOfBirth());
-            user.setPhoneNumber(request.getPhoneNumber());
-            user.setLastName(request.getLastName());
+            String newAddress = (request.getAddress() == null) ? ((Patient) user).getAddress() : request.getAddress();
+            user.setEmail(newEmail);
+            user.setFirstName(newFirstName);
+            ((Patient) user).setAddress(newAddress);
+            user.setDateOfBirth(newDateOfBirth);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setLastName(newLastName);
         }
         else{
-            user.setEmail(request.getEmail());
-            user.setFirstName(request.getFirstName());
-            user.setDateOfBirth(request.getDateOfBirth());
-            user.setPhoneNumber(request.getPhoneNumber());
-            user.setLastName(request.getLastName());
+            user.setEmail(newEmail);
+            user.setFirstName(newFirstName);
+            user.setDateOfBirth(newDateOfBirth);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setLastName(newLastName);
         }
 
         userService.create(user);
@@ -270,6 +278,29 @@ class RegisterRequest {
     private String password;
 
     @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "\\d{9,15}", message = "Phone number must be between 9 and 15 digits")
+    private String phoneNumber;
+
+    @Temporal(TemporalType.DATE)
+    @Past(message = "Date of birth must be in the past")
+    private Date dateOfBirth;
+
+    private String address;
+}
+
+@Getter
+@Setter
+@NoArgsConstructor
+class ChangeDataRequest {
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    private String firstName;
+
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    private String lastName;
+
+    @Email(message = "Invalid email format")
+    private String email;
+
     @Pattern(regexp = "\\d{9,15}", message = "Phone number must be between 9 and 15 digits")
     private String phoneNumber;
 

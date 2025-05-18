@@ -1,12 +1,15 @@
 package com.medical.homevisits.appointments.prescription.entity;
 
 import com.medical.homevisits.appointments.appointment.entity.Appointment;
+import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 @Entity
 @Getter
@@ -24,6 +27,9 @@ public class Prescription {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+   
+    private LocalDateTime PrescriptionTime;
+    
     private String medication;
     private String dosage;
     private String notes;

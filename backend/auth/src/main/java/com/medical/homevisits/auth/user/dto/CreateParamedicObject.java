@@ -6,14 +6,14 @@ import lombok.Getter;
 import java.util.UUID;
 
 /**
-dto object used for communication between auth and appointments microservices
+ dto object used for communication between auth and appointments microservices
  **/
 @Getter
 @AllArgsConstructor
-public class CreateUserObject{
+public class CreateParamedicObject{
     private UUID id;
-    private String email;
-    private String phoneNumber;
     private String firstName;
     private String lastName;
+    private String specialization;
+    private String workPlace;
 }
