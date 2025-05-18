@@ -3,6 +3,7 @@ package com.medical.homevisits.appointments.emergency.controller;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyReport;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyStatus;
 import com.medical.homevisits.appointments.emergency.service.EmergencyReportService;
+import com.medical.homevisits.appointments.paramedic.repository.ParamedicRepository;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import io.jsonwebtoken.Claims;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -23,14 +26,16 @@ public class EmergencyReportController {
 
     private final EmergencyReportService service;
     private final PatientRepository patientRepository;
+    private final ParamedicRepository paramedicRepository;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Autowired
-    public EmergencyReportController(EmergencyReportService service, PatientRepository patientRepository) {
+    public EmergencyReportController(EmergencyReportService service, PatientRepository patientRepository,ParamedicRepository paramedicRepository) {
         this.service = service;
         this.patientRepository = patientRepository;
+        this.paramedicRepository=paramedicRepository;
     }
 
     /**
@@ -40,8 +45,10 @@ public class EmergencyReportController {
      * @return - Response indicating whether the report was created successfully
      */
     @PostMapping("")
-    public ResponseEntity<String> addEmergencyReport(@RequestHeader(value = "Authorization") String token,
-                                                     @RequestBody EmergencyReport report) {
+    public ResponseEntity<String> addEmergencyReport(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody EmergencyReport report
+    ) {
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
@@ -53,24 +60,34 @@ public class EmergencyReportController {
                     .getBody();
 
             String patientId = claims.get("id", String.class);
-            if (patientId != null) {
-                Patient patient = patientRepository.findById(UUID.fromString(patientId))
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient with given ID does not exist"));
-
-                
-                report.setPatient(patient);
-                report.setStatus(EmergencyStatus.Available);
-                service.create(report); 
-
-                return ResponseEntity.ok("Emergency report created successfully.");
-            } else {
+            if (patientId == null) {
                 return ResponseEntity.badRequest().body("Patient ID not found in token.");
             }
+
+            Patient patient = patientRepository.findById(UUID.fromString(patientId))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found"));
+
+            report.setPatient(patient);
+
+            if (report.getEmergencyReportTime() == null) {
+                report.setEmergencyReportTime(LocalDateTime.now());
+            }
+
+            report.setStatus(EmergencyStatus.Available);
+
+            if (report.getParamedic() != null && report.getParamedic().getID() != null) {
+                UUID paramedicId = report.getParamedic().getID();
+                paramedicRepository.findById(paramedicId)
+                        .ifPresent(report::setParamedic);
+            }
+
+            service.create(report);
+            return ResponseEntity.ok("Emergency report created successfully.");
+
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error parsing token: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error processing request: " + e.getMessage());
         }
     }
-
     /**
      * Function for patients to get their emergency reports
      * @param token - Authorization token

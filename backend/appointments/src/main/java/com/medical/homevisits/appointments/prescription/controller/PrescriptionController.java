@@ -2,7 +2,6 @@ package com.medical.homevisits.appointments.prescription.controller;
 
 import com.medical.homevisits.appointments.prescription.entity.Prescription;
 import com.medical.homevisits.appointments.prescription.service.PrescriptionService;
-import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
 import com.medical.homevisits.appointments.nurse.entity.Nurse;
@@ -69,8 +68,7 @@ public class PrescriptionController {
         prescription.setMedication(request.getMedication());
         prescription.setDosage(request.getDosage());
         prescription.setNotes(request.getNotes());
-        prescription.setPrescriptionTime(request.getPrescriptionStartTime());
-        
+        prescription.setPrescriptionTime(request.getDate());
         service.createPrescription(prescription);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -149,12 +147,12 @@ public class PrescriptionController {
         prescription.setMedication(request.getMedication());
         prescription.setDosage(request.getDosage());
         prescription.setNotes(request.getNotes());
+
         service.updatePrescription(prescription);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     private NurseRepository nurseRepository;
-    
     @GetMapping("/doctors/from-workplace")
     public ResponseEntity<List<Doctor>> getDoctorsFromSameHospital(@RequestHeader("Authorization") String token) {
         String jwt = token.replace("Bearer ", "");
@@ -173,18 +171,15 @@ public class PrescriptionController {
 @Getter
 class CreatePrescriptionRequest {
     private UUID patient; 
-   
-    private LocalDateTime prescriptionStartTime;
     private String medication;
     private String dosage;
     private String notes;
-    
+    private LocalDateTime date;
 }
 
 @Getter
 class UpdatePrescriptionRequest {
     private String medication;
-   
     private String dosage;
     private String notes;
 }
