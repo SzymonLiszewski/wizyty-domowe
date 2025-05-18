@@ -1,7 +1,6 @@
 package com.medical.homevisits.appointments.prescription.controller;
 
 import com.medical.homevisits.appointments.prescription.entity.Prescription;
-import com.medical.homevisits.appointments.prescription.entity.PrescriptionStatus;
 import com.medical.homevisits.appointments.prescription.service.PrescriptionService;
 import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
@@ -71,7 +70,6 @@ public class PrescriptionController {
         prescription.setDosage(request.getDosage());
         prescription.setNotes(request.getNotes());
         prescription.setPrescriptionTime(request.getPrescriptionStartTime());
-        prescription.setStatus(request.getStatus());
         
         service.createPrescription(prescription);
 
@@ -151,7 +149,6 @@ public class PrescriptionController {
         prescription.setMedication(request.getMedication());
         prescription.setDosage(request.getDosage());
         prescription.setNotes(request.getNotes());
-        prescription.setStatus(request.getStatus());
         service.updatePrescription(prescription);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -176,7 +173,7 @@ public class PrescriptionController {
 @Getter
 class CreatePrescriptionRequest {
     private UUID patient; 
-    private PrescriptionStatus status; //status of the appointment (Available, In_progress, Completed)
+   
     private LocalDateTime prescriptionStartTime;
     private String medication;
     private String dosage;
@@ -187,7 +184,7 @@ class CreatePrescriptionRequest {
 @Getter
 class UpdatePrescriptionRequest {
     private String medication;
-    private PrescriptionStatus status; 
+   
     private String dosage;
     private String notes;
 }

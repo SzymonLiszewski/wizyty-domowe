@@ -27,7 +27,7 @@ public class Prescription {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    private PrescriptionStatus status; //status of the appointment (Available, In_progress, Completed)
+   
     private LocalDateTime PrescriptionTime;
     
     private String medication;

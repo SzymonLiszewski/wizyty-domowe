@@ -1,6 +1,7 @@
 package com.medical.homevisits.appointments.emergency.entity;
 
 import com.medical.homevisits.appointments.patient.entity.Patient;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +22,7 @@ public class EmergencyReport {
     private Patient patient;
 
     private String description;
-    private boolean resolved;
+    private EmergencyStatus status; //status of the appointment (Available, In_progress, Completed)
 
     public void setPatientId(UUID patientId) {
         if (this.patient == null) {

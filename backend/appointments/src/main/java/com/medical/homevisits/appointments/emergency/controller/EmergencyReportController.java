@@ -1,6 +1,7 @@
 package com.medical.homevisits.appointments.emergency.controller;
 
 import com.medical.homevisits.appointments.emergency.entity.EmergencyReport;
+import com.medical.homevisits.appointments.emergency.entity.EmergencyStatus;
 import com.medical.homevisits.appointments.emergency.service.EmergencyReportService;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
@@ -58,6 +59,7 @@ public class EmergencyReportController {
 
                 
                 report.setPatient(patient);
+                report.setStatus(EmergencyStatus.Available);
                 service.create(report); 
 
                 return ResponseEntity.ok("Emergency report created successfully.");

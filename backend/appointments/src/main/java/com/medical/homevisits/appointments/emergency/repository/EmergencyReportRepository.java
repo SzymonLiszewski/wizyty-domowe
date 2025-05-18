@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EmergencyReportRepository extends JpaRepository<EmergencyReport, UUID> {
-    List<EmergencyReport> findByResolvedFalse();
+    
 }
