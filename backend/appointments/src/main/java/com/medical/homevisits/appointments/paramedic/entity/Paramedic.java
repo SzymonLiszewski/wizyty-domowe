@@ -4,9 +4,8 @@ import java.util.UUID;
 
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,5 +24,8 @@ public class Paramedic {
     private String firstName;
     private String lastName;
     private String specialization;
-    private String workPlace;
+
+    @ManyToOne
+    @JoinColumn(name="workPlace", nullable = true)
+    private Workplace workPlace;
 }
