@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.Jwts;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -67,7 +68,7 @@ public class PrescriptionController {
         prescription.setMedication(request.getMedication());
         prescription.setDosage(request.getDosage());
         prescription.setNotes(request.getNotes());
-        
+        prescription.setPrescriptionTime(request.getDate());
         service.createPrescription(prescription);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -152,7 +153,6 @@ public class PrescriptionController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     private NurseRepository nurseRepository;
-    
     @GetMapping("/doctors/from-workplace")
     public ResponseEntity<List<Doctor>> getDoctorsFromSameHospital(@RequestHeader("Authorization") String token) {
         String jwt = token.replace("Bearer ", "");
@@ -174,6 +174,7 @@ class CreatePrescriptionRequest {
     private String medication;
     private String dosage;
     private String notes;
+    private LocalDateTime date;
 }
 
 @Getter
