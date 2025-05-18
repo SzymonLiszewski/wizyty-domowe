@@ -7,6 +7,7 @@ import com.medical.homevisits.appointments.paramedic.repository.ParamedicReposit
 
 import java.util.List;
 
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ public class ParamedicService {
     public ParamedicService(ParamedicRepository paramedicRepository) {
         this.paramedicRepository = paramedicRepository;
     }
-    public List<Paramedic> getParamedicByWorkPlace(String place) {
+    public List<Paramedic> getParamedicByWorkPlace(Workplace place) {
         return paramedicRepository.findByWorkPlace(place);
     }
 

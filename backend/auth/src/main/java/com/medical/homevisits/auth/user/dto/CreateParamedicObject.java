@@ -15,5 +15,5 @@ public class CreateParamedicObject{
     private String firstName;
     private String lastName;
     private String specialization;
-    private String workPlace;
+    private UUID workPlaceId;
 }

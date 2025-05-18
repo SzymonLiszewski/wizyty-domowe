@@ -5,6 +5,7 @@ import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
 
 import java.util.List;
 
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ public class DoctorService {
     public DoctorService(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
-    public List<Doctor> getDoctorsByWorkPlace(String place) {
+    public List<Doctor> getDoctorsByWorkPlace(Workplace place) {
         return doctorRepository.findByWorkPlace(place);
     }
 

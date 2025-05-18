@@ -26,15 +26,15 @@ public class UserService {
     public void create(User user){
         userRepository.save(user);
         if (user instanceof Doctor){
-            userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization(), ((Doctor) user).getWorkPlace()));
+            userEventRestRepository.createDoctor(new CreateDoctorObject(user.getID(), user.getFirstName(), user.getLastName(), ((Doctor) user).getSpecialization(), ((Doctor) user).getWorkPlace().getID()));
         } else if (user instanceof Patient) {
             userEventRestRepository.createPatient(new CreateUserObject(user.getID(), user.getEmail(), user.getPhoneNumber(), user.getFirstName(), user.getLastName()));
         }
         else if (user instanceof Nurse) {
-            userEventRestRepository.createNurse(new CreateNurseObject(user.getID(), user.getFirstName(), user.getLastName(), ((Nurse) user).getWorkPlace()));
+            userEventRestRepository.createNurse(new CreateNurseObject(user.getID(), user.getFirstName(), user.getLastName(), ((Nurse) user).getWorkPlace().getID()));
         }
         else if (user instanceof Paramedic) {
-            userEventRestRepository.createParamedic(new CreateParamedicObject(user.getID(), user.getFirstName(), user.getLastName(),((Paramedic) user).getSpecialization(), ((Paramedic) user).getWorkPlace()));
+            userEventRestRepository.createParamedic(new CreateParamedicObject(user.getID(), user.getFirstName(), user.getLastName(),((Paramedic) user).getSpecialization(), ((Paramedic) user).getWorkPlace().getID()));
         }
         //TODO: extend for other classes, use in initialize file
     }

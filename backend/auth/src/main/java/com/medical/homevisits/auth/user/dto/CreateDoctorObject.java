@@ -1,5 +1,6 @@
 package com.medical.homevisits.auth.user.dto;
 
+import com.medical.homevisits.auth.workplace.entity.Workplace;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,5 +16,5 @@ public class CreateDoctorObject{
     private String firstName;
     private String lastName;
     private String specialization;
-    private String workPlace;
+    private UUID workPlaceId;
 }

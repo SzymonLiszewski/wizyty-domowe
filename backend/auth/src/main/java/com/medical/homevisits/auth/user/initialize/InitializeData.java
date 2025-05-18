@@ -15,6 +15,10 @@ import java.text.SimpleDateFormat;
 
 import com.medical.homevisits.auth.user.service.CustomUserDetailsService;
 import com.medical.homevisits.auth.user.service.UserService;
+import com.medical.homevisits.auth.workplace.entity.Workplace;
+import com.medical.homevisits.auth.workplace.repository.WorkplaceRepository;
+import com.medical.homevisits.auth.workplace.service.WorkplaceService;
+import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -27,22 +31,36 @@ public class InitializeData implements InitializingBean {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final WorkplaceRepository workplaceRepository;
+    private final WorkplaceService workplaceService;
     private final UserEventRestRepository userEventRestRepository;
     private final UserService userService;
+    private Workplace workplace = Workplace.builder()
+            .name("testWorkplace")
+            .street("street 123")
+            .city("Gdansk")
+            .country("Poland")
+            .build();
 
     @Autowired
     public InitializeData(
             PasswordEncoder passwordEncoder,
-            UserRepository userRepository, UserEventRestRepository userEventRestRepository, UserService userService
+            UserRepository userRepository, WorkplaceRepository workplaceRepository, WorkplaceService workplaceService, UserEventRestRepository userEventRestRepository, UserService userService
     ) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.workplaceRepository = workplaceRepository;
+        this.workplaceService = workplaceService;
         this.userEventRestRepository = userEventRestRepository;
         this.userService = userService;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
+        if (workplaceRepository.findByName(workplace.getName()).isEmpty()){
+            workplaceService.create(workplace);
+        }
         if (userRepository.findByEmail("admin@test.com").isEmpty()) {
             User admin = User.builder()
                     .email("admin@test.com")
@@ -75,7 +93,7 @@ public class InitializeData implements InitializingBean {
                     .phoneNumber("012345678")
                     .specialization("General Practitioner")
                     .academicDegree("YES")
-                    .workPlace("clinic")
+                    .workPlace(workplace)
                     .dateOfBirth(new SimpleDateFormat("dd-MM-yyyy").parse("06-05-2025"))
                     .build();
             userService.create(doctor);
@@ -94,7 +112,7 @@ public class InitializeData implements InitializingBean {
                     .dateOfBirth(new SimpleDateFormat("dd-MM-yyyy").parse("06-05-2025"))
                     .specialization("General Practitioner")
                     .academicDegree("YES")
-                    .workPlace("clinic")
+                    .workPlace(workplace)
                     .doctor("doctor@test.com")
                     .build();
             userService.create(nurse);
@@ -110,7 +128,7 @@ public class InitializeData implements InitializingBean {
                     .phoneNumber("012345678")
                     .specialization("General Practitioner")
                     .academicDegree("YES")
-                    .workPlace("clinic")
+                    .workPlace(workplace)
                     .build();
             userRepository.save(paramedic);
             System.out.println("Paramedic user has been created!");

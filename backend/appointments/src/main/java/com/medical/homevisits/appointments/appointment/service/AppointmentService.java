@@ -9,6 +9,8 @@ import com.medical.homevisits.appointments.nurse.entity.Nurse;
 import com.medical.homevisits.appointments.nurse.repository.NurseRepository;
 import com.medical.homevisits.appointments.patient.entity.Patient;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
+import com.medical.homevisits.appointments.workplace.repository.WorkplaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -29,13 +31,15 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
     private final NurseRepository nurseRepository;
+    private final WorkplaceRepository workplaceRepository;
 
     @Autowired
-    public AppointmentService(AppointmentRepository repository, DoctorRepository doctorRepository, PatientRepository patientRepository, NurseRepository nurseRepository){
+    public AppointmentService(AppointmentRepository repository, DoctorRepository doctorRepository, PatientRepository patientRepository, NurseRepository nurseRepository, WorkplaceRepository workplaceRepository){
         this.repository = repository;
         this.doctorRepository = doctorRepository;
         this.patientRepository = patientRepository;
         this.nurseRepository = nurseRepository;
+        this.workplaceRepository = workplaceRepository;
     }
     public void delete(UUID id){
         Appointment appointment = repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "appointment not found"));
@@ -56,7 +60,7 @@ public class AppointmentService {
      * @param patientId - patients id
      * @return - list of appointments which fit specification
      */
-    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId){
+    public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId, String city, UUID nurseId){
         Specification<Appointment> spec = Specification.where(null);
         if (status != null){
             spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("status"), status));
@@ -83,6 +87,24 @@ public class AppointmentService {
             LocalDateTime startOfDay = date.atStartOfDay();
             LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
             spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.between(root.get("appointmentStartTime"), startOfDay, endOfDay));
+        }
+        if (city != null){
+            if (workplaceRepository.findByCity(city).isPresent()){
+                Workplace workplace = workplaceRepository.findByCity(city).get();
+                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("doctor").get("workPlace"), workplace));
+            }
+            else{
+                return new ArrayList<>();
+            }
+        }
+        if (nurseId!=null){
+            if (nurseRepository.findById(nurseId).isPresent()){
+                Nurse nurse = nurseRepository.findById(nurseId).get();
+                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("nurse"), nurse));
+            }
+            else{
+                return new ArrayList<>();
+            }
         }
         return repository.findAll(spec);
     }
@@ -142,46 +164,4 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.RESERVED);
         this.create(appointment); //this updates old appointment entity (without patient) with new (with patient)
     }
-	public List<Appointment> getAppointments(AppointmentStatus status, UUID doctorId, LocalDate date, UUID patientId, UUID nurseId) {
-		
-	        Specification<Appointment> spec = Specification.where(null);
-	        if (status != null){
-	            spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("status"), status));
-	        }
-	        if (doctorId!=null){
-	            if (doctorRepository.findById(doctorId).isPresent()){
-	                Doctor doctor = doctorRepository.findById(doctorId).get();
-	                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("doctor"), doctor));
-	            }
-	            else{
-	                return new ArrayList<>();
-	            }
-	        }
-	        if (patientId!=null){
-	            if (patientRepository.findById(patientId).isPresent()){
-	                Patient patient = patientRepository.findById(patientId).get();
-	                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("patient"), patient));
-	            }
-	            else{
-	                return new ArrayList<>();
-	            }
-	        }
-	        if (nurseId!=null){
-	            if (nurseRepository.findById(nurseId).isPresent()){
-	                Nurse nurse = nurseRepository.findById(nurseId).get();
-	                spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.equal(root.get("nurse"), nurse));
-	            }
-	            else{
-	                return new ArrayList<>();
-	            }
-	        }
-	        if (date != null){
-	            LocalDateTime startOfDay = date.atStartOfDay();
-	            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-	            spec = spec.and((root, query, criteriaBuilder)-> criteriaBuilder.between(root.get("appointmentStartTime"), startOfDay, endOfDay));
-	        }
-	        return repository.findAll(spec);
-	    
-	}
-	
 }

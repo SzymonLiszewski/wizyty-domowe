@@ -1,5 +1,6 @@
 package com.medical.homevisits.appointments.nurse.entity;
 
+import com.medical.homevisits.appointments.workplace.entity.Workplace;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,5 +22,8 @@ public class Nurse {
     private UUID ID;
     private String firstName;
     private String lastName;
-    private String workPlace;
+
+    @ManyToOne
+    @JoinColumn(name="workPlace", nullable = true)
+    private Workplace workPlace;
 }
