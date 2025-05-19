@@ -91,7 +91,7 @@ public class EmergencyReportController {
      * @return - List of emergency reports for a patient
      */
     @GetMapping("/patients")
-    public ResponseEntity<Optional<EmergencyReport>> getPatientEmergencyReports(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<List<EmergencyReport>> getPatientEmergencyReports(@RequestHeader(value = "Authorization") String token) {
         // Extracting patient ID from token
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
@@ -103,7 +103,7 @@ public class EmergencyReportController {
                 .getBody();
 
         UUID patientId = UUID.fromString(claims.get("id", String.class));
-        Optional<EmergencyReport> reports = service.getReportsByPatient(patientId);
+        List<EmergencyReport> reports = service.getReportsByPatient(patientId);
         return ResponseEntity.ok(reports);
     }
 

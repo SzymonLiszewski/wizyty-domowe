@@ -4,29 +4,31 @@ import com.medical.homevisits.appointments.emergency.entity.EmergencyReport;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyStatus;
 import com.medical.homevisits.appointments.emergency.repository.EmergencyReportRepository;
 
+import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class EmergencyReportService {
 
     private final EmergencyReportRepository repository;
+    private final PatientRepository patientRepository;
 
-    public EmergencyReportService(EmergencyReportRepository repository) {
+    public EmergencyReportService(EmergencyReportRepository repository, PatientRepository patientRepository) {
         this.repository = repository;
+        this.patientRepository = patientRepository;
     }
 
     public void create(EmergencyReport report) {
         repository.save(report);
     }
 
-    public Optional<EmergencyReport> getReportsByPatient(UUID patientId) {
-        return repository.findById(patientId);
+    public List<EmergencyReport> getReportsByPatient(UUID patientId) {
+        return repository.findByPatient(patientRepository.findById(patientId).get());
     }
 
     public List<EmergencyReport> getAllReports() {
