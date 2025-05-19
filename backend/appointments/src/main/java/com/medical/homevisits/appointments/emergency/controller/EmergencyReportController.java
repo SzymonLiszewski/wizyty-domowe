@@ -2,6 +2,7 @@ package com.medical.homevisits.appointments.emergency.controller;
 
 import com.medical.homevisits.appointments.emergency.entity.EmergencyReport;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyStatus;
+import com.medical.homevisits.appointments.emergency.repository.EmergencyReportRepository;
 import com.medical.homevisits.appointments.emergency.service.EmergencyReportService;
 import com.medical.homevisits.appointments.paramedic.entity.Paramedic;
 import com.medical.homevisits.appointments.paramedic.repository.ParamedicRepository;
@@ -28,15 +29,17 @@ public class EmergencyReportController {
     private final EmergencyReportService service;
     private final PatientRepository patientRepository;
     private final ParamedicRepository paramedicRepository;
+    private final EmergencyReportRepository emergencyReportRepository;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Autowired
-    public EmergencyReportController(EmergencyReportService service, PatientRepository patientRepository,ParamedicRepository paramedicRepository) {
+    public EmergencyReportController(EmergencyReportService service, PatientRepository patientRepository, ParamedicRepository paramedicRepository, EmergencyReportRepository emergencyReportRepository) {
         this.service = service;
         this.patientRepository = patientRepository;
         this.paramedicRepository=paramedicRepository;
+        this.emergencyReportRepository = emergencyReportRepository;
     }
 
     /**
@@ -207,6 +210,39 @@ public class EmergencyReportController {
         return ResponseEntity.ok(reports);
     }
 
+    /**
+     * Function for paramedics to change status of appointment
+     */
+    @PutMapping("/{reportId}/status")
+    public ResponseEntity<String> changeEmergencyStatus(
+            @RequestHeader("Authorization") String token,
+            @PathVariable UUID reportId,
+            @RequestBody changeStatusRequest statusRequest
+    ){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
 
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID paramedicId = UUID.fromString(claims.get("id", String.class));
+        EmergencyReport emergencyReport = emergencyReportRepository.findById(reportId).get();
+
+        //allowing assigned paramedics to change status
+        if (emergencyReport.getParamedic().getID().equals(paramedicId)){
+            emergencyReport.setStatus(statusRequest.getStatus());
+            emergencyReportRepository.save(emergencyReport);
+            return ResponseEntity.ok("Status changed succesfully");
+        }
+        return ResponseEntity.ok("User not allowed for this action");
+    }
+}
+
+@Getter
+class changeStatusRequest{
+    private EmergencyStatus status;
 }
 

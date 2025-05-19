@@ -30,6 +30,8 @@ public class EmergencyReport {
     private String address;
     private LocalDateTime EmergencyReportTime;
     private String description;
+
+    @Enumerated(EnumType.STRING)
     private EmergencyStatus status; //status of the appointment (Available, In_progress, Completed)
 
     public void setPatientId(UUID patientId) {
