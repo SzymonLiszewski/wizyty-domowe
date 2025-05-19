@@ -130,7 +130,7 @@ public class InitializeData implements InitializingBean {
                     .academicDegree("YES")
                     .workPlace(workplace)
                     .build();
-            userRepository.save(paramedic);
+            userService.create(paramedic);
             System.out.println("Paramedic user has been created!");
         }
     }
