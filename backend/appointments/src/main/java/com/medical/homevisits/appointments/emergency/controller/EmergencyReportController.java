@@ -108,6 +108,28 @@ public class EmergencyReportController {
     }
 
     /**
+     * Function for patients to get their emergency reports
+     * @param token - Authorization token
+     * @return - List of emergency reports for a patient
+     */
+    @GetMapping("/paramedics")
+    public ResponseEntity<List<EmergencyReport>> getParamedicEmergencyReports(@RequestHeader(value = "Authorization") String token) {
+        // Extracting ID from token
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        UUID paramedicId = UUID.fromString(claims.get("id", String.class));
+        List<EmergencyReport> reports = service.getReportsByParamedic(paramedicId);
+        return ResponseEntity.ok(reports);
+    }
+
+    /**
      * Function to get all emergency reports (for admins or authorized users)
      * @return - List of all emergency reports
      */

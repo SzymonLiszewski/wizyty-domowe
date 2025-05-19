@@ -4,6 +4,7 @@ import com.medical.homevisits.appointments.emergency.entity.EmergencyReport;
 import com.medical.homevisits.appointments.emergency.entity.EmergencyStatus;
 import com.medical.homevisits.appointments.emergency.repository.EmergencyReportRepository;
 
+import com.medical.homevisits.appointments.paramedic.repository.ParamedicRepository;
 import com.medical.homevisits.appointments.patient.repository.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,12 @@ public class EmergencyReportService {
 
     private final EmergencyReportRepository repository;
     private final PatientRepository patientRepository;
+    private final ParamedicRepository paramedicRepository;
 
-    public EmergencyReportService(EmergencyReportRepository repository, PatientRepository patientRepository) {
+    public EmergencyReportService(EmergencyReportRepository repository, PatientRepository patientRepository, ParamedicRepository paramedicRepository) {
         this.repository = repository;
         this.patientRepository = patientRepository;
+        this.paramedicRepository = paramedicRepository;
     }
 
     public void create(EmergencyReport report) {
@@ -29,6 +32,10 @@ public class EmergencyReportService {
 
     public List<EmergencyReport> getReportsByPatient(UUID patientId) {
         return repository.findByPatient(patientRepository.findById(patientId).get());
+    }
+
+    public List<EmergencyReport> getReportsByParamedic(UUID paramedicId) {
+        return repository.findByParamedic(paramedicRepository.findById(paramedicId).get());
     }
 
     public List<EmergencyReport> getAllReports() {
