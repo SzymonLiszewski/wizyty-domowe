@@ -2,6 +2,7 @@ package com.medical.wizytydomowe.fragments.appointments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.GridLayout
@@ -9,15 +10,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.card.MaterialCardView
+import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
+import com.medical.wizytydomowe.api.appointments.AddAppointmentRequest
 import com.medical.wizytydomowe.api.appointments.Appointment
 import com.medical.wizytydomowe.api.utils.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragment) {
 
     private var appointment: Appointment? = null
+    private var addNewAppointmentFlag: String? = null
 
     private lateinit var preferenceManager : PreferenceManager
 
@@ -28,14 +37,17 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private lateinit var addressHorizontalView: MaterialCardView
     private lateinit var cancelAppointmentView : MaterialCardView
     private lateinit var finishAppointmentView: MaterialCardView
+    private lateinit var addAppointmentView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         appointment = arguments?.getSerializable("appointment") as? Appointment
+        addNewAppointmentFlag = arguments?.getSerializable("addNewAppointmentFlag") as? String
 
         cancelAppointmentView = view.findViewById(R.id.cancelAppointmentView)
         finishAppointmentView = view.findViewById(R.id.finishAppointmentView)
+        addAppointmentView = view.findViewById(R.id.addAppointmentView)
         doctorView = view.findViewById(R.id.doctorView)
         nurseView = view.findViewById(R.id.nurseView)
         patientView = view.findViewById(R.id.patientView)
@@ -57,6 +69,8 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
             //TODO send request to the backend
         }
 
+        addAppointmentView.setOnClickListener { addNewAppointmentDialog() }
+
     }
 
     private fun cancelAppointment(){
@@ -74,19 +88,19 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         val statusTextView = view?.findViewById<TextView>(R.id.statusTextView)
 
         when (appointment?.status) {
-            "CANCELED" -> {
+            "Canceled" -> {
                 statusTextView?.text = "ANULOWANA"
                 statusTextView?.setTextColor(Color.RED)
             }
-            "COMPLETED" -> {
+            "Completed" -> {
                 statusTextView?.text = "ODBYTA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
-            "RESERVED" -> {
+            "Reserved" -> {
                 statusTextView?.text = "ZAREZERWOWANA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
-            "AVAILABLE" -> {
+            "Available" -> {
                 statusTextView?.text = "DOSTĘPNA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
@@ -94,11 +108,14 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
         if (!appointment?.notes.isNullOrEmpty()) view?.findViewById<TextView>(R.id.notesTextView)?.text = "Dodatkowe informacje:\n" + "${appointment?.notes}"
 
-        if (appointment?.status == "RESERVED" && preferenceManager.getRole() == "Patient") cancelAppointmentView.visibility = View.VISIBLE
+        if (appointment?.status == "Reserved" && preferenceManager.getRole() == "Patient") cancelAppointmentView.visibility = View.VISIBLE
         else cancelAppointmentView.visibility = View.GONE
 
-        if (appointment?.status == "RESERVED" && preferenceManager.getRole() != "Patient") finishAppointmentView.visibility = View.VISIBLE
+        if (appointment?.status == "Reserved" && preferenceManager.getRole() != "Patient") finishAppointmentView.visibility = View.VISIBLE
         else finishAppointmentView.visibility = View.GONE
+
+        if (appointment?.status == "Available" && addNewAppointmentFlag != null) addAppointmentView.visibility = View.VISIBLE
+        else addAppointmentView.visibility = View.GONE
     }
 
     private fun setAddressData(){
@@ -329,6 +346,40 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         else{
             setNurseViewWithoutDoctor()
             setNurseLayoutWithoutDoctor()
+        }
+    }
+
+    private fun navigateToAppointmentFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(AppointmentsFragment())
+    }
+
+    private fun addNewAppointment(){
+        val addAppointmentRequest = AddAppointmentRequest(appointment?.status, appointment?.appointmentStartTime,
+            appointment?.appointmentEndTime, appointment?.doctor?.id, appointment?.nurse?.id,
+            appointment?.patient?.id, appointment?.address, appointment?.notes)
+        AppointmentRetrofitInstance.appointmentApiService.addSingleAppointment(addAppointmentRequest)
+            .enqueue(object : Callback<Unit> {
+            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Wizyta została dodana pomyślnie.", Toast.LENGTH_LONG).show()
+                    navigateToAppointmentFragment()
+                }
+                else {
+                    val errorMessage = response.errorBody()?.string()
+                    Toast.makeText(context, "Podczas tworzenia wizyty wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Unit>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun addNewAppointmentDialog(){
+        showDialog(requireContext(),"Czy na pewno chcesz dodać tę wizytę?"){
+            addNewAppointment()
         }
     }
 }

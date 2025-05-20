@@ -3,6 +3,7 @@ package com.medical.wizytydomowe.fragments.prescriptions
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -10,12 +11,14 @@ import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
 import com.medical.wizytydomowe.api.prescriptions.Prescription
 import com.medical.wizytydomowe.api.prescriptions.PrescriptionAdapter
-import com.medical.wizytydomowe.api.users.Doctor
-import com.medical.wizytydomowe.api.users.Patient
 import com.medical.wizytydomowe.fragments.SearchFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
 
@@ -25,22 +28,25 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var logoutView: MaterialCardView
     private lateinit var noPrescriptionView: MaterialCardView
+    private lateinit var errorConnectionView: MaterialCardView
     private lateinit var prescriptionsRecyclerView: RecyclerView
+    private lateinit var goToAddPrescriptionButton: Button
+    private lateinit var goToMakeAnAppointmentButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         preferenceManager = PreferenceManager(requireContext())
         val userRole = preferenceManager.getRole()
-        val userToken = preferenceManager.getAuthToken()
 
         logoutView = view.findViewById(R.id.logoutView)
         noPrescriptionView = view.findViewById(R.id.noPrescriptionView)
+        errorConnectionView = view.findViewById(R.id.errorConnectionView)
         prescriptionsRecyclerView = view.findViewById(R.id.prescriptionsRecyclerView)
 
         val goToLoginButton = view.findViewById<Button>(R.id.goToLoginButton)
-        val goToAddPrescriptionButton = view.findViewById<Button>(R.id.goToAddPrescriptionButton)
-        val goToMakeAnAppointmentButton = view.findViewById<Button>(R.id.goToMakeAnAppointmentButton)
+        goToAddPrescriptionButton = view.findViewById(R.id.goToAddPrescriptionButton)
+        goToMakeAnAppointmentButton = view.findViewById(R.id.goToMakeAnAppointmentButton)
 
         goToLoginButton.setOnClickListener {
             navigateToLoginFragment()
@@ -54,66 +60,12 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
             navigateToMakeAnAppointmentFragment()
         }
 
-
-
-        //TODO get user's prescriptions from backend
-        val prescriptions = listOf(
-            Prescription(
-                id = "1",
-                doctor = Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Rupert", "Kozłowski", "ab@a.pl", "123456789"),
-                date = "2025-05-01T13:30",
-                medication = "Paracetamol;Amoxicillin;Ibuprofen",
-                dosage = "1 tabletka co 6 godzin, maksymalnie 4 tabletki na dobę.;1 kapsułka 3 razy dziennie przez 7 dni.;1–2 tabletki co 6–8 godzin w razie bólu, nie więcej niż 6 tabletek na dobę.",
-                notes = "Receptę należy wykupić w przeciągu najbliższych 12 miesięcy w dowolnej aptece, okazując swój dowód osobisty."
-            ),
-            Prescription(
-                id = "2",
-                doctor = Doctor("1", "Marcin", "Rogowski", "ginekolog", "Szpital Miejski we Wrocławiu"),
-                patient = Patient("1", "Robert", "Kozłowski", "a@a.pl", "123456789"),
-                date = "2023-05-02T18:30",
-                medication = "Paracetamol;Amoxicillin;Ibuprofen",
-                dosage = "1 tabletka co 6 godzin, maksymalnie 4 tabletki na dobę.;1 kapsułka 3 razy dziennie przez 7 dni.;1–2 tabletki co 6–8 godzin w razie bólu, nie więcej niż 6 tabletek na dobę.",
-                notes = "Receptę należy wykupić w przeciągu najbliższych 12 miesięcy w dowolnej aptece, okazując swój dowód osobisty."
-            ),
-            Prescription(
-                id = "3",
-                doctor = Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
-                date = "2025-05-01T13:30",
-                medication = "Paracetamol;Amoxicillin;Ibuprofen",
-                dosage = "1 tabletka co 6 godzin, maksymalnie 4 tabletki na dobę.;1 kapsułka 3 razy dziennie przez 7 dni.;1–2 tabletki co 6–8 godzin w razie bólu, nie więcej niż 6 tabletek na dobę.",
-                notes = "Receptę należy wykupić w przeciągu najbliższych 12 miesięcy w dowolnej aptece, okazując swój dowód osobisty."
-            ),
-            Prescription(
-                id = "4",
-                doctor = Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
-                date = "2025-05-01T13:30",
-                medication = "Paracetamol;Amoxicillin;Ibuprofen",
-                dosage = "1 tabletka co 6 godzin, maksymalnie 4 tabletki na dobę.;1 kapsułka 3 razy dziennie przez 7 dni.;1–2 tabletki co 6–8 godzin w razie bólu, nie więcej niż 6 tabletek na dobę.",
-                notes = "Receptę należy wykupić w przeciągu najbliższych 12 miesięcy w dowolnej aptece, okazując swój dowód osobisty."
-            ),
-            Prescription(
-                id = "4",
-                doctor = Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
-                patient = Patient("1", "Robert", "Kozłowski", "a", "a"),
-                date = "2025-05-01T13:30",
-                medication = "Paracetamol;Amoxicillin;Ibuprofen",
-                dosage = "1 tabletka co 6 godzin, maksymalnie 4 tabletki na dobę.;1 kapsułka 3 razy dziennie przez 7 dni.;1–2 tabletki co 6–8 godzin w razie bólu, nie więcej niż 6 tabletek na dobę.",
-                notes = "Receptę należy wykupić w przeciągu najbliższych 12 miesięcy w dowolnej aptece, okazując swój dowód osobisty."
-            )
-        )
-
-        if (userToken != null) {
+        if (preferenceManager.getAuthToken() != null) {
             logoutView.visibility = View.GONE
 
-            if (prescriptions.isEmpty()){
-                setNoPrescriptionsLayout(userRole, goToAddPrescriptionButton, goToMakeAnAppointmentButton)
-            }
-            else{
-                setPrescriptionsLayout(prescriptions)
-            }
+            val userToken = "Bearer " + preferenceManager.getAuthToken()
+            if (userRole == "Patient") getPatientPrescriptions(userToken)
+            else getDoctorPrescriptions(userToken)
         }
         else{
             setLogoutLayout()
@@ -123,6 +75,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
     private fun setPrescriptionsLayout(prescriptions: List<Prescription>){
         prescriptionsRecyclerView.visibility = View.VISIBLE
         noPrescriptionView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
 
         recyclerView = prescriptionsRecyclerView
 
@@ -138,6 +91,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
                                          goToMakeAnAppointmentButton: Button){
         noPrescriptionView.visibility = View.VISIBLE
         prescriptionsRecyclerView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
 
         if (userRole == "Patient"){
             goToMakeAnAppointmentButton.visibility = View.VISIBLE
@@ -153,6 +107,14 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
         logoutView.visibility = View.VISIBLE
         noPrescriptionView.visibility = View.GONE
         prescriptionsRecyclerView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
+    }
+
+    private fun setErrorConnectionLayout(){
+        logoutView.visibility = View.GONE
+        noPrescriptionView.visibility = View.GONE
+        prescriptionsRecyclerView.visibility = View.GONE
+        errorConnectionView.visibility = View.VISIBLE
     }
 
     private fun navigateToLoginFragment(){
@@ -175,6 +137,52 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(PrescriptionDetailsFragment().apply { arguments = bundle })
+    }
+
+    private fun getDoctorPrescriptions(token: String?){
+        AppointmentRetrofitInstance.appointmentApiService.getDoctorPrescriptions(token.toString())
+            .enqueue(object : Callback<List<Prescription>> {
+            override fun onResponse(call: Call<List<Prescription>>, response: Response<List<Prescription>>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (!body.isNullOrEmpty()){
+                        setPrescriptionsLayout(body)
+                    }
+                    else setNoPrescriptionsLayout(preferenceManager.getRole(), goToAddPrescriptionButton, goToMakeAnAppointmentButton)
+                }
+                else {
+                    setErrorConnectionLayout()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Prescription>>, t: Throwable) {
+                setErrorConnectionLayout()
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getPatientPrescriptions(token: String?){
+        AppointmentRetrofitInstance.appointmentApiService.getPatientPrescriptions(token.toString())
+            .enqueue(object : Callback<List<Prescription>> {
+                override fun onResponse(call: Call<List<Prescription>>, response: Response<List<Prescription>>) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (!body.isNullOrEmpty()){
+                            setPrescriptionsLayout(body)
+                        }
+                        else setNoPrescriptionsLayout(preferenceManager.getRole(), goToAddPrescriptionButton, goToMakeAnAppointmentButton)
+                    }
+                    else {
+                        setErrorConnectionLayout()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Prescription>>, t: Throwable) {
+                    setErrorConnectionLayout()
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
 }

@@ -10,10 +10,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.RetrofitInstance
-import com.medical.wizytydomowe.api.userInfo.EditPasswordRequest
-import com.medical.wizytydomowe.api.utils.validateNewPassword
-import com.medical.wizytydomowe.api.utils.validateOldPassword
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
+import com.medical.wizytydomowe.api.editProfile.EditPasswordRequest
+import com.medical.wizytydomowe.api.utils.*
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -54,7 +53,7 @@ class EditPasswordFragment: Fragment(R.layout.edit_password_fragment) {
     }
 
     private fun sendEditPasswordRequest(editPasswordRequest: EditPasswordRequest){
-        RetrofitInstance.apiService.editPassword(editPasswordRequest).enqueue(object :
+        AuthRetrofitInstance.authApiService.editPassword(editPasswordRequest).enqueue(object :
             Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
@@ -80,7 +79,7 @@ class EditPasswordFragment: Fragment(R.layout.edit_password_fragment) {
         val newPasswordLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutNewPassword)
         val newPasswordConfirmationLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutNewPasswordConfirmation)
 
-        if (!validateOldPassword(oldPassword, oldPasswordLayout)) return false
+        if (!validatePassword(oldPassword, oldPasswordLayout)) return false
         if (!validateNewPassword(newPassword, newPasswordConfirmation,
                 newPasswordLayout, newPasswordConfirmationLayout)) return false
         return true

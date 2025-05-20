@@ -25,6 +25,13 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.26" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_35"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.28" />
+
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -99,6 +106,62 @@
                     android:layout_weight="1"
                     android:layout_marginTop="12dp"
                     android:text="Aktualnie nikt nie potrzebuje profesjonalnej pomocy medycznej"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textAlignment="center"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/errorConnectionView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:layout_margin="24dp"
+            android:foreground="@color/gray"
+            app:cardElevation="8dp"
+            android:layout_marginTop="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_35"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="24dp"
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:src="@drawable/status_information_svgrepo_com"/>
+
+                <TextView
+                    android:id="@+id/statusErrorConnectionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginTop="12dp"
+                    android:text="BŁĄD POŁĄCZENIA"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
+
+                <TextView
+                    android:id="@+id/additionalInformationErrorConnectionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginTop="12dp"
+                    android:text="Nie udało się pobrać dostępnych zgłoszeń.\nSpróbuj ponownie później."
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textAlignment="center"/>

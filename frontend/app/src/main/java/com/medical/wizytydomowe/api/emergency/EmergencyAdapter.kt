@@ -32,15 +32,15 @@ class EmergencyAdapter(
 
         private fun setEmergencyStatus(emergency: Emergency){
             when (emergency.status) {
-                "AVAILABLE" -> {
+                "Available" -> {
                     statusEmergencyTextView.text = "DOSTĘPNE"
                     statusEmergencyTextView.setTextColor(Color.rgb(80,200,120))
                 }
-                "IN PROGRESS" -> {
+                "In_progress" -> {
                     statusEmergencyTextView.text = "W TOKU"
                     statusEmergencyTextView.setTextColor(Color.RED)
                 }
-                "COMPLETED" -> {
+                "Completed" -> {
                     statusEmergencyTextView.text = "ZAKOŃCZONE"
                     statusEmergencyTextView.setTextColor(Color.BLACK)
                 }
@@ -48,7 +48,7 @@ class EmergencyAdapter(
         }
 
         private fun setEmergencyDate(emergency: Emergency){
-            setDate(emergencyDateTextView, emergencyHourTextView, emergency.date)
+            setDate(emergencyDateTextView, emergencyHourTextView, emergency.emergencyReportTime)
         }
 
     }

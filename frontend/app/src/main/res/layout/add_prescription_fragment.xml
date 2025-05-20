@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         app:boxStrokeColor="@color/black"
                         app:hintTextColor="@color/black"
-                        android:hint="Wprowadź imię, nazwisko lub e-mail"
+                        android:hint="Wprowadź e-mail pacjenta"
                         app:errorEnabled="true"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
@@ -418,7 +418,7 @@
                     android:gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldDescription"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTextFieldNotes"
                     android:visibility="visible">
 
                     <Button

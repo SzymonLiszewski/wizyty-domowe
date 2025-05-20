@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.medical.wizytydomowe.fragments.AddVisitFragment
+import com.medical.wizytydomowe.fragments.appointments.AddAppointmentFragment
 import com.medical.wizytydomowe.fragments.prescriptions.PrescriptionsFragment
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
 import com.medical.wizytydomowe.fragments.SearchFragment
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
         val searchFragment = SearchFragment()
         val appointmentFragment = AppointmentsFragment()
-        val addVisitFragment = AddVisitFragment()
+        val addAppointmentFragment = AddAppointmentFragment()
         val prescriptionsFragment = PrescriptionsFragment()
         val profileFragment = ProfileFragment()
         val loginFragment = LoginFragment()
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     true
                 }
                 R.id.bottom_add_visit -> {
-                    setCurrentFragment(addVisitFragment)
+                    setCurrentFragment(addAppointmentFragment)
                     true
                 }
                 R.id.bottom_prescriptions -> {

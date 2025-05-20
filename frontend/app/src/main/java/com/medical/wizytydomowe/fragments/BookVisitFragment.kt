@@ -42,7 +42,8 @@ class BookVisitFragment : Fragment(R.layout.book_visits_fragment) {
         //TODO get user's appointments
 
         // Example data
-        val appointments = listOf(
+        val appointments = emptyList<Appointment>()
+            /*listOf(
             Appointment(
                 id = "23",
                 status = "RESERVED",
@@ -87,7 +88,7 @@ class BookVisitFragment : Fragment(R.layout.book_visits_fragment) {
                 address = "456 Elm Street",
                 notes = null
             )
-        )
+        )*/
 
         allAppointments = appointments
         appointmentsDisplayed = appointments.toMutableList()

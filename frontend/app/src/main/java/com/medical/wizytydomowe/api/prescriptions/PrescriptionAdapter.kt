@@ -54,7 +54,7 @@ class PrescriptionAdapter(
         }
 
         private fun setPrescriptionDate(prescription: Prescription){
-            setDate(prescriptionDateTextView, prescriptionHourTextView, prescription.date)
+            setDate(prescriptionDateTextView, prescriptionHourTextView, prescription.prescriptionTime)
         }
     }
 

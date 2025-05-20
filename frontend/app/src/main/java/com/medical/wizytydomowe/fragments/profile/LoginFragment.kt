@@ -12,7 +12,7 @@ import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.MainActivity
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.RetrofitInstance
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
 import com.medical.wizytydomowe.api.login.LoginRequest
 import com.medical.wizytydomowe.api.login.LoginResponse
 import com.medical.wizytydomowe.api.utils.validateLoginInputs
@@ -52,7 +52,7 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
     }
 
     private fun sendLoginRequest(loginRequest: LoginRequest){
-        RetrofitInstance.apiService.login(loginRequest).enqueue(object :
+        AuthRetrofitInstance.authApiService.login(loginRequest).enqueue(object :
             Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {

@@ -12,7 +12,7 @@ import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.MainActivity
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.RetrofitInstance
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
 import retrofit2.Callback
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import retrofit2.Call
@@ -82,7 +82,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     }
 
     private fun sendRequest(requestToken: String, userRole: String?){
-        RetrofitInstance.apiService.getUserInfo(requestToken)
+        AuthRetrofitInstance.authApiService.getUserInfo(requestToken)
             .enqueue(object : Callback<UserInfoResponse> {
                 override fun onResponse(call: Call<UserInfoResponse>, response: Response<UserInfoResponse>) {
                     if (response.isSuccessful) {
@@ -186,7 +186,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     }
 
     private fun setMedicalData(userInfo: UserInfoResponse?){
-        view?.findViewById<TextView>(R.id.hospitalTextView)?.text = "${userInfo?.workPlace}"
+        view?.findViewById<TextView>(R.id.hospitalTextView)?.text = "${userInfo?.workPlace?.name}"
         view?.findViewById<TextView>(R.id.specializationTextView)?.text = "${userInfo?.specialization}"
     }
 

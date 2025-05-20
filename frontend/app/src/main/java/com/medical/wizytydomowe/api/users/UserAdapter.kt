@@ -88,12 +88,12 @@ class UserAdapter(
 
         fun setNurseData(nurse: Nurse){
             specializationMedicalStaffTextView.text = "Pielęgniarka"
-            hospitalMedicalStaffTextView.text = nurse.workPlace
+            hospitalMedicalStaffTextView.text = nurse.workPlace?.name
         }
 
         fun setDoctorData(doctor: Doctor){
             specializationMedicalStaffTextView.text = doctor.specialization
-            hospitalMedicalStaffTextView.text = doctor.workPlace
+            hospitalMedicalStaffTextView.text = doctor.workPlace?.name
         }
 
         fun setPatientData(patient: Patient){

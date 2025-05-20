@@ -1,4 +1,4 @@
-package com.medical.wizytydomowe.api.userInfo
+package com.medical.wizytydomowe.api.editProfile
 
 data class EditUserInfoResponse(
     val refresh_token: String?,

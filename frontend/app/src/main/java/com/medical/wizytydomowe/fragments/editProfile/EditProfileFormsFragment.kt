@@ -12,9 +12,9 @@ import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.RetrofitInstance
-import com.medical.wizytydomowe.api.userInfo.EditUserInfoResponse
-import com.medical.wizytydomowe.api.userInfo.EditUserInfoRequest
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
+import com.medical.wizytydomowe.api.editProfile.EditUserInfoResponse
+import com.medical.wizytydomowe.api.editProfile.EditUserInfoRequest
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import com.medical.wizytydomowe.api.utils.*
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
@@ -215,7 +215,7 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
     }
 
     private fun sendUserInfoRequest(requestToken: String) {
-        RetrofitInstance.apiService.getUserInfo(requestToken)
+        AuthRetrofitInstance.authApiService.getUserInfo(requestToken)
             .enqueue(object : Callback<UserInfoResponse> {
                 override fun onResponse(
                     call: Call<UserInfoResponse>,
@@ -238,7 +238,7 @@ class EditProfileFormsFragment : Fragment(R.layout.edit_profile_forms_fragment) 
     }
 
     private fun sendEditUserDataRequest(editUserInfoRequest: EditUserInfoRequest?){
-        RetrofitInstance.apiService.editUserData(editUserInfoRequest, requestToken).enqueue(object :
+        AuthRetrofitInstance.authApiService.editUserData(editUserInfoRequest, requestToken).enqueue(object :
             Callback<EditUserInfoResponse> {
             override fun onResponse(call: Call<EditUserInfoResponse>, response: Response<EditUserInfoResponse>) {
                 if (response.isSuccessful) {

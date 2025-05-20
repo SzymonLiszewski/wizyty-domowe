@@ -1,5 +1,7 @@
 package com.medical.wizytydomowe.api.userInfo
 
+import com.medical.wizytydomowe.api.workplace.Workplace
+
 data class UserInfoResponse(
     val id: String?,
     val firstName: String?,
@@ -9,8 +11,6 @@ data class UserInfoResponse(
     val dateOfBirth: String?,
     val address: String?,
     val specialization: String?,
-    val academicDegree: String?,
-    val doctor: String?,
-    val workPlace: String?,
+    val workPlace: Workplace?,
     val phoneNumber: String?
 )

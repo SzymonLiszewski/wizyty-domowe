@@ -74,11 +74,11 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         medications = mutableListOf()
         //TODO get patient list from backend
         users = listOf(
-            Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
-            Patient("1", "Robert", "Stanowski", "j@2gmail.com", "123-456-789"),
-            Patient("1", "Maciej", "Maciak", "j@2gmail.com", "123-456-789"),
-            Patient("1", "Szewczyk", "Dratewka", "j@2gmail.com", "123-456-789"),
-            Patient("1", "Jędrzej", "Stanowski", "j@2gmail.com", "123-456-789")
+            Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123456789"),
+            Patient("1", "Robert", "Stanowski", "j@2gmail.com", "123456789"),
+            Patient("1", "Maciej", "Maciak", "j@2gmail.com", "123456789"),
+            Patient("1", "Szewczyk", "Dratewka", "j@2gmail.com", "123456789"),
+            Patient("1", "Jędrzej", "Stanowski", "j@2gmail.com", "123456789")
         )
 
         setPage(1)
@@ -142,8 +142,8 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         val textInputLayoutPatientFilter = view?.findViewById<TextInputLayout>(R.id.textInputLayoutPatientFilter)
         val textInputEditTextPatientFilter = view?.findViewById<TextInputEditText>(R.id.textInputEditTextPatientFilter)?.text.toString()
 
-        if (validateFilterText(textInputEditTextPatientFilter, textInputLayoutPatientFilter)){
-            //TODO send request to the backend to the filter patients by e-mail, firstName or lastName
+        if (validateEmailAddress(textInputEditTextPatientFilter, textInputLayoutPatientFilter)){
+            //TODO send request to the backend to the filter patients by e-mail
         }
     }
 

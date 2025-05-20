@@ -9,7 +9,7 @@ data class Emergency(
     val patient: Patient?,
     val paramedic: Paramedic?,
     val status: String?,
-    val date: String?,
+    val emergencyReportTime: String?,
     val address: String?,
     val description: String?
 ) : Serializable

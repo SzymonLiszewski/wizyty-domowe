@@ -6,10 +6,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.card.MaterialCardView
+import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
 import com.medical.wizytydomowe.api.prescriptions.Prescription
+import com.medical.wizytydomowe.api.prescriptions.PrescriptionRequest
 import com.medical.wizytydomowe.api.utils.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
 
@@ -37,10 +43,7 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
         notesView = view.findViewById(R.id.notesView)
         addPrescriptionView = view.findViewById(R.id.addPrescriptionView)
 
-        addPrescriptionView.setOnClickListener {
-            Toast.makeText(requireContext(), "Dodano receptę", Toast.LENGTH_SHORT).show()
-            //TODO send request to the backend and add dialog
-        }
+        addPrescriptionView.setOnClickListener { addNewPrescriptionDialog() }
 
         preferenceManager = PreferenceManager(requireContext())
         val userRole = preferenceManager.getRole()
@@ -75,8 +78,9 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
     private fun setPatientData(){
         view?.findViewById<TextView>(R.id.firstNamePatientTextView)?.text = "${prescription?.patient?.firstName}"
         view?.findViewById<TextView>(R.id.lastNamePatientTextView)?.text = "${prescription?.patient?.lastName}"
-        view?.findViewById<TextView>(R.id.phoneNumberPatientTextView)?.text = "123-456-789"
-        view?.findViewById<TextView>(R.id.emailPatientTextView)?.text = "janrogowski@gmail.com"
+        view?.findViewById<TextView>(R.id.emailPatientTextView)?.text = "${prescription?.patient?.email}"
+        val phoneNumberConverted = "${prescription?.patient?.phoneNumber?.substring(0,3)}-${prescription?.patient?.phoneNumber?.substring(3,6)}-${prescription?.patient?.phoneNumber?.substring(6)}"
+        view?.findViewById<TextView>(R.id.phoneNumberPatientTextView)?.text = "${phoneNumberConverted}"
     }
 
     private fun setDoctorView(){
@@ -87,7 +91,7 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
         view?.findViewById<TextView>(R.id.firstNameDoctorTextView)?.text = "${prescription?.doctor?.firstName}"
         view?.findViewById<TextView>(R.id.lastNameDoctorTextView)?.text = "${prescription?.doctor?.lastName}"
         view?.findViewById<TextView>(R.id.specializationDoctorTextView)?.text = "${prescription?.doctor?.specialization}"
-        view?.findViewById<TextView>(R.id.hospitalDoctorTextView)?.text = "${prescription?.doctor?.workPlace}"
+        view?.findViewById<TextView>(R.id.hospitalDoctorTextView)?.text = "${prescription?.doctor?.workPlace?.name}"
     }
 
     private fun setMainView(){
@@ -100,7 +104,7 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
         val startDateTextView: TextView? = view?.findViewById(R.id.prescriptionDateTextView)
         val startHourTextView : TextView? = view?.findViewById(R.id.prescriptionHourTextView)
 
-        setDate(startDateTextView, startHourTextView, prescription?.date)
+        setDate(startDateTextView, startHourTextView, prescription?.prescriptionTime)
     }
 
     private fun setPrescriptionNotes(){
@@ -120,5 +124,39 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
         }
 
         view?.findViewById<TextView>(R.id.dosagePrescriptionTextView)?.text = "${description}"
+    }
+
+    private fun addNewPrescription(){
+        val prescriptionRequest = PrescriptionRequest("a8b4f9dd-381f-4026-a07b-14d5c8621f42",
+            prescription?.medication, prescription?.dosage, prescription?.notes, prescription?.prescriptionTime)
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        AppointmentRetrofitInstance.appointmentApiService.addNewPrescription(token,
+            prescriptionRequest).enqueue(object : Callback<Unit> {
+            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Recepta została utworzona pomyślnie.", Toast.LENGTH_LONG).show()
+                    navigateToPrescriptionsFragment()
+                }
+                else {
+                    val errorMessage = response.errorBody()?.string()
+                    Toast.makeText(context, "Podczas tworzenia recepty wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Unit>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun navigateToPrescriptionsFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(PrescriptionsFragment())
+    }
+
+    private fun addNewPrescriptionDialog(){
+        showDialog(requireContext(),"Czy na pewno chcesz dodać tę receptę?"){
+            addNewPrescription()
+        }
     }
 }

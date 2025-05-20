@@ -1,7 +1,6 @@
 package com.medical.wizytydomowe.api.utils
 
 import com.google.android.material.textfield.TextInputLayout
-import com.medical.wizytydomowe.R
 
 
 fun validatePersonalDataFields(firstName: String?, lastName: String?,
@@ -24,8 +23,25 @@ fun validatePersonalDataFields(firstName: String?, lastName: String?,
 
 fun validateContactFields(email: String?, phoneNumber: String?, emailLayout: TextInputLayout?,
                               phoneNumberLayout: TextInputLayout?): Boolean{
-    emailLayout?.error = null
     phoneNumberLayout?.error = null
+    emailLayout?.error = null
+    if (!validateEmailAddress(email, emailLayout)) return false
+
+    when{
+        phoneNumber.isNullOrEmpty() -> {
+            phoneNumberLayout?.error = "Pole 'Numer telefonu' jest wymagane"
+            return false
+        }
+        !phoneNumber.matches("^\\d{9}\$".toRegex()) -> {
+            phoneNumberLayout?.error = "Nieprawidłowy format pola 'Numer telefonu'"
+            return false
+        }
+    }
+    return true
+}
+
+fun validateEmailAddress(email: String?, emailLayout: TextInputLayout?): Boolean{
+    emailLayout?.error = null
 
     when{
         email.isNullOrEmpty() -> {
@@ -34,14 +50,6 @@ fun validateContactFields(email: String?, phoneNumber: String?, emailLayout: Tex
         }
         !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
             emailLayout?.error = "Nieprawidłowy format pola 'E-mail'"
-            return false
-        }
-        phoneNumber.isNullOrEmpty() -> {
-            phoneNumberLayout?.error = "Pole 'Numer telefonu' jest wymagane"
-            return false
-        }
-        !phoneNumber.matches("^\\d{9}\$".toRegex()) -> {
-            phoneNumberLayout?.error = "Nieprawidłowy format pola 'Numer telefonu'"
             return false
         }
     }
@@ -103,23 +111,11 @@ fun validateAddress(city: String?, street: String?, buildingNumber: String?, pos
 
 fun validateLoginInputs(email: String, password: String, emailLayout: TextInputLayout?,
                         passwordLayout: TextInputLayout?): Boolean {
-    emailLayout?.error = null
     passwordLayout?.error = null
+    emailLayout?.error = null
 
-    when {
-        email.isEmpty() -> {
-            emailLayout?.error = "Pole 'E-mail' jest wymagane"
-            return false
-        }
-        !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-            emailLayout?.error = "Nieprawidłowy format pola 'E-mail'"
-            return false
-        }
-        password.isEmpty() -> {
-            passwordLayout?.error = "Pole 'Hasło' jest wymagane"
-            return false
-        }
-    }
+    if (!validateEmailAddress(email, emailLayout)) return false
+    if (!validatePassword(password, passwordLayout)) return false
     return true
 }
 
@@ -135,19 +131,7 @@ fun validateDescription(description: String?, descriptionLayout: TextInputLayout
     return true
 }
 
-fun validateFilterText(filterText: String?, filterTextLayout: TextInputLayout?): Boolean{
-    filterTextLayout?.error = null
-
-    when{
-        filterText.isNullOrEmpty() -> {
-            filterTextLayout?.error = "Pole 'Filtracja' nie powinno być puste"
-            return false
-        }
-    }
-    return true
-}
-
-fun validateOldPassword(password: String?, passwordLayout: TextInputLayout?): Boolean{
+fun validatePassword(password: String?, passwordLayout: TextInputLayout?): Boolean{
     passwordLayout?.error = null
 
     when{
@@ -168,15 +152,8 @@ fun validateNewPassword(password: String?, passwordConfirmation : String?, passw
     passwordLayout?.error = null
     passwordConfirmationLayout?.error = null
 
+    if (!validatePassword(password, passwordLayout)) return false
     when{
-        password.isNullOrEmpty() -> {
-            passwordLayout?.error = "Pole 'Hasło' jest wymagane"
-            return false
-        }
-        password.length < 6 -> {
-            passwordLayout?.error = "Pole 'Hasło' powinno zawierać min. 6 znaków"
-            return false
-        }
         passwordConfirmation.isNullOrEmpty() -> {
             passwordConfirmationLayout?.error = "Pole 'Potwierdzenie hasła' jest wymagane"
             return false

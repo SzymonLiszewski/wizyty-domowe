@@ -12,7 +12,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
-import com.medical.wizytydomowe.api.RetrofitInstance
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
 import com.medical.wizytydomowe.api.registration.RegisterRequest
 import com.medical.wizytydomowe.api.utils.*
 import okhttp3.ResponseBody
@@ -120,7 +120,7 @@ class RegisterFragment : Fragment(R.layout.register_fragment) {
     }
 
     private fun sendRegisterRequest(registerRequest: RegisterRequest){
-        RetrofitInstance.apiService.register(registerRequest).enqueue(object : Callback<ResponseBody> {
+        AuthRetrofitInstance.authApiService.register(registerRequest).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Rejestracja przebiegła pomyślnie.", Toast.LENGTH_LONG).show()

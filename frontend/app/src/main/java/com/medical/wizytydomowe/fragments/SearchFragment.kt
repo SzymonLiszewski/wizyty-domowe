@@ -31,7 +31,8 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
         val searchEditText = view.findViewById<EditText>(R.id.et_search)
 
         // Example data
-        val exampleDoctors = listOf(
+        val exampleDoctors = emptyList<Doctor>()
+            /*listOf(
             Doctor("1", "Jan", "Kowalski", "laryngolog", "Szpital Miejski w Gdańsku"),
             Doctor("2", "Robert", "Nowak", "ginekolog", "Szpital Miejski w Krakowie"),
             Doctor("3", "Franciszek", "Wiśniewski", "urolog", "Szpital Miejski w Warszawie"),
@@ -42,7 +43,7 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
             Doctor("8", "Arkadiusz", "Zieliński", "pediatra", "Szpital Miejski w Gdańsku"),
             Doctor("9", "Janusz", "Szymański", "pediatra", "Szpital Miejski w Warszawie"),
             Doctor("10", "Robert", "Woźniak", "psycholog", "Szpital Miejski w Gdańsku")
-        )
+        )*/
 
         doctorsDisplayed = exampleDoctors.toMutableList()
         allDoctors = exampleDoctors

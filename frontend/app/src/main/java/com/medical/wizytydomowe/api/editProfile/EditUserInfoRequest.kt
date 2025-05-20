@@ -1,4 +1,4 @@
-package com.medical.wizytydomowe.api.userInfo
+package com.medical.wizytydomowe.api.editProfile
 
 import java.io.Serializable
 

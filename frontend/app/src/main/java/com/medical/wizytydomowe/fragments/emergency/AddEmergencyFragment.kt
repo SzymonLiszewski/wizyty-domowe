@@ -1,6 +1,7 @@
 package com.medical.wizytydomowe.fragments.emergency
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -11,12 +12,18 @@ import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
+import com.medical.wizytydomowe.api.editProfile.EditUserInfoRequest
 import com.medical.wizytydomowe.api.emergency.Emergency
+import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import com.medical.wizytydomowe.api.users.Patient
 import com.medical.wizytydomowe.api.utils.validateContactFields
 import com.medical.wizytydomowe.api.utils.validateDescription
 import com.medical.wizytydomowe.api.utils.validatePersonalDataFields
 import com.medical.wizytydomowe.api.utils.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
@@ -30,6 +37,7 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
     private var email: String? = null
     private var phoneNumber: String? = null
     private var description: String? = null
+    private var userInfoResponse: UserInfoResponse? = null
 
     private var pageNumber: Int = 1
 
@@ -80,7 +88,10 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
             }
         }
 
-        if (userToken != null) pageNumber = 2
+        if (userToken != null){
+            pageNumber = 2
+            sendUserInfoRequest("Bearer " + userToken)
+        }
         else pageNumber = 1
 
         setPage(pageNumber)
@@ -126,19 +137,22 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
     }
 
     private fun navigateToConfirmEmergency(){
-        val patient: Patient
+        val patient: Patient?
         if (preferenceManager.getAuthToken() != null){
-            //TODO sent request for userInfo
-            patient = Patient("0", "Jan", "Rogowski", "jan@rog.pl", "123-456-789")
+            if (userInfoResponse != null) patient = Patient(userInfoResponse?.id, userInfoResponse?.firstName, userInfoResponse?.lastName,
+                userInfoResponse?.email, userInfoResponse?.phoneNumber)
+            else patient = null
         }
         else {
             patient = Patient("0", firstName, lastName, email, phoneNumber)
         }
 
-        //TODO set address as phone localization
-        val address = "Gdańsk, 10-101, Gdańska 12A/4"
-        val emergency = Emergency("0",  patient, null, "AVAILABLE", setActualDate(), address, description)
-        navigateToEmergencyDetailsFragment(emergency)
+        if (patient != null){
+            //TODO set address as phone localization
+            val address = "Gdańsk, 10-101, Politechniczna 12A/4"
+            val emergency = Emergency(null,  patient, null, "Available", setActualDate(), address, description)
+            navigateToEmergencyDetailsFragment(emergency)
+        }
     }
 
     private fun navigateToEmergencyDetailsFragment(emergency: Emergency){
@@ -149,5 +163,28 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(EmergencyDetailsFragment().apply { arguments = bundle })
+    }
+
+    private fun sendUserInfoRequest(requestToken: String) {
+        AuthRetrofitInstance.authApiService.getUserInfo(requestToken)
+            .enqueue(object : Callback<UserInfoResponse> {
+                override fun onResponse(
+                    call: Call<UserInfoResponse>,
+                    response: Response<UserInfoResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        userInfoResponse = UserInfoResponse(responseBody?.id, responseBody?.firstName,
+                            responseBody?.lastName, responseBody?.email, null, null,
+                            null, null, null, responseBody?.phoneNumber)
+                    } else {
+                        Log.e("API", "Błąd: ${response.code()} - ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<UserInfoResponse>, t: Throwable) {
+                    Log.e("API", "Niepowodzenie: ${t.message}")
+                }
+            })
     }
 }

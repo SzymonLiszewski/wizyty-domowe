@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginLeft="36dp">
+            android:layout_marginLeft="38dp">
 
             <TextView
                 android:id="@+id/prescriptionDateTextView"
@@ -63,7 +63,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:layout_marginStart="36dp">
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:layout_marginStart="24dp">
 
             <TextView
                 android:id="@+id/prescriptionRoleTextView"

@@ -12,10 +12,6 @@ import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointments.Appointment
 import com.medical.wizytydomowe.api.appointments.AppointmentAdapter
-import com.medical.wizytydomowe.api.users.Doctor
-import com.medical.wizytydomowe.api.users.Nurse
-import com.medical.wizytydomowe.api.users.Patient
-import com.medical.wizytydomowe.fragments.AddVisitFragment
 import com.medical.wizytydomowe.fragments.SearchFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
 
@@ -57,7 +53,8 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         }
 
         //TODO get user's appointments from backend
-        val appointments = listOf(
+        val appointments = emptyList<Appointment>()
+            /*listOf(
             Appointment(
                 id = "23",
                 status = "RESERVED",
@@ -102,7 +99,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
                 address = "456 Elm Street",
                 notes = null
             )
-        )
+        )*/
 
         if (userToken != null) {
             logoutView.visibility = View.GONE
@@ -166,7 +163,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
 
     private fun navigateToAddAnAppointmentFragment(){
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(AddVisitFragment())
+        activity?.navigateToFragment(AddAppointmentFragment())
     }
 
     private fun navigateToAppointmentDetails(appointment: Appointment){

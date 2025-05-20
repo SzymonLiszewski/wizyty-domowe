@@ -1,5 +1,6 @@
 package com.medical.wizytydomowe.api.users
 
+import com.medical.wizytydomowe.api.workplace.Workplace
 import java.io.Serializable
 
 class Doctor(
@@ -7,5 +8,5 @@ class Doctor(
     firstName: String?,
     lastName: String?,
     val specialization: String?,
-    val workPlace: String?
+    val workPlace: Workplace?
 ) : Serializable, User(id, firstName, lastName)

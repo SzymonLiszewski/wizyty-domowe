@@ -107,7 +107,7 @@ fun showDialog(context: Context, message: String, onConfirm: () -> Unit){
 }
 
 fun setActualDate(): String{
-    val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH.mm", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     val currentDate = Date()
     return outputFormat.format(currentDate)
 }

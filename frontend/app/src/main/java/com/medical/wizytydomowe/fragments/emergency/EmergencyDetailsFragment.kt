@@ -6,10 +6,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.card.MaterialCardView
+import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
+import com.medical.wizytydomowe.api.emergency.ChangeStatusRequest
 import com.medical.wizytydomowe.api.emergency.Emergency
 import com.medical.wizytydomowe.api.utils.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
 
@@ -22,6 +29,7 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     private lateinit var sendEmergencyView: MaterialCardView
     private lateinit var patientView: MaterialCardView
     private lateinit var paramedicView: MaterialCardView
+    private lateinit var noParamedicView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,6 +45,7 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
         sendEmergencyView = view.findViewById(R.id.sendEmergencyView)
         patientView = view.findViewById(R.id.patientView)
         paramedicView = view.findViewById(R.id.paramedicView)
+        noParamedicView = view.findViewById(R.id.noParamedicView)
 
         finishEmergencyView.setOnClickListener {
             showFinishEmergencyDialog()
@@ -74,11 +83,20 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
             setPatientView()
             patientView.visibility = View.VISIBLE
             paramedicView.visibility = View.GONE
+            noParamedicView.visibility = View.GONE
         }
         else {
-            setParamedicView()
             patientView.visibility = View.GONE
-            paramedicView.visibility = View.VISIBLE
+            if (emergency?.paramedic == null){
+                noParamedicView.visibility = View.VISIBLE
+                paramedicView.visibility = View.GONE
+            }
+            else{
+                setParamedicView()
+                noParamedicView.visibility = View.GONE
+                paramedicView.visibility = View.VISIBLE
+            }
+
         }
         setMainView()
     }
@@ -86,6 +104,7 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     private fun setParamedicLayout(){
         patientView.visibility = View.VISIBLE
         paramedicView.visibility = View.GONE
+        noParamedicView.visibility = View.GONE
 
         setPatientView()
         setMainView()
@@ -94,22 +113,23 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     private fun setPatientData(){
         view?.findViewById<TextView>(R.id.firstNamePatientTextView)?.text = "${emergency?.patient?.firstName}"
         view?.findViewById<TextView>(R.id.lastNamePatientTextView)?.text = "${emergency?.patient?.lastName}"
-        view?.findViewById<TextView>(R.id.phoneNumberPatientTextView)?.text = "123-456-789"
-        view?.findViewById<TextView>(R.id.emailPatientTextView)?.text = "janrogowski@gmail.com"
+        val phoneNumberConverted = "${emergency?.patient?.phoneNumber?.substring(0,3)}-${emergency?.patient?.phoneNumber?.substring(3,6)}-${emergency?.patient?.phoneNumber?.substring(6)}"
+        view?.findViewById<TextView>(R.id.phoneNumberPatientTextView)?.text = "${phoneNumberConverted}"
+        view?.findViewById<TextView>(R.id.emailPatientTextView)?.text = "${emergency?.patient?.email}"
     }
 
     private fun setParamedicData(){
         view?.findViewById<TextView>(R.id.firstNameParamedicTextView)?.text = "${emergency?.paramedic?.firstName}"
         view?.findViewById<TextView>(R.id.lastNameParamedicTextView)?.text = "${emergency?.paramedic?.lastName}"
         view?.findViewById<TextView>(R.id.specializationParamedicTextView)?.text = "Ratownik medyczny"
-        view?.findViewById<TextView>(R.id.hospitalParamedicTextView)?.text = "${emergency?.paramedic?.workPlace}"
+        view?.findViewById<TextView>(R.id.hospitalParamedicTextView)?.text = "${emergency?.paramedic?.workPlace?.name}"
     }
 
     private fun setDate(){
         val startDateTextView: TextView? = view?.findViewById(R.id.startDateTextView)
         val startHourTextView : TextView? = view?.findViewById(R.id.startHourTextView)
 
-        setDate(startDateTextView, startHourTextView, emergency?.date)
+        setDate(startDateTextView, startHourTextView, emergency?.emergencyReportTime)
     }
 
 
@@ -126,37 +146,31 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     }
 
     private fun setStatus(){
-        if (emergency?.status == "AVAILABLE" && preferenceManager.getRole() == "Paramedic"){
+        if (emergency?.status == "Available" && preferenceManager.getRole() == "Paramedic"){
             takeOnAEmergencyView.visibility = View.VISIBLE
         }
         else takeOnAEmergencyView.visibility = View.GONE
 
-        if (emergency?.status == "IN PROGRESS" && preferenceManager.getRole() == "Paramedic") {
+        if (emergency?.status == "In_progress" && preferenceManager.getRole() == "Paramedic") {
             finishEmergencyView.visibility = View.VISIBLE
         }
         else finishEmergencyView.visibility = View.GONE
 
-        if (emergency?.status == "AVAILABLE" && preferenceManager.getRole() != "Paramedic"
+        if (emergency?.status == "Available" && preferenceManager.getRole() != "Paramedic"
             && addNewEmergencyFlag == true){
             sendEmergencyView.visibility = View.VISIBLE
         }
         else sendEmergencyView.visibility = View.GONE
     }
 
-    private fun takeOnEmergency(){
-        //TODO send request to the backend and toast
-        Toast.makeText(requireContext(), "Podjęto się zgłoszenia.", Toast.LENGTH_SHORT).show()
-    }
-
     private fun showTakeOnEmergencyDialog(){
         showDialog(requireContext(),"Czy na pewno chcesz się podjąć zgłoszenia?"){
-            takeOnEmergency()
+            sendTakeOnEmergencyRequest()
         }
     }
 
     private fun finishEmergency(){
-        //TODO send request to the backend and toast
-        Toast.makeText(requireContext(), "Zakończono zgłoszenie.", Toast.LENGTH_SHORT).show()
+        sendFinishEmergencyRequest()
     }
 
     private fun showFinishEmergencyDialog(){
@@ -165,14 +179,82 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
         }
     }
 
-    private fun addNewEmergency(){
-        //TODO send request to the backend and navigate to the emergency view
-        Toast.makeText(requireContext(), "Wysłano zgłoszenie pomyślnie.", Toast.LENGTH_SHORT).show()
-    }
-
     private fun showAddNewEmergencyDialog(){
         showDialog(requireContext(),"Czy na pewno chcesz dodać te zgłoszenie?"){
-            addNewEmergency()
+            sendNewEmergency()
         }
+    }
+
+    private fun navigateToEmergencyFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(EmergencyFragment())
+    }
+
+    private fun sendNewEmergency(){
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        val emergencyRequest = Emergency(emergency?.id, emergency?.patient, emergency?.paramedic,
+            emergency?.status, emergency?.emergencyReportTime, emergency?.address, emergency?.description)
+
+        AppointmentRetrofitInstance.appointmentApiService.addNewEmergency(token,
+            emergencyRequest).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Zgłoszenie zostało dodane pomyślnie.", Toast.LENGTH_LONG).show()
+                    navigateToEmergencyFragment()
+                }
+                else {
+                    val errorMessage = response.errorBody()?.string()
+                    Toast.makeText(context, "Podczas tworzenia zgłoszenia wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun sendTakeOnEmergencyRequest(){
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        AppointmentRetrofitInstance.appointmentApiService.assignEmergency(token,
+            emergency?.id.toString()).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Zgłoszenie zostało przypisane pomyślnie.", Toast.LENGTH_LONG).show()
+                    navigateToEmergencyFragment()
+                }
+                else {
+                    val errorMessage = response.errorBody()?.string()
+                    Toast.makeText(context, "Podczas przypisywania zgłoszenia wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun sendFinishEmergencyRequest(){
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        val changeStatusRequest = ChangeStatusRequest("Completed")
+
+        AppointmentRetrofitInstance.appointmentApiService.finishEmergency(token,
+            emergency?.id.toString(), changeStatusRequest).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Zgłoszenie zostało zakończone pomyślnie.", Toast.LENGTH_LONG).show()
+                    navigateToEmergencyFragment()
+                }
+                else {
+                    val errorMessage = response.errorBody()?.string()
+                    Toast.makeText(context, "Podczas zakończenia zgłoszenia wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
