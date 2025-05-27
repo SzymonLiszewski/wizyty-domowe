@@ -1,5 +1,5 @@
 package com.medical.wizytydomowe.api.emergency
 
-data class ChangeStatusRequest(
+data class EmergencyChangeStatusRequest(
     val status: String?
 )

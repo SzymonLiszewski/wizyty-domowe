@@ -3,6 +3,7 @@ package com.medical.wizytydomowe.fragments.appointments
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -10,10 +11,14 @@ import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
 import com.medical.wizytydomowe.api.appointments.Appointment
 import com.medical.wizytydomowe.api.appointments.AppointmentAdapter
-import com.medical.wizytydomowe.fragments.SearchFragment
+import com.medical.wizytydomowe.fragments.registerAppointment.SearchMedicalStaffFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
 
@@ -23,7 +28,11 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
     private lateinit var preferenceManager : PreferenceManager
     private lateinit var logoutView: MaterialCardView
     private lateinit var noAppointmentView: MaterialCardView
+    private lateinit var errorConnectionView: MaterialCardView
     private lateinit var appointmentRecyclerView: RecyclerView
+
+    private lateinit var goToMakeAnAppointmentButton: Button
+    private lateinit var goToAddAppointmentButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,81 +44,23 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         logoutView = view.findViewById(R.id.logoutView)
         noAppointmentView = view.findViewById(R.id.noAppointmentView)
         appointmentRecyclerView = view.findViewById(R.id.appointmentsRecyclerView)
+        errorConnectionView = view.findViewById(R.id.errorConnectionView)
 
         val goToLoginButton = view.findViewById<Button>(R.id.goToLoginButton)
-        val goToMakeAnAppointmentButton = view.findViewById<Button>(R.id.goToMakeAnAppointmentButton)
-        val goToAddAppointmentButton = view.findViewById<Button>(R.id.goToAddAppointmentButton)
+        goToMakeAnAppointmentButton = view.findViewById(R.id.goToMakeAnAppointmentButton)
+        goToAddAppointmentButton = view.findViewById(R.id.goToAddAppointmentButton)
 
-        goToLoginButton.setOnClickListener {
-            navigateToLoginFragment()
-        }
-
-        goToMakeAnAppointmentButton.setOnClickListener {
-            navigateToMakeAnAppointmentFragment()
-        }
-
-        goToAddAppointmentButton.setOnClickListener {
-            navigateToAddAnAppointmentFragment()
-        }
-
-        //TODO get user's appointments from backend
-        val appointments = emptyList<Appointment>()
-            /*listOf(
-            Appointment(
-                id = "23",
-                status = "RESERVED",
-                appointmentStartTime = "2025-06-01T10.15",
-                appointmentEndTime = "2025-06-01T10.30",
-                doctor = Doctor("1", "Marcin", "Rogowski", "Ginekolog", "Szpital Miejski w Warszawie"),
-                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski w Warszawie"),
-                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
-                address = "Warszawa, 10-101, Opolska 12A/4",
-                notes = "Płatność dostępna tylko za pomocą BLIK"
-            ),
-            Appointment(
-                id = "24",
-                status = "CANCELED",
-                appointmentStartTime = "2024-06-01T10.15",
-                appointmentEndTime = "2024-06-01T10.15",
-                doctor = Doctor("2", "Jan", "Kowalski", "ginekolog", "Szpital Miejski w Opolu"),
-                nurse = null,
-                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
-                address = "Opole, 10-101, Opolska 12A/4",
-                notes = null
-            ),
-            Appointment(
-                id = "3",
-                status = "RESERVED",
-                appointmentStartTime = "2024-06-01T09.15",
-                appointmentEndTime = "2024-06-01T09.25",
-                doctor = null,
-                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski we Wrocławiu"),
-                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
-                address = "Wrocław, 10-101, Opolska 12A/4",
-                notes = null
-            ),
-            Appointment(
-                id = "4",
-                status = "RESERVED",
-                appointmentStartTime = "10.30 2025-03-01",
-                appointmentEndTime = "10.45 2025-03-01",
-                doctor = Doctor("4", "Jan", "Kowalski", "chirurg", "Szpital Miejski w Gdańsku"),
-                nurse = Nurse("1", "Agnieszka", "Jaworowicz", "Szpital Miejski we Wrocławiu"),
-                patient = Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123-456-789"),
-                address = "456 Elm Street",
-                notes = null
-            )
-        )*/
+        goToLoginButton.setOnClickListener { navigateToLoginFragment() }
+        goToMakeAnAppointmentButton.setOnClickListener { navigateToMakeAnAppointmentFragment() }
+        goToAddAppointmentButton.setOnClickListener { navigateToAddAnAppointmentFragment() }
 
         if (userToken != null) {
             logoutView.visibility = View.GONE
 
-            if (appointments.isEmpty()){
-                setNoAppointmentsLayout(userRole, goToAddAppointmentButton, goToMakeAnAppointmentButton)
-            }
-            else{
-                setAppointmentsLayout(appointments)
-            }
+            val token = "Bearer " + preferenceManager.getAuthToken()
+            if (userRole == "Doctor") getDoctorAppointments(token)
+            else if (userRole == "Patient") getPatientAppointments(token)
+            else getNurseAppointments(token)
         }
         else{
             setLogoutLayout()
@@ -120,6 +71,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
                                         goToMakeAnAppointmentButton: Button){
         appointmentRecyclerView.visibility = View.GONE
         noAppointmentView.visibility = View.VISIBLE
+        errorConnectionView.visibility = View.GONE
 
         if (userRole == "Patient"){
             goToAddAppointmentButton.visibility = View.GONE
@@ -134,6 +86,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
     private fun setAppointmentsLayout(appointments : List<Appointment>){
         appointmentRecyclerView.visibility = View.VISIBLE
         noAppointmentView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
 
         recyclerView = appointmentRecyclerView
 
@@ -149,6 +102,13 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         logoutView.visibility = View.VISIBLE
         appointmentRecyclerView.visibility = View.GONE
         noAppointmentView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
+    }
+
+    private fun setErrorConnectionLayout(){
+        appointmentRecyclerView.visibility = View.GONE
+        noAppointmentView.visibility = View.GONE
+        errorConnectionView.visibility = View.VISIBLE
     }
 
     private fun navigateToLoginFragment(){
@@ -158,7 +118,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
 
     private fun navigateToMakeAnAppointmentFragment(){
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(SearchFragment())
+        activity?.navigateToFragment(SearchMedicalStaffFragment())
     }
 
     private fun navigateToAddAnAppointmentFragment(){
@@ -171,6 +131,44 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(AppointmentDetailsFragment().apply { arguments = bundle })
+    }
+
+    private fun getAppointments(request: Call<List<Appointment>>) {
+        request.enqueue(object : Callback<List<Appointment>> {
+            override fun onResponse(call: Call<List<Appointment>>, response: Response<List<Appointment>>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (!body.isNullOrEmpty()) setAppointmentsLayout(body)
+                    else {
+                        setNoAppointmentsLayout(
+                            preferenceManager.getRole(),
+                            goToAddAppointmentButton,
+                            goToMakeAnAppointmentButton
+                        )
+                    }
+                } else setErrorConnectionLayout()
+            }
+
+            override fun onFailure(call: Call<List<Appointment>>, t: Throwable) {
+                setErrorConnectionLayout()
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getDoctorAppointments(token: String?) {
+        val request = AppointmentRetrofitInstance.appointmentApiService.getDoctorAppointment(token.toString())
+        getAppointments(request)
+    }
+
+    private fun getPatientAppointments(token: String?) {
+        val request = AppointmentRetrofitInstance.appointmentApiService.getPatientAppointment(token.toString())
+        getAppointments(request)
+    }
+
+    private fun getNurseAppointments(token: String?) {
+        val request = AppointmentRetrofitInstance.appointmentApiService.getNurseAppointment(token.toString())
+        getAppointments(request)
     }
 
 }

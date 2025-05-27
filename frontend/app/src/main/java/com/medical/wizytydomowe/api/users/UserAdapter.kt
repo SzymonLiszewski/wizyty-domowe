@@ -98,7 +98,8 @@ class UserAdapter(
 
         fun setPatientData(patient: Patient){
             emailPatientTextView.text = patient.email
-            phoneNumberPatientTextView.text = "123-456-789"
+            val phoneNumberConverted = "${patient.phoneNumber?.substring(0,3)}-${patient.phoneNumber?.substring(3,6)}-${patient.phoneNumber?.substring(6)}"
+            phoneNumberPatientTextView.text = "${phoneNumberConverted}"
         }
 
         fun setPersonalData(user: User){

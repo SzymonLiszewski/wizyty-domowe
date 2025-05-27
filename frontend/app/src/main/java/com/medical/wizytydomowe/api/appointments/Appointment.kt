@@ -13,6 +13,6 @@ data class Appointment(
     val doctor: Doctor?,
     val nurse: Nurse?,
     val patient: Patient?,
-    val address: String?,
+    var address: String?,
     val notes: String?
 ) : Serializable

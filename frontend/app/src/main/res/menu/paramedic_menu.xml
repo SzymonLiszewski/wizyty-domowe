@@ -3,14 +3,14 @@
 
 
     <item
-        android:id="@+id/bottom_pramedic_medical_reports"
+        android:id="@+id/bottom_emergency_paramedic"
         android:title="@string/nav_paramedic_medical_report"
         android:icon="@drawable/ambulance_svgrepo_com"
         />
 
 
     <item
-        android:id="@+id/bottom_available_medical_report"
+        android:id="@+id/bottom_emergency_available"
         android:title="@string/nav_medical_report"
         android:icon="@drawable/ambulance_light_svgrepo_com"
         />

@@ -254,7 +254,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guidelineForm1"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -446,7 +446,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guidelineForm1"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -491,18 +491,20 @@
                         android:layout_marginEnd="15dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/dayOfTheWeekMenu"
+                        android:id="@+id/daysOfWeekMenu"
                         android:layout_width="265dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="3dp"
-                        android:hint="  Wybierz dzień tygodnia"
+                        android:hint="Wybierz dzień tygodnia"
+                        app:errorEnabled="true"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <AutoCompleteTextView
-                            android:id="@+id/exposedDropdown"
+                            android:id="@+id/daysOfWeekDropdown"
                             android:layout_width="match_parent"
                             android:layout_height="43dp"
-                            android:inputType="none"/>
+                            android:padding="8dp"
+                            android:inputType="none" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>

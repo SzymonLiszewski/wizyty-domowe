@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.medical.wizytydomowe.R
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -110,4 +111,49 @@ fun setActualDate(): String{
     val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     val currentDate = Date()
     return outputFormat.format(currentDate)
+}
+
+fun convertSelectedDay(selectedDay: String): String{
+    when{
+        selectedDay == "Poniedziałek" -> {
+            return "MONDAY"
+        }
+        selectedDay == "Wtorek" -> {
+            return "TUESDAY"
+        }
+        selectedDay == "Środa" -> {
+            return "WEDNESDAY"
+        }
+        selectedDay == "Czwartek" -> {
+            return "THURSDAY"
+        }
+        selectedDay == "Piątek" -> {
+            return "FRIDAY"
+        }
+        selectedDay == "Sobota" -> {
+            return "SATURDAY"
+        }
+        else -> {
+            return "SUNDAY"
+        }
+    }
+}
+
+fun countEndTimeAppointment(format: String, startTimeAppointment: String?, durationTime: String?) : String?{
+    try{
+        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        val startDate: Date = dateFormat.parse(startTimeAppointment.toString())!!
+
+        val minutes = durationTime?.toInt()
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+        if (minutes != null) {
+            calendar.add(Calendar.MINUTE, minutes)
+            return dateFormat.format(calendar.time)
+        }
+        else return null
+    }
+    catch (e: Exception){
+        return null
+    }
 }

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.medical.wizytydomowe.fragments.appointments.AddAppointmentFragment
 import com.medical.wizytydomowe.fragments.prescriptions.PrescriptionsFragment
 import com.medical.wizytydomowe.fragments.profile.ProfileFragment
-import com.medical.wizytydomowe.fragments.SearchFragment
+import com.medical.wizytydomowe.fragments.registerAppointment.SearchMedicalStaffFragment
 import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 import com.google.android.material.navigation.NavigationBarView
 import com.medical.wizytydomowe.fragments.prescriptions.AddPrescriptionFragment
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
         val preferenceManager = PreferenceManager(this)
 
-        val searchFragment = SearchFragment()
+        val searchMedicalStaffFragment = SearchMedicalStaffFragment()
         val appointmentFragment = AppointmentsFragment()
         val addAppointmentFragment = AddAppointmentFragment()
         val prescriptionsFragment = PrescriptionsFragment()
@@ -53,15 +53,15 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
         bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
-                R.id.bottom_visits -> {
+                R.id.bottom_appointments -> {
                     setCurrentFragment(appointmentFragment)
                     true
                 }
                 R.id.bottom_search -> {
-                    setCurrentFragment(searchFragment)
+                    setCurrentFragment(searchMedicalStaffFragment)
                     true
                 }
-                R.id.bottom_add_visit -> {
+                R.id.bottom_add_appointment -> {
                     setCurrentFragment(addAppointmentFragment)
                     true
                 }
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                         true
                     }
                 }
-                R.id.bottom_medical_report -> {
+                R.id.bottom_emergency_patient -> {
                     setCurrentFragment(emergencyPatientMenuFragment)
                     true
                 }
@@ -87,11 +87,11 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                     setCurrentFragment(addPrescriptionFragment)
                     true
                 }
-                R.id.bottom_available_medical_report -> {
+                R.id.bottom_emergency_available -> {
                     setCurrentFragment(emergencyAvailableFragment)
                     true
                 }
-                R.id.bottom_pramedic_medical_reports -> {
+                R.id.bottom_emergency_paramedic -> {
                     setCurrentFragment(emergencyFragment)
                     true
                 }
@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
     private fun setStartFragment(preferenceManager: PreferenceManager){
         if (!preferenceManager.isLoggedIn() || preferenceManager.getRole() == "Patient"){
-            setCurrentFragment(SearchFragment())
+            setCurrentFragment(SearchMedicalStaffFragment())
         }
         else if (preferenceManager.getRole() == "Doctor"){
             setCurrentFragment(AppointmentsFragment())

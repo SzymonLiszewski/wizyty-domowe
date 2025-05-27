@@ -14,7 +14,7 @@ import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
 import com.medical.wizytydomowe.api.prescriptions.Prescription
 import com.medical.wizytydomowe.api.prescriptions.PrescriptionAdapter
-import com.medical.wizytydomowe.fragments.SearchFragment
+import com.medical.wizytydomowe.fragments.registerAppointment.SearchMedicalStaffFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
 import retrofit2.Call
 import retrofit2.Callback
@@ -124,7 +124,7 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
 
     private fun navigateToMakeAnAppointmentFragment(){
         val activity = activity as? FragmentNavigation
-        activity?.navigateToFragment(SearchFragment())
+        activity?.navigateToFragment(SearchMedicalStaffFragment())
     }
 
     private fun navigateToAddPrescriptionFragment(){
@@ -139,20 +139,15 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
         activity?.navigateToFragment(PrescriptionDetailsFragment().apply { arguments = bundle })
     }
 
-    private fun getDoctorPrescriptions(token: String?){
-        AppointmentRetrofitInstance.appointmentApiService.getDoctorPrescriptions(token.toString())
-            .enqueue(object : Callback<List<Prescription>> {
+    private fun getPrescriptions(request: Call<List<Prescription>>){
+        request.enqueue(object : Callback<List<Prescription>> {
             override fun onResponse(call: Call<List<Prescription>>, response: Response<List<Prescription>>) {
                 if (response.isSuccessful) {
                     val body = response.body()
-                    if (!body.isNullOrEmpty()){
-                        setPrescriptionsLayout(body)
-                    }
+                    if (!body.isNullOrEmpty()) setPrescriptionsLayout(body)
                     else setNoPrescriptionsLayout(preferenceManager.getRole(), goToAddPrescriptionButton, goToMakeAnAppointmentButton)
                 }
-                else {
-                    setErrorConnectionLayout()
-                }
+                else setErrorConnectionLayout()
             }
 
             override fun onFailure(call: Call<List<Prescription>>, t: Throwable) {
@@ -162,27 +157,14 @@ class PrescriptionsFragment : Fragment(R.layout.prescriptions_fragment) {
         })
     }
 
-    private fun getPatientPrescriptions(token: String?){
-        AppointmentRetrofitInstance.appointmentApiService.getPatientPrescriptions(token.toString())
-            .enqueue(object : Callback<List<Prescription>> {
-                override fun onResponse(call: Call<List<Prescription>>, response: Response<List<Prescription>>) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (!body.isNullOrEmpty()){
-                            setPrescriptionsLayout(body)
-                        }
-                        else setNoPrescriptionsLayout(preferenceManager.getRole(), goToAddPrescriptionButton, goToMakeAnAppointmentButton)
-                    }
-                    else {
-                        setErrorConnectionLayout()
-                    }
-                }
+    private fun getDoctorPrescriptions(token: String?){
+        val request = AppointmentRetrofitInstance.appointmentApiService.getDoctorPrescriptions(token.toString())
+        getPrescriptions(request)
+    }
 
-                override fun onFailure(call: Call<List<Prescription>>, t: Throwable) {
-                    setErrorConnectionLayout()
-                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
-                }
-            })
+    private fun getPatientPrescriptions(token: String?){
+        val request = AppointmentRetrofitInstance.appointmentApiService.getPatientPrescriptions(token.toString())
+        getPrescriptions(request)
     }
 
 }

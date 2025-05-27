@@ -16,7 +16,12 @@ import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
 import com.medical.wizytydomowe.api.appointments.AddAppointmentRequest
 import com.medical.wizytydomowe.api.appointments.Appointment
+import com.medical.wizytydomowe.api.appointments.AppointmentChangeStatusRequest
+import com.medical.wizytydomowe.api.appointments.AppointmentRegisterRequest
+import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
+import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import com.medical.wizytydomowe.api.utils.*
+import com.medical.wizytydomowe.fragments.profile.LoginFragment
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,7 +42,12 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private lateinit var addressHorizontalView: MaterialCardView
     private lateinit var cancelAppointmentView : MaterialCardView
     private lateinit var finishAppointmentView: MaterialCardView
+    private lateinit var registerAppointmentView:MaterialCardView
+    private lateinit var goToLoginView: MaterialCardView
     private lateinit var addAppointmentView: MaterialCardView
+    private lateinit var noPatientView: MaterialCardView
+    private lateinit var noAddressVerticalView: MaterialCardView
+    private lateinit var noAddressHorizontalView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,60 +57,55 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
         cancelAppointmentView = view.findViewById(R.id.cancelAppointmentView)
         finishAppointmentView = view.findViewById(R.id.finishAppointmentView)
+        registerAppointmentView = view.findViewById(R.id.registerAppointmentView)
+        goToLoginView = view.findViewById(R.id.goToLoginView)
         addAppointmentView = view.findViewById(R.id.addAppointmentView)
         doctorView = view.findViewById(R.id.doctorView)
         nurseView = view.findViewById(R.id.nurseView)
         patientView = view.findViewById(R.id.patientView)
         addressVerticalView = view.findViewById(R.id.addressVerticalView)
         addressHorizontalView = view.findViewById(R.id.addressHorizontalView)
+        noPatientView = view.findViewById(R.id.noPatientView)
+        noAddressVerticalView = view.findViewById(R.id.noAddressVerticalView)
+        noAddressHorizontalView = view.findViewById(R.id.noAddressHorizontalView)
 
         preferenceManager = PreferenceManager(requireContext())
         val userRole = preferenceManager.getRole()
+        val token = "Bearer " + preferenceManager.getAuthToken()
 
-        if (userRole == "Patient") setPatientLayout()
+        if (userRole == "Nurse") setNurseLayout()
         else if (userRole == "Doctor") setDoctorLayout()
-        else setNurseLayout()
+        else setPatientLayout()
 
-        cancelAppointmentView.setOnClickListener {
-            showCancelAppointmentDialog()
-        }
-
-        finishAppointmentView.setOnClickListener {
-            //TODO send request to the backend
-        }
-
+        cancelAppointmentView.setOnClickListener { cancelAppointmentDialog() }
+        finishAppointmentView.setOnClickListener { finishAppointmentDialog() }
         addAppointmentView.setOnClickListener { addNewAppointmentDialog() }
-
+        registerAppointmentView.setOnClickListener { registerAppointmentDialog() }
+        goToLoginView.setOnClickListener { navigateToLoginFragment() }
     }
 
-    private fun cancelAppointment(){
-        //TODO send request to the backend and toast
-        Toast.makeText(requireContext(), "Anulowano wizytę.", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showCancelAppointmentDialog(){
-        showDialog(requireContext(),"Czy na pewno chcesz anulować wizytę?"){
-            cancelAppointment()
-        }
+    private fun navigateToLoginFragment(){
+        val activity = activity as? FragmentNavigation
+        activity?.navigateToFragment(LoginFragment())
     }
 
     private fun setStatus(){
         val statusTextView = view?.findViewById<TextView>(R.id.statusTextView)
 
         when (appointment?.status) {
-            "Canceled" -> {
+            "CANCELED" -> {
                 statusTextView?.text = "ANULOWANA"
                 statusTextView?.setTextColor(Color.RED)
             }
-            "Completed" -> {
+            "COMPLETED" -> {
                 statusTextView?.text = "ODBYTA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
-            "Reserved" -> {
+            "RESERVED" -> {
                 statusTextView?.text = "ZAREZERWOWANA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
-            "Available" -> {
+            "AVAILABLE" -> {
                 statusTextView?.text = "DOSTĘPNA"
                 statusTextView?.setTextColor(Color.BLACK)
             }
@@ -108,14 +113,20 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
         if (!appointment?.notes.isNullOrEmpty()) view?.findViewById<TextView>(R.id.notesTextView)?.text = "Dodatkowe informacje:\n" + "${appointment?.notes}"
 
-        if (appointment?.status == "Reserved" && preferenceManager.getRole() == "Patient") cancelAppointmentView.visibility = View.VISIBLE
+        if (appointment?.status == "RESERVED" && preferenceManager.getRole() == "Patient") cancelAppointmentView.visibility = View.VISIBLE
         else cancelAppointmentView.visibility = View.GONE
 
-        if (appointment?.status == "Reserved" && preferenceManager.getRole() != "Patient") finishAppointmentView.visibility = View.VISIBLE
+        if (appointment?.status == "RESERVED" && preferenceManager.getRole() != "Patient") finishAppointmentView.visibility = View.VISIBLE
         else finishAppointmentView.visibility = View.GONE
 
-        if (appointment?.status == "Available" && addNewAppointmentFlag != null) addAppointmentView.visibility = View.VISIBLE
+        if (appointment?.status == "AVAILABLE" && preferenceManager.getRole() == "Patient") registerAppointmentView.visibility = View.VISIBLE
+        else registerAppointmentView.visibility = View.GONE
+
+        if (appointment?.status == "AVAILABLE" && addNewAppointmentFlag != null) addAppointmentView.visibility = View.VISIBLE
         else addAppointmentView.visibility = View.GONE
+
+        if (appointment?.status == "AVAILABLE" && preferenceManager.getRole() == null) goToLoginView.visibility = View.VISIBLE
+        else goToLoginView.visibility = View.GONE
     }
 
     private fun setAddressData(){
@@ -147,22 +158,23 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private fun setPatientData(){
         view?.findViewById<TextView>(R.id.firstNamePatientTextView)?.text = "${appointment?.patient?.firstName}"
         view?.findViewById<TextView>(R.id.lastNamePatientTextView)?.text = "${appointment?.patient?.lastName}"
-        view?.findViewById<TextView>(R.id.phoneNumberPatientTextView)?.text = "123-456-789"
-        view?.findViewById<TextView>(R.id.emailPatientTextView)?.text = "janrogowski@gmail.com"
+        val phoneNumberConverted = "${appointment?.patient?.phoneNumber?.substring(0,3)}-${appointment?.patient?.phoneNumber?.substring(3,6)}-${appointment?.patient?.phoneNumber?.substring(6)}"
+        view?.findViewById<TextView>(R.id.phoneNumberPatientTextView)?.text = "${phoneNumberConverted}"
+        view?.findViewById<TextView>(R.id.emailPatientTextView)?.text = "${appointment?.patient?.email}"
     }
 
     private fun setNurseData(){
         view?.findViewById<TextView>(R.id.firstNameNurseTextView)?.text = "${appointment?.nurse?.firstName}"
         view?.findViewById<TextView>(R.id.lastNameNurseTextView)?.text = "${appointment?.nurse?.lastName}"
         view?.findViewById<TextView>(R.id.specializationNurseTextView)?.text = "Pielęgniarka"
-        view?.findViewById<TextView>(R.id.hospitalNurseTextView)?.text = "${appointment?.nurse?.workPlace}"
+        view?.findViewById<TextView>(R.id.hospitalNurseTextView)?.text = "${appointment?.nurse?.workPlace?.name}"
     }
 
     private fun setDoctorData(){
         view?.findViewById<TextView>(R.id.firstNameDoctorTextView)?.text = "${appointment?.doctor?.firstName}"
         view?.findViewById<TextView>(R.id.lastNameDoctorTextView)?.text = "${appointment?.doctor?.lastName}"
         view?.findViewById<TextView>(R.id.specializationDoctorTextView)?.text = "${appointment?.doctor?.specialization}"
-        view?.findViewById<TextView>(R.id.hospitalDoctorTextView)?.text = "${appointment?.doctor?.workPlace}"
+        view?.findViewById<TextView>(R.id.hospitalDoctorTextView)?.text = "${appointment?.doctor?.workPlace?.name}"
     }
 
     private fun setLayoutPositionInGrid(view: MaterialCardView, row: Int, column: Int){
@@ -182,15 +194,29 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
+    }
+
+    private fun setAddressHorizontalLayoutAndView(){
+        if (appointment?.address != null){
+            addressHorizontalView.visibility = View.VISIBLE
+            noAddressHorizontalView.visibility = View.GONE
+            setAddressData()
+        }
+        else {
+            addressHorizontalView.visibility = View.GONE
+            noAddressHorizontalView.visibility = View.VISIBLE
+        }
     }
 
     private fun setPatientLayoutWithDoctorAndNurse(){
         doctorView.visibility = View.VISIBLE
         nurseView.visibility = View.VISIBLE
         patientView.visibility = View.GONE
+        noPatientView.visibility - View.GONE
         addressVerticalView.visibility = View.GONE
-        addressHorizontalView.visibility = View.VISIBLE
+        noAddressVerticalView.visibility = View.GONE
+
+        setAddressHorizontalLayoutAndView()
 
         setLayoutPositionInGrid(doctorView, 0, 0)
         setLayoutPositionInGrid(nurseView, 0, 1)
@@ -201,18 +227,32 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
+    }
+
+    private fun setAddressVerticaLayoutAndView(){
+        if (appointment?.address != null){
+            noAddressVerticalView.visibility = View.GONE
+            addressVerticalView.visibility = View.VISIBLE
+            setLayoutPositionInGrid(addressVerticalView, 0, 1)
+            setAddressData()
+        }
+        else{
+            noAddressVerticalView.visibility = View.VISIBLE
+            addressVerticalView.visibility = View.GONE
+        }
     }
 
     private fun setPatientLayoutWithDoctor(){
         doctorView.visibility = View.VISIBLE
         nurseView.visibility = View.GONE
         patientView.visibility = View.GONE
-        addressVerticalView.visibility = View.VISIBLE
+        noPatientView.visibility - View.GONE
         addressHorizontalView.visibility = View.GONE
+        noAddressHorizontalView.visibility = View.GONE
+
+        setAddressVerticaLayoutAndView()
 
         setLayoutPositionInGrid(doctorView, 0, 0)
-        setLayoutPositionInGrid(addressVerticalView, 0, 1)
     }
 
     private fun setPatientViewWithNurse(){
@@ -220,18 +260,19 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
     }
 
     private fun setPatientLayoutWithNurse(){
         doctorView.visibility = View.GONE
         nurseView.visibility = View.VISIBLE
         patientView.visibility = View.GONE
-        addressVerticalView.visibility = View.VISIBLE
+        noPatientView.visibility - View.GONE
         addressHorizontalView.visibility = View.GONE
+        noAddressHorizontalView.visibility = View.GONE
+
+        setAddressVerticaLayoutAndView()
 
         setLayoutPositionInGrid(nurseView, 0, 0)
-        setLayoutPositionInGrid(addressVerticalView, 0, 1)
     }
 
     private fun setPatientLayout(){
@@ -251,41 +292,50 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
     private fun setDoctorViewWithNurse(){
         setNurseData()
-        setPatientData()
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
+    }
+
+    private fun setPatientLayoutAndViewForMedicalStaff(){
+        if (appointment?.patient != null){
+            patientView.visibility = View.VISIBLE
+            noPatientView.visibility = View.GONE
+            setLayoutPositionInGrid(patientView, 0, 0)
+            setPatientData()
+        }
+        else {
+            patientView.visibility = View.GONE
+            noPatientView.visibility = View.VISIBLE
+        }
     }
 
     private fun setDoctorLayoutWithNurse(){
         doctorView.visibility = View.GONE
         nurseView.visibility = View.VISIBLE
-        patientView.visibility = View.VISIBLE
         addressVerticalView.visibility = View.GONE
-        addressHorizontalView.visibility = View.VISIBLE
+        noAddressVerticalView.visibility = View.GONE
 
-        setLayoutPositionInGrid(patientView, 0, 0)
+        setAddressHorizontalLayoutAndView()
+        setPatientLayoutAndViewForMedicalStaff()
+
         setLayoutPositionInGrid(nurseView, 0, 1)
     }
 
     private fun setDoctorViewWithoutNurse(){
-        setPatientData()
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
     }
 
     private fun setDoctorLayoutWithoutNurse(){
         doctorView.visibility = View.GONE
         nurseView.visibility = View.GONE
-        patientView.visibility = View.VISIBLE
-        addressVerticalView.visibility = View.VISIBLE
         addressHorizontalView.visibility = View.GONE
+        noAddressHorizontalView.visibility = View.GONE
 
-        setLayoutPositionInGrid(patientView, 0, 0)
-        setLayoutPositionInGrid(addressVerticalView, 0, 1)
+        setAddressVerticaLayoutAndView()
+        setPatientLayoutAndViewForMedicalStaff()
     }
 
     private fun setDoctorLayout(){
@@ -300,42 +350,40 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     }
 
     private fun setNurseViewWithDoctor(){
-        setPatientData()
         setDoctorData()
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
     }
 
     private fun setNurseLayoutWithDoctor(){
         doctorView.visibility = View.VISIBLE
         nurseView.visibility = View.GONE
-        patientView.visibility = View.VISIBLE
         addressVerticalView.visibility = View.GONE
-        addressHorizontalView.visibility = View.VISIBLE
+        noAddressVerticalView.visibility = View.GONE
 
-        setLayoutPositionInGrid(patientView, 0, 0)
+        setAddressHorizontalLayoutAndView()
+        setPatientLayoutAndViewForMedicalStaff()
+
         setLayoutPositionInGrid(doctorView, 0, 1)
     }
 
     private fun setNurseViewWithoutDoctor(){
-        setPatientData()
         setStatus()
         setStartData()
         setEndData()
-        setAddressData()
     }
 
     private fun setNurseLayoutWithoutDoctor(){
         doctorView.visibility = View.GONE
         nurseView.visibility = View.GONE
-        patientView.visibility = View.VISIBLE
-        addressVerticalView.visibility = View.VISIBLE
         addressHorizontalView.visibility = View.GONE
+        noAddressHorizontalView.visibility = View.GONE
 
-        setLayoutPositionInGrid(patientView, 0, 0)
-        setLayoutPositionInGrid(addressVerticalView, 0, 1)
+        setAddressVerticaLayoutAndView()
+
+        setPatientLayoutAndViewForMedicalStaff()
+
     }
 
     private fun setNurseLayout(){
@@ -358,6 +406,7 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         val addAppointmentRequest = AddAppointmentRequest(appointment?.status, appointment?.appointmentStartTime,
             appointment?.appointmentEndTime, appointment?.doctor?.id, appointment?.nurse?.id,
             appointment?.patient?.id, appointment?.address, appointment?.notes)
+
         AppointmentRetrofitInstance.appointmentApiService.addSingleAppointment(addAppointmentRequest)
             .enqueue(object : Callback<Unit> {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
@@ -380,6 +429,93 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private fun addNewAppointmentDialog(){
         showDialog(requireContext(),"Czy na pewno chcesz dodać tę wizytę?"){
             addNewAppointment()
+        }
+    }
+
+    private fun cancelAppointment(){
+        val token = "Bearer " + preferenceManager.getAuthToken()
+
+        AppointmentRetrofitInstance.appointmentApiService.cancelAppointment(appointment?.id.toString(), token)
+            .enqueue(object : Callback<Unit> {
+                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(context, "Wizyta została anulowana pomyślnie.", Toast.LENGTH_LONG).show()
+                        navigateToAppointmentFragment()
+                    }
+                    else {
+                        val errorMessage = response.errorBody()?.string()
+                        Toast.makeText(context, "Podczas anulowania wizyty wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun cancelAppointmentDialog(){
+        showDialog(requireContext(),"Czy na pewno chcesz anulować wizytę?"){
+            cancelAppointment()
+        }
+    }
+
+    private fun finishAppointment(){
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        val appointmentChangeStatusRequest = AppointmentChangeStatusRequest("COMPLETED")
+
+        AppointmentRetrofitInstance.appointmentApiService.finishAppointment(token, appointment?.id.toString(),
+            appointmentChangeStatusRequest)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(context, "Status wizyty został pomyślnie zmieniony.", Toast.LENGTH_LONG).show()
+                        navigateToAppointmentFragment()
+                    }
+                    else {
+                        val errorMessage = response.errorBody()?.string()
+                        Toast.makeText(context, "Podczas zmiany statusu wizyty wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun finishAppointmentDialog(){
+        showDialog(requireContext(),"Czy na pewno chcesz uznać wizytę za odbytą?"){
+            finishAppointment()
+        }
+    }
+
+    private fun registerAppointment(){
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        val appointmentRegisterRequest = AppointmentRegisterRequest(appointment?.id, appointment?.address)
+
+        AppointmentRetrofitInstance.appointmentApiService.registerPatientOnAppointment(token, appointmentRegisterRequest)
+            .enqueue(object : Callback<Unit> {
+                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(context, "Wizyta została zarezerwowana pomyślnie.", Toast.LENGTH_LONG).show()
+                        navigateToAppointmentFragment()
+                    }
+                    else {
+                        val errorMessage = response.errorBody()?.string()
+                        Toast.makeText(context, "Podczas rezerwacji wizyty wystąpił błąd: $errorMessage.", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun registerAppointmentDialog(){
+        showDialog(requireContext(),"Czy na pewno chcesz zarezerwować tę wizytę?"){
+            registerAppointment()
         }
     }
 }

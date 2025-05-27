@@ -10,7 +10,7 @@ import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
-import com.medical.wizytydomowe.api.emergency.ChangeStatusRequest
+import com.medical.wizytydomowe.api.emergency.EmergencyChangeStatusRequest
 import com.medical.wizytydomowe.api.emergency.Emergency
 import com.medical.wizytydomowe.api.utils.*
 import okhttp3.ResponseBody
@@ -237,10 +237,10 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
 
     private fun sendFinishEmergencyRequest(){
         val token = "Bearer " + preferenceManager.getAuthToken()
-        val changeStatusRequest = ChangeStatusRequest("Completed")
+        val emergencyChangeStatusRequest = EmergencyChangeStatusRequest("Completed")
 
         AppointmentRetrofitInstance.appointmentApiService.finishEmergency(token,
-            emergency?.id.toString(), changeStatusRequest).enqueue(object : Callback<ResponseBody> {
+            emergency?.id.toString(), emergencyChangeStatusRequest).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Zgłoszenie zostało zakończone pomyślnie.", Toast.LENGTH_LONG).show()

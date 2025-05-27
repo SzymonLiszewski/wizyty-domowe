@@ -110,45 +110,31 @@ class EmergencyFragment  : Fragment(R.layout.emergency_fragment) {
         activity?.navigateToFragment(AddEmergencyFragment())
     }
 
-    private fun getPatientEmergency(userToken: String?, userRole: String?){
-        AppointmentRetrofitInstance.appointmentApiService.getPatientEmergency(userToken.toString())
-            .enqueue(object : Callback<List<Emergency>> {
-                override fun onResponse(call: Call<List<Emergency>>, response: Response<List<Emergency>>) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (!body.isNullOrEmpty()){
-                            setEmergenciesLayout(body)
-                        }
-                        else setNoEmergenciesLayout(userRole)
-                    }
-                    else setErrorConnectionLayout()
+    private fun getEmergencies(userRole: String?, request: Call<List<Emergency>>){
+        request.enqueue(object : Callback<List<Emergency>> {
+            override fun onResponse(call: Call<List<Emergency>>, response: Response<List<Emergency>>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (!body.isNullOrEmpty()) setEmergenciesLayout(body)
+                    else setNoEmergenciesLayout(userRole)
                 }
+                else setErrorConnectionLayout()
+            }
 
-                override fun onFailure(call: Call<List<Emergency>>, t: Throwable) {
-                    setErrorConnectionLayout()
-                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            override fun onFailure(call: Call<List<Emergency>>, t: Throwable) {
+                setErrorConnectionLayout()
+                Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getPatientEmergency(userToken: String?, userRole: String?){
+        val request = AppointmentRetrofitInstance.appointmentApiService.getPatientEmergency(userToken.toString())
+        getEmergencies(userRole, request)
     }
 
     private fun getParamedicEmergency(userToken: String?, userRole: String?){
-        AppointmentRetrofitInstance.appointmentApiService.getParamedicEmergency(userToken.toString())
-            .enqueue(object : Callback<List<Emergency>> {
-                override fun onResponse(call: Call<List<Emergency>>, response: Response<List<Emergency>>) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (!body.isNullOrEmpty()){
-                            setEmergenciesLayout(body)
-                        }
-                        else setNoEmergenciesLayout(userRole)
-                    }
-                    else setErrorConnectionLayout()
-                }
-
-                override fun onFailure(call: Call<List<Emergency>>, t: Throwable) {
-                    setErrorConnectionLayout()
-                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
-                }
-            })
+        val request = AppointmentRetrofitInstance.appointmentApiService.getParamedicEmergency(userToken.toString())
+        getEmergencies(userRole, request)
     }
 }
