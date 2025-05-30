@@ -1,14 +1,32 @@
 package com.medical.wizytydomowe.fragments.appointments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.GridLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
@@ -21,14 +39,18 @@ import com.medical.wizytydomowe.api.appointments.AppointmentRegisterRequest
 import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import com.medical.wizytydomowe.api.utils.*
+import com.medical.wizytydomowe.fragments.emergency.EmergencyDetailsFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyDetailsFragment.Companion
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
 
-class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragment) {
+class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragment), OnMapReadyCallback {
 
     private var appointment: Appointment? = null
     private var addNewAppointmentFlag: String? = null
@@ -48,6 +70,14 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private lateinit var noPatientView: MaterialCardView
     private lateinit var noAddressVerticalView: MaterialCardView
     private lateinit var noAddressHorizontalView: MaterialCardView
+
+    //Google maps
+    private lateinit var map: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,6 +112,25 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         addAppointmentView.setOnClickListener { addNewAppointmentDialog() }
         registerAppointmentView.setOnClickListener { registerAppointmentDialog() }
         goToLoginView.setOnClickListener { navigateToLoginFragment() }
+
+
+        // Initialize Google map
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        val mapFragment = childFragmentManager
+            .findFragmentById(R.id.id_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        val mapTouchOverlay = view.findViewById<View>(R.id.map_touch_overlay)
+        val nestedScrollView = view.findViewById<NestedScrollView>(R.id.nested_view)
+
+        mapTouchOverlay.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> nestedScrollView.requestDisallowInterceptTouchEvent(true)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> nestedScrollView.requestDisallowInterceptTouchEvent(false)
+            }
+            false
+        }
     }
 
     private fun navigateToLoginFragment(){
@@ -129,16 +178,18 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         else goToLoginView.visibility = View.GONE
     }
 
+    //TODO:
+    //mapa
     private fun setAddressData(){
         val cityVerticalTextView = view?.findViewById<TextView>(R.id.cityVerticalTextView)
         val postalCodeVerticalTextView = view?.findViewById<TextView>(R.id.postalCodeVerticalTextView)
         val streetVerticalTextView = view?.findViewById<TextView>(R.id.streetVerticalTextView)
-        val cityHorizontalTextView = view?.findViewById<TextView>(R.id.cityHorizontalTextView)
-        val postalCodeHorizontalTextView = view?.findViewById<TextView>(R.id.postalCodeHorizontalTextView)
-        val streetHorizontalTextView = view?.findViewById<TextView>(R.id.streetHorizontalTextView)
+//        val cityHorizontalTextView = view?.findViewById<TextView>(R.id.cityHorizontalTextView)
+//        val postalCodeHorizontalTextView = view?.findViewById<TextView>(R.id.postalCodeHorizontalTextView)
+//        val streetHorizontalTextView = view?.findViewById<TextView>(R.id.streetHorizontalTextView)
 
         setAddress(appointment?.address, cityVerticalTextView, postalCodeVerticalTextView, streetVerticalTextView)
-        setAddress(appointment?.address, cityHorizontalTextView, postalCodeHorizontalTextView, streetHorizontalTextView)
+//        setAddress(appointment?.address, cityHorizontalTextView, postalCodeHorizontalTextView, streetHorizontalTextView)
     }
 
     private fun setEndData(){
@@ -516,6 +567,98 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private fun registerAppointmentDialog(){
         showDialog(requireContext(),"Czy na pewno chcesz zarezerwować tę wizytę?"){
             registerAppointment()
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                AppointmentDetailsFragment.LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+
+        map.isMyLocationEnabled = true
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                val userLocation = LatLng(location.latitude, location.longitude)
+                map.addMarker(
+                    MarkerOptions()
+                        .position(userLocation)
+                        .title("Twoja lokalizacja")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                )
+
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                appointment?.address?.let { addressString ->
+                    try {
+                        val addressList = geocoder.getFromLocationName(addressString, 1)
+                        if (addressList != null && addressList.isNotEmpty()) {
+                            val address = addressList[0]
+                            val emergencyLocation = LatLng(address.latitude, address.longitude)
+
+                            map.addMarker(
+                                MarkerOptions()
+                                    .position(emergencyLocation)
+                                    .title("Lokalizacja wizyty")
+                                    .icon(
+                                        BitmapDescriptorFactory.defaultMarker(
+                                            BitmapDescriptorFactory.HUE_RED))
+                            )
+
+                            // Dodanie linii łączącej oba punkty
+                            val polylineOptions = PolylineOptions()
+                                .add(userLocation)
+                                .add(emergencyLocation)
+                                .width(8f)
+                                .color(Color.GREEN)
+                                .geodesic(true)
+                            map.addPolyline(polylineOptions)
+
+                            // Ustawienie kamery by objąć oba punkty
+                            val boundsBuilder = LatLngBounds.Builder()
+                            boundsBuilder.include(userLocation)
+                            boundsBuilder.include(emergencyLocation)
+                            val bounds = boundsBuilder.build()
+
+                            val padding = 100 // margines w pikselach od krawędzi ekranu
+                            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                            map.moveCamera(cameraUpdate)
+
+                        } else {
+                            Toast.makeText(requireContext(), "Nie znaleziono lokalizacji: $addressString", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: IOException) {
+                        Toast.makeText(requireContext(), "Błąd geokodowania: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Nie udało się pobrać lokalizacji użytkownika", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == AppointmentDetailsFragment.LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Jeśli pozwolenie zostało udzielone, ponownie załaduj mapę
+                val mapFragment = childFragmentManager
+                    .findFragmentById(R.id.id_map) as SupportMapFragment
+                mapFragment.getMapAsync(this)
+            }
         }
     }
 }

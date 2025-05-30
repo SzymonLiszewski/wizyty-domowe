@@ -1,10 +1,29 @@
 package com.medical.wizytydomowe.fragments.emergency
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Geocoder
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.PreferenceManager
@@ -17,8 +36,10 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
-class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
+class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment), OnMapReadyCallback {
 
     private var emergency: Emergency? = null
     private var addNewEmergencyFlag: Boolean? = null
@@ -30,6 +51,14 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     private lateinit var patientView: MaterialCardView
     private lateinit var paramedicView: MaterialCardView
     private lateinit var noParamedicView: MaterialCardView
+
+    //Google maps
+    private lateinit var map: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,6 +86,24 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
 
         sendEmergencyView.setOnClickListener {
             showAddNewEmergencyDialog()
+        }
+
+        // Inicjalizacja Google Maps
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        val mapFragment = childFragmentManager
+            .findFragmentById(R.id.id_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        val mapTouchOverlay = view.findViewById<View>(R.id.map_touch_overlay)
+        val nestedScrollView = view.findViewById<NestedScrollView>(R.id.nested_view)
+
+        mapTouchOverlay.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> nestedScrollView.requestDisallowInterceptTouchEvent(true)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> nestedScrollView.requestDisallowInterceptTouchEvent(false)
+            }
+            false
         }
 
         if (userRole == "Paramedic") setParamedicLayout()
@@ -133,12 +180,13 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
     }
 
 
+    //TUTAJ MAPKA
     private fun setAddressData(){
-        val cityEmergencyTextView =  view?.findViewById<TextView>(R.id.cityEmergencyTextView)
-        val postalCodeEmergencyTextView =  view?.findViewById<TextView>(R.id.postalCodeEmergencyTextView)
-        val streetEmergencyTextView =  view?.findViewById<TextView>(R.id.streetEmergencyTextView)
+//        val cityEmergencyTextView =  view?.findViewById<TextView>(R.id.cityEmergencyTextView)
+//        val postalCodeEmergencyTextView =  view?.findViewById<TextView>(R.id.postalCodeEmergencyTextView)
+//        val streetEmergencyTextView =  view?.findViewById<TextView>(R.id.streetEmergencyTextView)
 
-        setAddress(emergency?.address, cityEmergencyTextView, postalCodeEmergencyTextView, streetEmergencyTextView)
+        setAddress(emergency?.address, null, null, null)
     }
 
     private fun setDescription(){
@@ -256,5 +304,95 @@ class EmergencyDetailsFragment : Fragment(R.layout.emergency_details_fragment) {
                 Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+
+        map.isMyLocationEnabled = true
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                val userLocation = LatLng(location.latitude, location.longitude)
+                map.addMarker(
+                    MarkerOptions()
+                        .position(userLocation)
+                        .title("Twoja lokalizacja")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                )
+
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                emergency?.address?.let { addressString ->
+                    try {
+                        val addressList = geocoder.getFromLocationName(addressString, 1)
+                        if (addressList != null && addressList.isNotEmpty()) {
+                            val address = addressList[0]
+                            val emergencyLocation = LatLng(address.latitude, address.longitude)
+
+                            map.addMarker(
+                                MarkerOptions()
+                                    .position(emergencyLocation)
+                                    .title("Lokalizacja zgłoszenia")
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                            )
+
+                            // Dodanie linii łączącej oba punkty
+                            val polylineOptions = PolylineOptions()
+                                .add(userLocation)
+                                .add(emergencyLocation)
+                                .width(8f)
+                                .color(Color.GREEN)
+                                .geodesic(true)
+                            map.addPolyline(polylineOptions)
+
+                            // Ustawienie kamery by objąć oba punkty
+                            val boundsBuilder = LatLngBounds.Builder()
+                            boundsBuilder.include(userLocation)
+                            boundsBuilder.include(emergencyLocation)
+                            val bounds = boundsBuilder.build()
+
+                            val padding = 100 // margines w pikselach od krawędzi ekranu
+                            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                            map.moveCamera(cameraUpdate)
+
+                        } else {
+                            Toast.makeText(requireContext(), "Nie znaleziono lokalizacji: $addressString", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: IOException) {
+                        Toast.makeText(requireContext(), "Błąd geokodowania: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Nie udało się pobrać lokalizacji użytkownika", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Jeśli pozwolenie zostało udzielone, ponownie załaduj mapę
+                val mapFragment = childFragmentManager
+                    .findFragmentById(R.id.id_map) as SupportMapFragment
+                mapFragment.getMapAsync(this)
+            }
+        }
     }
 }
