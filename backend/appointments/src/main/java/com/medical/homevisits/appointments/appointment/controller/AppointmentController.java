@@ -42,7 +42,24 @@ public class AppointmentController {
     }
 
     @PostMapping("")
-    public void addAppointment(@RequestBody AddAppointmentRequest request){
+    public void addAppointment(
+            @RequestBody AddAppointmentRequest request,
+            @RequestHeader(value = "Authorization") String token
+    ){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        String role = claims.get("role", String.class);
+
+        if (!Objects.equals(role, "Doctor") && !Objects.equals(role, "Nurse")){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "");
+        }
+
         Doctor doctor = null;
         Nurse nurse = null;
         if (request.getDoctor() == null && request.getNurse() == null){
