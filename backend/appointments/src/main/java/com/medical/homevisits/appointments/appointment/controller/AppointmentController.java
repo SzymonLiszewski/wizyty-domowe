@@ -307,6 +307,28 @@ public class AppointmentController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this appointment");
     }
 
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<Void> completeAppointment(
+            @PathVariable UUID id,
+            @RequestHeader("Authorization") String token
+    ) {
+        String jwt = token.replace("Bearer ", "");
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+
+        UUID userId = UUID.fromString(claims.get("id", String.class));
+        String role = claims.get("role", String.class);
+
+        Appointment appointment = service.find(id);
+        if (role.equals("Doctor") && appointment.getDoctor().getID().equals(userId) ||
+                role.equals("Nurse") && appointment.getNurse().getID().equals(userId)
+        ) {
+            appointment.setStatus(AppointmentStatus.COMPLETED);
+            return ResponseEntity.noContent().build();
+        }
+
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this appointment");
+    }
+
 
 }
 
