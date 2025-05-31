@@ -187,7 +187,7 @@ public class AppointmentController {
         if (service.find(request.getAppointmentId()).getStatus() != AppointmentStatus.AVAILABLE){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "appointment not available");
         }
-        service.registerPatient(request.getAppointmentId(), patientId);
+        service.registerPatient(request.getAppointmentId(), patientId, request.getAddress());
     }
 
 
@@ -361,4 +361,5 @@ class CalendarRequest{
 @Getter
 class RegisterRequest{
     private UUID appointmentId;
+    private String address;
 }
