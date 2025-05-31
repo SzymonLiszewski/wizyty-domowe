@@ -29,15 +29,17 @@ public class PrescriptionController {
     private final PrescriptionService service;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final NurseRepository nurseRepository;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Autowired
-    public PrescriptionController(PrescriptionService service, PatientRepository patientRepository, DoctorRepository doctorRepository) {
+    public PrescriptionController(PrescriptionService service, PatientRepository patientRepository, DoctorRepository doctorRepository, NurseRepository nurseRepository) {
         this.service = service;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
+        this.nurseRepository = nurseRepository;
     }
 
     /**
@@ -152,7 +154,7 @@ public class PrescriptionController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-    private NurseRepository nurseRepository;
+
     @GetMapping("/doctors/from-workplace")
     public ResponseEntity<List<Doctor>> getDoctorsFromSameHospital(@RequestHeader("Authorization") String token) {
         String jwt = token.replace("Bearer ", "");
@@ -164,6 +166,19 @@ public class PrescriptionController {
 
         List<Doctor> doctors = doctorRepository.findByWorkPlace(nurse.getWorkPlace());
         return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping("/nurses/from-workplace")
+    public ResponseEntity<List<Nurse>> getNursesFromSameHospital(@RequestHeader("Authorization") String token) {
+        String jwt = token.replace("Bearer ", "");
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody();
+
+        UUID doctorId = UUID.fromString(claims.get("id", String.class));
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "doctor not found"));
+
+        List<Nurse> nurses = nurseRepository.findByWorkPlace(doctor.getWorkPlace());
+        return ResponseEntity.ok(nurses);
     }
 
 }
