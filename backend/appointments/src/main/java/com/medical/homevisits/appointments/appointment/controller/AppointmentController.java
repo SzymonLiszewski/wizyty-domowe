@@ -297,7 +297,9 @@ public class AppointmentController {
 
         Appointment appointment = service.find(id);
         if (role.equals("Doctor") && appointment.getDoctor().getID().equals(userId) ||
-            role.equals("Nurse") && appointment.getNurse().getID().equals(userId)) {
+            role.equals("Nurse") && appointment.getNurse().getID().equals(userId) ||
+            role.equals("Patient") && appointment.getPatient().getID().equals(userId)
+        ) {
             appointment.setStatus(AppointmentStatus.CANCELED);
             return ResponseEntity.noContent().build();
         }
