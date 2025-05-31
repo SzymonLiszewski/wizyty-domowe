@@ -2,6 +2,7 @@ package com.medical.homevisits.appointments.appointment.controller;
 
 import com.medical.homevisits.appointments.appointment.entity.Appointment;
 import com.medical.homevisits.appointments.appointment.entity.AppointmentStatus;
+import com.medical.homevisits.appointments.appointment.repository.AppointmentRepository;
 import com.medical.homevisits.appointments.appointment.service.AppointmentService;
 import com.medical.homevisits.appointments.doctor.entity.Doctor;
 import com.medical.homevisits.appointments.doctor.repository.DoctorRepository;
@@ -30,15 +31,17 @@ public class AppointmentController {
     private final AppointmentService service;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Autowired
-    public AppointmentController(AppointmentService service, PatientRepository patientRepository, DoctorRepository doctorRepository) {
+    public AppointmentController(AppointmentService service, PatientRepository patientRepository, DoctorRepository doctorRepository, AppointmentRepository appointmentRepository) {
         this.service = service;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
     @PostMapping("")
@@ -306,6 +309,7 @@ public class AppointmentController {
             role.equals("Patient") && appointment.getPatient().getID().equals(userId)
         ) {
             appointment.setStatus(AppointmentStatus.CANCELED);
+            appointmentRepository.save(appointment);
             return ResponseEntity.noContent().build();
         }
 
@@ -328,6 +332,7 @@ public class AppointmentController {
                 role.equals("Nurse") && appointment.getNurse().getID().equals(userId)
         ) {
             appointment.setStatus(AppointmentStatus.COMPLETED);
+            appointmentRepository.save(appointment);
             return ResponseEntity.noContent().build();
         }
 
