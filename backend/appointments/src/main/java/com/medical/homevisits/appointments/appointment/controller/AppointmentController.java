@@ -106,10 +106,10 @@ public class AppointmentController {
     public ResponseEntity<List<Appointment>> getAvailableAppointments(
             @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) LocalDate appointmentDate,
-            @RequestParam(required = false) String city
-            //TODO: add nurse in params
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) UUID nurseId
             ){
-        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null, city, null);
+        List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, doctorId, appointmentDate, null, city, nurseId);
         return ResponseEntity.ok(appointments);
     }
 
