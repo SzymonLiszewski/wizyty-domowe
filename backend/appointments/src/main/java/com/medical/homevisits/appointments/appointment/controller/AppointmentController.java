@@ -239,7 +239,7 @@ public class AppointmentController {
             //TODO: implement finding doctor in separate function
 
             // adding doctor to set if his specialization matches preferred one
-            if ((preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)) &&
+            if (appointment.getDoctor() != null && (preferredSpecialization == null || Objects.equals(appointment.getDoctor().getSpecialization(), preferredSpecialization)) &&
                     (preferredCity == null || Objects.equals(appointment.getDoctor().getWorkPlace().getCity(), preferredCity)) &&
                     (preferredFirstName == null || Objects.equals(appointment.getDoctor().getFirstName(), preferredFirstName)) &&
                     (preferredLastName == null || Objects.equals(appointment.getDoctor().getLastName(), preferredLastName))){
@@ -273,12 +273,17 @@ public class AppointmentController {
 
     @GetMapping("/nurses/available")
     public ResponseEntity<Set<Nurse>> getAvailableNurses(
-            @RequestParam(required = false) LocalDate appointmentDate
+            @RequestParam(required = false) LocalDate appointmentDate,
+            @RequestParam(required = false) String preferredCity,
+            @RequestParam(required = false) String preferredFirstName,
+            @RequestParam(required = false) String preferredLastName
     ) {
         Set<Nurse> nurseSet = new HashSet<>();
         List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null, null, null);
         appointments.forEach((appointment -> {
-            if (appointment.getNurse() != null) {
+            if (appointment.getNurse() != null && (preferredCity == null || Objects.equals(appointment.getDoctor().getWorkPlace().getCity(), preferredCity)) &&
+                    (preferredFirstName == null || Objects.equals(appointment.getDoctor().getFirstName(), preferredFirstName)) &&
+                    (preferredLastName == null || Objects.equals(appointment.getDoctor().getLastName(), preferredLastName))) {
                 nurseSet.add(appointment.getNurse());
             }
         }));
