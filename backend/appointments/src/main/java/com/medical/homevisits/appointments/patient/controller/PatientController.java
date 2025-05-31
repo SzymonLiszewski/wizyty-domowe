@@ -37,6 +37,11 @@ public class PatientController {
         patientService.create(patient);
     }
 
+    /**
+     * function for doctors to browse patients list
+     * @param token  - doctor token
+     * @return - patients list
+     */
     @GetMapping("/api/patients")
     public ResponseEntity<List<Patient>> getPatients(
             @RequestHeader(value = "Authorization") String token
