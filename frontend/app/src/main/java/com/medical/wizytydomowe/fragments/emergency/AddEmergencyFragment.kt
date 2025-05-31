@@ -1,11 +1,18 @@
 package com.medical.wizytydomowe.fragments.emergency
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -24,6 +31,8 @@ import com.medical.wizytydomowe.api.utils.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
 class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
@@ -31,6 +40,10 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
     private lateinit var personalDataView: MaterialCardView
     private lateinit var descriptionView: MaterialCardView
+
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var currentAddress: String? = null
 
     private var firstName: String? = null
     private var lastName: String? = null
@@ -43,6 +56,16 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        } else {
+            getUserLocationAndAddress()
+        }
 
         preferenceManager = PreferenceManager(requireContext())
         val userToken = preferenceManager.getAuthToken()
@@ -117,6 +140,54 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
         }
     }
 
+    private fun getUserLocationAndAddress() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            currentAddress = "Brak uprawnień do lokalizacji"
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                try {
+                    val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    if (!addresses.isNullOrEmpty()) {
+                        currentAddress = addresses[0].getAddressLine(0)
+                    } else {
+                        currentAddress = "Nieznany adres"
+                    }
+                } catch (e: IOException) {
+                    currentAddress = "Błąd geokodowania"
+                }
+            } else {
+                currentAddress = "Lokalizacja niedostępna"
+            }
+        }.addOnFailureListener {
+            currentAddress = "Błąd pobierania lokalizacji"
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getUserLocationAndAddress()
+            } else {
+                Toast.makeText(requireContext(), "Brak zgody na lokalizację", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
     private fun validateFieldsPage1(firstName: String?, lastName: String?, email: String?,
                                     phoneNumber: String?): Boolean{
         val firstNameLayout = view?.findViewById<TextInputLayout>(R.id.textInputLayoutFirstName)
@@ -148,8 +219,7 @@ class AddEmergencyFragment : Fragment(R.layout.add_emergency_fragment)  {
         }
 
         if (patient != null){
-            //TODO set address as phone localization
-            val address = "Gdańsk, 10-101, Politechniczna 12A/4"
+            val address = currentAddress ?: "Adres niedostępny"
             val emergency = Emergency(null,  patient, null, "Available", setActualDate(), address, description)
             navigateToEmergencyDetailsFragment(emergency)
         }
