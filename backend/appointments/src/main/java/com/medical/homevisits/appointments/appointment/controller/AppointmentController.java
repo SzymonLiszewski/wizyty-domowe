@@ -43,8 +43,14 @@ public class AppointmentController {
 
     @PostMapping("")
     public void addAppointment(@RequestBody AddAppointmentRequest request){
-        Doctor doctor = doctorRepository.findById(request.getDoctor()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor with given ID does not exist"));
+        Doctor doctor = null;
         Nurse nurse = null;
+        if (request.getDoctor() == null && request.getNurse() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor or nurse is required");
+        }
+        if (request.getDoctor() != null){
+            doctor = doctorRepository.findById(request.getDoctor()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor with given ID does not exist"));
+        }
         if (request.getNurse() != null) {
             nurse = nurseRepository.findById(request.getNurse()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Nurse with given ID does not exist"));
         }
@@ -67,6 +73,7 @@ public class AppointmentController {
                     .address(request.getAddress())
                     .status(request.getStatus())
                     .doctor(doctor)
+                    .nurse(nurse)
                     .notes(request.getNotes())
                     .build());
         }
