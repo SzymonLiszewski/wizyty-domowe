@@ -12,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class PatientController {
@@ -44,7 +42,10 @@ public class PatientController {
      */
     @GetMapping("/api/patients")
     public ResponseEntity<List<Patient>> getPatients(
-            @RequestHeader(value = "Authorization") String token
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam(required = false) String preferredEmail,
+            @RequestParam(required = false) String preferredFirstName,
+            @RequestParam(required = false) String preferredLastName
     ){
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
@@ -61,7 +62,17 @@ public class PatientController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         List<Patient> patients = patientRepository.findAll();
-        return ResponseEntity.ok(patients);
+        List<Patient> filteredList = new ArrayList<>();
+
+        patients.forEach(patient -> {
+            if ((preferredEmail == null || Objects.equals(patient.getEmail(), preferredEmail)) &&
+                    (preferredFirstName == null || Objects.equals(patient.getFirstName(), preferredFirstName)) &&
+                    (preferredLastName == null || Objects.equals(patient.getLastName(), preferredLastName))
+            ){
+                filteredList.add(patient);
+            }
+        });
+        return ResponseEntity.ok(filteredList);
     }
 
 }
