@@ -284,9 +284,9 @@ public class AppointmentController {
         Set<Nurse> nurseSet = new HashSet<>();
         List<Appointment> appointments = service.getAppointments(AppointmentStatus.AVAILABLE, null, appointmentDate, null, null, null);
         appointments.forEach((appointment -> {
-            if (appointment.getNurse() != null && (preferredCity == null || Objects.equals(appointment.getDoctor().getWorkPlace().getCity(), preferredCity)) &&
-                    (preferredFirstName == null || Objects.equals(appointment.getDoctor().getFirstName(), preferredFirstName)) &&
-                    (preferredLastName == null || Objects.equals(appointment.getDoctor().getLastName(), preferredLastName))) {
+            if (appointment.getNurse() != null && (preferredCity == null || Objects.equals(appointment.getNurse().getWorkPlace().getCity(), preferredCity)) &&
+                    (preferredFirstName == null || Objects.equals(appointment.getNurse().getFirstName(), preferredFirstName)) &&
+                    (preferredLastName == null || Objects.equals(appointment.getNurse().getLastName(), preferredLastName))) {
                 nurseSet.add(appointment.getNurse());
             }
         }));
