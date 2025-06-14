@@ -6,21 +6,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.medical.wizytydomowe.fragments.AddVisitFragment
-import com.medical.wizytydomowe.fragments.PrescriptionsFragment
-import com.medical.wizytydomowe.fragments.ProfileFragment
-import com.medical.wizytydomowe.fragments.SearchFragment
-import com.medical.wizytydomowe.fragments.VisitsFragment
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.medical.wizytydomowe.fragments.appointments.AddAppointmentFragment
+import com.medical.wizytydomowe.fragments.prescriptions.PrescriptionsFragment
+import com.medical.wizytydomowe.fragments.profile.ProfileFragment
+import com.medical.wizytydomowe.fragments.registerAppointment.SearchMedicalStaffFragment
+import com.medical.wizytydomowe.fragments.appointments.AppointmentsFragment
 import com.google.android.material.navigation.NavigationBarView
-import com.medical.wizytydomowe.fragments.AddMedicalReportFragment
-import com.medical.wizytydomowe.fragments.AddPrescriptionFragment
-import com.medical.wizytydomowe.fragments.AvailableMedicalReportsFragment
-import com.medical.wizytydomowe.fragments.LoginFragment
-import com.medical.wizytydomowe.fragments.ParamedicMedicalReportsFragment
-import com.medical.wizytydomowe.fragments.PrescriptionsLogoutFragment
-import com.medical.wizytydomowe.fragments.VisitsLogoutFragment
+import com.medical.wizytydomowe.fragments.prescriptions.AddPrescriptionFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyAvailableFragment
+import com.medical.wizytydomowe.fragments.profile.LoginFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyFragment
+import com.medical.wizytydomowe.fragments.emergency.EmergencyPatientMenuFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigation {
 
@@ -36,23 +32,20 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
             insets
         }
 
-
         val preferenceManager = PreferenceManager(this)
 
-        val searchFragment = SearchFragment()
-        val visitFragment = VisitsFragment()
-        val addVisitFragment = AddVisitFragment()
+        val searchMedicalStaffFragment = SearchMedicalStaffFragment()
+        val appointmentFragment = AppointmentsFragment()
+        val addAppointmentFragment = AddAppointmentFragment()
         val prescriptionsFragment = PrescriptionsFragment()
-        val prescriptionsLogoutFragment = PrescriptionsLogoutFragment()
         val profileFragment = ProfileFragment()
         val loginFragment = LoginFragment()
-        val visitLogoutFragment = VisitsLogoutFragment()
-        val addMedicalReport = AddMedicalReportFragment()
         val addPrescriptionFragment = AddPrescriptionFragment()
-        val availableMedicalReportsFragment = AvailableMedicalReportsFragment()
-        val paramedicMedicalReportsFragment = ParamedicMedicalReportsFragment()
+        val emergencyAvailableFragment = EmergencyAvailableFragment()
+        val emergencyFragment = EmergencyFragment()
+        val emergencyPatientMenuFragment = EmergencyPatientMenuFragment()
 
-        setCurrentFragment(visitLogoutFragment)
+        setStartFragment(preferenceManager)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
@@ -60,33 +53,21 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
         bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
-                R.id.bottom_visits -> {
-                    if (preferenceManager.isLoggedIn()) {
-                        setCurrentFragment(visitFragment)
-                        true
-                    }
-                    else {
-                        setCurrentFragment(visitLogoutFragment)
-                        true
-                    }
-                }
-                R.id.bottom_search -> {
-                    setCurrentFragment(searchFragment)
+                R.id.bottom_appointments -> {
+                    setCurrentFragment(appointmentFragment)
                     true
                 }
-                R.id.bottom_add_visit -> {
-                    setCurrentFragment(addVisitFragment)
+                R.id.bottom_search -> {
+                    setCurrentFragment(searchMedicalStaffFragment)
+                    true
+                }
+                R.id.bottom_add_appointment -> {
+                    setCurrentFragment(addAppointmentFragment)
                     true
                 }
                 R.id.bottom_prescriptions -> {
-                    if (preferenceManager.isLoggedIn()) {
-                        setCurrentFragment(prescriptionsFragment)
-                        true
-                    }
-                    else {
-                        setCurrentFragment(prescriptionsLogoutFragment)
-                        true
-                    }
+                    setCurrentFragment(prescriptionsFragment)
+                    true
                 }
                 R.id.bottom_profile -> {
                     if (preferenceManager.isLoggedIn()) {
@@ -98,27 +79,25 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                         true
                     }
                 }
-                R.id.bottom_medical_report -> {
-                    setCurrentFragment(addMedicalReport)
+                R.id.bottom_emergency_patient -> {
+                    setCurrentFragment(emergencyPatientMenuFragment)
                     true
                 }
                 R.id.bottom_add_prescription -> {
                     setCurrentFragment(addPrescriptionFragment)
                     true
                 }
-                R.id.bottom_available_medical_report -> {
-                    setCurrentFragment(availableMedicalReportsFragment)
+                R.id.bottom_emergency_available -> {
+                    setCurrentFragment(emergencyAvailableFragment)
                     true
                 }
-                R.id.bottom_pramedic_medical_reports -> {
-                    setCurrentFragment(paramedicMedicalReportsFragment)
+                R.id.bottom_emergency_paramedic -> {
+                    setCurrentFragment(emergencyFragment)
                     true
                 }
                 else -> false
-
             }
         }
-
     }
 
     private fun setCurrentFragment(fragment: Fragment) =
@@ -161,6 +140,21 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         }
         else if (preferenceManager.getRole() == "Paramedic"){
             setMenuParamedic()
+        }
+    }
+
+    private fun setStartFragment(preferenceManager: PreferenceManager){
+        if (!preferenceManager.isLoggedIn() || preferenceManager.getRole() == "Patient"){
+            setCurrentFragment(SearchMedicalStaffFragment())
+        }
+        else if (preferenceManager.getRole() == "Doctor"){
+            setCurrentFragment(AppointmentsFragment())
+        }
+        else if (preferenceManager.getRole() == "Nurse"){
+            setCurrentFragment(AppointmentsFragment())
+        }
+        else if (preferenceManager.getRole() == "Paramedic"){
+            setCurrentFragment(EmergencyFragment())
         }
     }
 

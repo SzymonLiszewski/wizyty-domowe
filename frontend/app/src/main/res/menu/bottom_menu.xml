@@ -11,14 +11,14 @@
         />
 
     <item
-        android:id="@+id/bottom_visits"
+        android:id="@+id/bottom_appointments"
         android:title="@string/nav_visits"
         android:icon="@drawable/calendar_alt_svgrepo_com"
 
         />
 
     <item
-        android:id="@+id/bottom_medical_report"
+        android:id="@+id/bottom_emergency_patient"
         android:title="@string/nav_medical_report"
         android:icon="@drawable/ambulance_light_svgrepo_com"
         />

@@ -1,5 +1,7 @@
 package com.medical.wizytydomowe.api.userInfo
 
+import com.medical.wizytydomowe.api.workplace.Workplace
+
 data class UserInfoResponse(
     val id: String?,
     val firstName: String?,
@@ -8,8 +10,7 @@ data class UserInfoResponse(
     val role: String?,
     val dateOfBirth: String?,
     val address: String?,
-    // Typo in backend so typo has to be in there as well =)
-    val specialisation: String?,
-    val academicDegree: String?,
-    val workPlace: String?
+    val specialization: String?,
+    val workPlace: Workplace?,
+    val phoneNumber: String?
 )

@@ -6,8 +6,10 @@ import java.io.Serializable
 
 data class Prescription(
     val id: String?,
-    val prescriptionTime: String?,
     val doctor: Doctor?,
     val patient: Patient?,
+    val prescriptionTime: String?,
+    val medication: String?,
+    val dosage: String?,
     val notes: String?
 ) : Serializable

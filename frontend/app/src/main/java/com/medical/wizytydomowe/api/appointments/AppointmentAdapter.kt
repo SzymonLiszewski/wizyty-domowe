@@ -4,50 +4,60 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.medical.wizytydomowe.R
-
+import com.medical.wizytydomowe.api.utils.*
 
 class AppointmentAdapter(
     private var appointments: List<Appointment>,
-    private val onAppointmentDetailsClick: (Appointment) -> Unit
+    private val onAppointmentClick: (Appointment) -> Unit
 ) : RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder>() {
 
     inner class AppointmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvStartTime: TextView = itemView.findViewById(R.id.tvAppointmentStartTime)
-        private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
-        private val btnAppointmentDetails: Button = itemView.findViewById(R.id.btnAppointmentDetails)
+        private val startDateTextView: TextView = itemView.findViewById(R.id.startDateTextView)
+        private val startHourTextView: TextView = itemView.findViewById(R.id.startHourTextView)
+        private val statusAppointmentTextView: TextView = itemView.findViewById(R.id.statusAppointmentTextView)
+        private val appointmentView: MaterialCardView = itemView.findViewById(R.id.appointmentView)
 
         fun bind(appointment: Appointment) {
-            tvStartTime.text = "${appointment.appointmentStartTime}"
+            setDateAndTime(appointment)
+            setStatus(appointment)
 
+            appointmentView.setOnClickListener {
+                onAppointmentClick(appointment)
+            }
+        }
+
+        private fun setDateAndTime(appointment: Appointment){
+            setDate(startDateTextView, startHourTextView, appointment.appointmentStartTime)
+        }
+
+        private fun setStatus(appointment: Appointment){
             when (appointment.status) {
-                "cancelled" -> tvStatus.text = "Anulowana"
-                "completed" -> tvStatus.text = "Odbyta"
-                "reserved" -> tvStatus.text = "Zarezerwowana"
-                "available" -> tvStatus.text = "Dostępna"
-            }
-
-            when (tvStatus.text) {
-                "Anulowana" -> tvStatus.setTextColor(Color.RED)
-                "Odbyta" -> tvStatus.setTextColor(Color.BLACK)
-                "Zarezerwowana" -> tvStatus.setTextColor(
-                    ContextCompat.getColor(itemView.context, R.color.gray)
-                )
-                else -> tvStatus.setTextColor(Color.BLACK)
-            }
-
-            btnAppointmentDetails.setOnClickListener {
-                onAppointmentDetailsClick(appointment)
+                "CANCELED" -> {
+                    statusAppointmentTextView.text = "ANULOWANA"
+                    statusAppointmentTextView.setTextColor(Color.RED)
+                }
+                "COMPLETED" -> {
+                    statusAppointmentTextView.text = "ODBYTA"
+                    statusAppointmentTextView.setTextColor(Color.BLACK)
+                }
+                "RESERVED" -> {
+                    statusAppointmentTextView.text = "ZAREZERWOWANA"
+                    statusAppointmentTextView.setTextColor(Color.BLACK)
+                }
+                "AVAILABLE" -> {
+                    statusAppointmentTextView.text = "DOSTĘPNA"
+                    statusAppointmentTextView.setTextColor(Color.BLACK)
+                }
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.visit_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.appointment_item, parent, false)
         return AppointmentViewHolder(view)
     }
 
@@ -61,4 +71,5 @@ class AppointmentAdapter(
         appointments = newAppointments
         notifyDataSetChanged()
     }
+
 }
