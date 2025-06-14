@@ -3,7 +3,6 @@ package com.medical.wizytydomowe.api.appointmentApi
 import com.medical.wizytydomowe.api.appointments.AddAppointmentCalendarRequest
 import com.medical.wizytydomowe.api.appointments.AddAppointmentRequest
 import com.medical.wizytydomowe.api.appointments.Appointment
-import com.medical.wizytydomowe.api.appointments.AppointmentChangeStatusRequest
 import com.medical.wizytydomowe.api.appointments.AppointmentRegisterRequest
 import com.medical.wizytydomowe.api.emergency.EmergencyChangeStatusRequest
 import com.medical.wizytydomowe.api.emergency.Emergency
@@ -12,6 +11,7 @@ import retrofit2.Call
 import com.medical.wizytydomowe.api.prescriptions.PrescriptionRequest
 import com.medical.wizytydomowe.api.users.Doctor
 import com.medical.wizytydomowe.api.users.Nurse
+import com.medical.wizytydomowe.api.users.Patient
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -52,19 +52,19 @@ interface AppointmentApiService {
     fun finishEmergency(@Header("Authorization") token: String, @Path("reportId") reportId: String, @Body emergencyChangeStatusRequest: EmergencyChangeStatusRequest): Call<ResponseBody>
 
     @POST("api/appointments")
-    fun addSingleAppointment(@Body addAppointmentRequest: AddAppointmentRequest): Call<Unit>
+    fun addSingleAppointment(@Body addAppointmentRequest: AddAppointmentRequest, @Header("Authorization") token: String): Call<Unit>
 
     @POST("api/appointments/doctors")
     fun addMonthAppointment(@Header("Authorization") token: String, @Body addAppointmentCalendarRequest: AddAppointmentCalendarRequest): Call<Unit>
 
     @GET("api/appointments/doctors")
-    fun getDoctorAppointment(@Header("Authorization") token: String): Call<List<Appointment>>
+    fun getDoctorAppointment(@Header("Authorization") token: String, @Query("appointmentDate") appointmentDate: String?): Call<List<Appointment>>
 
     @GET("api/appointments/patients")
     fun getPatientAppointment(@Header("Authorization") token: String): Call<List<Appointment>>
 
     @GET("api/appointments/nurses")
-    fun getNurseAppointment(@Header("Authorization") token: String): Call<List<Appointment>>
+    fun getNurseAppointment(@Header("Authorization") token: String, @Query("appointmentDate") appointmentDate: String?): Call<List<Appointment>>
 
     @POST("api/appointments/register")
     fun registerPatientOnAppointment(@Header("Authorization") token: String, @Body appointmentRegisterRequest: AppointmentRegisterRequest): Call<Unit>
@@ -72,15 +72,24 @@ interface AppointmentApiService {
     @PUT("api/appointments/{id}/cancel")
     fun cancelAppointment(@Path("id") id: String, @Header("Authorization") token: String): Call<Unit>
 
-    @PUT("api/appointments/{id}/status")
-    fun finishAppointment(@Header("Authorization") token: String, @Path("id") id: String, @Body appointmentChangeStatusRequest: AppointmentChangeStatusRequest): Call<ResponseBody>
+    @PUT("api/appointments/{id}/complete")
+    fun finishAppointment(@Path("id") id: String, @Header("Authorization") token: String): Call<ResponseBody>
 
     @GET("api/appointments/nurses/available")
-    fun getNursesAvailable(): Call<List<Nurse>>
+    fun getNursesAvailable(@Query("preferredCity") preferredCity: String?, @Query("preferredLastName") preferredLastName: String?): Call<List<Nurse>>
 
     @GET("api/appointments/doctors/available")
-    fun getDoctorAvailable(): Call<List<Doctor>>
+    fun getDoctorAvailable(@Query("preferredCity") preferredCity: String?, @Query("preferredLastName") preferredLastName: String?, @Query("preferredSpecialization") preferredSpecialization: String?): Call<List<Doctor>>
 
     @GET("/api/appointments")
-    fun getAvailableAppointments(@Query("doctorId") doctorId: String?): Call<List<Appointment>>
+    fun getAvailableAppointments(@Query("doctorId") doctorId: String?, @Query("nurseId") nurseId: String?, @Query("appointmentDate") appointmentDate: String?): Call<List<Appointment>>
+
+    @GET("/api/patients")
+    fun getPatients(@Header("Authorization") token: String, @Query("preferredEmail") preferredEmail: String?): Call<List<Patient>>
+
+    @GET("/api/prescriptions/doctors/from-workplace")
+    fun getDoctorsFromSameHospital(@Header("Authorization") token: String): Call<List<Doctor>>
+
+    @GET("/api/prescriptions/nurses/from-workplace")
+    fun getNursesFromSameHospital(@Header("Authorization") token: String): Call<List<Nurse>>
 }

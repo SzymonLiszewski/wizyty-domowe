@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object AuthRetrofitInstance {
 
-    const val BASE_URL = "http://192.168.0.38:8081/api/auth/"
+    const val BASE_URL = "http://192.168.0.99:8081/api/auth/"
 
     val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)

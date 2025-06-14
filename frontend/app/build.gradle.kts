@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-
+    implementation ("io.github.b-sahana:horizontalcalendar:1.2.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

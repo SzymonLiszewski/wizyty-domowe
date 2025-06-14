@@ -17,6 +17,7 @@ import com.medical.wizytydomowe.api.appointments.AppointmentAdapter
 import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
 import com.medical.wizytydomowe.fragments.appointments.AppointmentDetailsFragment
+import com.sahana.horizontalcalendar.HorizontalCalendar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,15 +31,31 @@ class SearchAppointmentFragment : Fragment(R.layout.search_appointment_fragment)
     private var id: String? = null
     private var role: String? = null
     private var patientAddress: String? = null
+    private var appointments: List<Appointment> = emptyList()
 
     private lateinit var errorConnectionView: MaterialCardView
     private lateinit var appointmentsRecyclerView: RecyclerView
+    private lateinit var horizontalCalendar: HorizontalCalendar
+    private lateinit var noAppointmentView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         errorConnectionView = view.findViewById(R.id.errorConnectionView)
         appointmentsRecyclerView = view.findViewById(R.id.appointmentsRecyclerView)
+        horizontalCalendar = view.findViewById(R.id.horizontalCalendar)
+        noAppointmentView = view.findViewById(R.id.noAppointmentView)
+
+        horizontalCalendar.setOnDateSelectListener { dateModel ->
+            val selectedDate = "%04d-%02d-%02d".format(
+                dateModel.year,
+                dateModel.monthNumber,
+                dateModel.day
+            )
+
+            if (role == "nurse") getAvailableAppointments(null, id, selectedDate)
+            else getAvailableAppointments(id, null, selectedDate)
+        }
 
         preferenceManager = PreferenceManager(requireContext())
         val token = preferenceManager.getAuthToken()
@@ -48,18 +65,29 @@ class SearchAppointmentFragment : Fragment(R.layout.search_appointment_fragment)
 
         if (token != null) sendUserInfoRequest(token)
 
-        if (role == "nurse") getAvailableAppointments(null, id)
-        else getAvailableAppointments(id, null)
+        if (role == "nurse") getAvailableAppointments(null, id, null)
+        else getAvailableAppointments(id, null, null)
+    }
+
+    private fun setNoAppointmentsLayout(){
+        errorConnectionView.visibility = View.GONE
+        appointmentsRecyclerView.visibility = View.GONE
+        horizontalCalendar.visibility = View.VISIBLE
+        noAppointmentView.visibility = View.VISIBLE
     }
 
     private fun setErrorConnectionLayout(){
         errorConnectionView.visibility = View.VISIBLE
         appointmentsRecyclerView.visibility = View.GONE
+        horizontalCalendar.visibility = View.GONE
+        noAppointmentView.visibility = View.GONE
     }
 
-    private fun setAppointmentsLayout(appointments: List<Appointment>){
+    private fun setAppointmentsLayout(){
         errorConnectionView.visibility = View.GONE
         appointmentsRecyclerView.visibility = View.VISIBLE
+        horizontalCalendar.visibility = View.VISIBLE
+        noAppointmentView.visibility = View.GONE
 
         recyclerView = appointmentsRecyclerView
 
@@ -79,14 +107,17 @@ class SearchAppointmentFragment : Fragment(R.layout.search_appointment_fragment)
         activity?.navigateToFragment(AppointmentDetailsFragment().apply { arguments = bundle })
     }
 
-    private fun getAvailableAppointments(doctorId: String?, nurseId: String?){
-        AppointmentRetrofitInstance.appointmentApiService.getAvailableAppointments(doctorId)
+    private fun getAvailableAppointments(doctorId: String?, nurseId: String?, appointmentDate: String?){
+        AppointmentRetrofitInstance.appointmentApiService.getAvailableAppointments(doctorId, nurseId, appointmentDate)
             .enqueue(object : Callback<List<Appointment>> {
                 override fun onResponse(call: Call<List<Appointment>>, response: Response<List<Appointment>>) {
                     if (response.isSuccessful) {
                         val body = response.body()
-                        if (!body.isNullOrEmpty()) setAppointmentsLayout(body)
-                        else setErrorConnectionLayout()
+                        if (!body.isNullOrEmpty()) {
+                            appointments = body
+                            setAppointmentsLayout()
+                        }
+                        else setNoAppointmentsLayout()
                     }
                     else setErrorConnectionLayout()
                 }

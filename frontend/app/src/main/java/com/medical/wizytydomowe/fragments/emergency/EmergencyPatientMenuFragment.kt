@@ -53,7 +53,7 @@ class EmergencyPatientMenuFragment: Fragment(R.layout.emergency_patient_menu_fra
     }
 
     private fun setLogoutLayout(){
-        addEmergencyView.visibility = View.VISIBLE
+        addEmergencyView.visibility = View.GONE
         logoutView.visibility = View.VISIBLE
         patientEmergencyView.visibility = View.GONE
     }

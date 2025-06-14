@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +13,10 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
+import com.medical.wizytydomowe.PreferenceManager
 import com.medical.wizytydomowe.R
+import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
+import com.medical.wizytydomowe.api.appointments.Appointment
 import com.medical.wizytydomowe.api.medication.Medication
 import com.medical.wizytydomowe.api.medication.MedicationAdapter
 import com.medical.wizytydomowe.api.prescriptions.Prescription
@@ -20,12 +24,16 @@ import com.medical.wizytydomowe.api.users.Patient
 import com.medical.wizytydomowe.api.users.User
 import com.medical.wizytydomowe.api.users.UserAdapter
 import com.medical.wizytydomowe.api.utils.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var userAdapter: UserAdapter
     private lateinit var medicationAdapter: MedicationAdapter
+    private lateinit var preferenceManager: PreferenceManager
 
     private var pageNumber: Int = 1
     private lateinit var users: List<User>
@@ -38,17 +46,21 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
     private lateinit var addMedicationView: MaterialCardView
     private lateinit var medicationRecyclerView: RecyclerView
     private lateinit var notesView: MaterialCardView
+    private lateinit var errorConnectionView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         pageNumber = 1
+        preferenceManager = PreferenceManager(requireContext())
+        val token = preferenceManager.getAuthToken()
 
         userRecyclerView = view.findViewById(R.id.userRecyclerView)
         filterPatientView = view.findViewById(R.id.filterPatientView)
         goToThePage3View = view.findViewById(R.id.goToThePage3View)
         addMedicationView = view.findViewById(R.id.addMedicationView)
         medicationRecyclerView = view.findViewById(R.id.medicationRecyclerView)
+        errorConnectionView = view.findViewById(R.id.errorConnectionView)
         notesView = view.findViewById(R.id.notesView)
 
         val filterPatientButton = view.findViewById<Button>(R.id.filterPatientButton)
@@ -72,16 +84,8 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         buttonAddPrescription.setOnClickListener { addPrescription() }
 
         medications = mutableListOf()
-        //TODO get patient list from backend
-        users = listOf(
-            Patient("1", "Robert", "Kozłowski", "j@2gmail.com", "123456789"),
-            Patient("1", "Robert", "Stanowski", "j@2gmail.com", "123456789"),
-            Patient("1", "Maciej", "Maciak", "j@2gmail.com", "123456789"),
-            Patient("1", "Szewczyk", "Dratewka", "j@2gmail.com", "123456789"),
-            Patient("1", "Jędrzej", "Stanowski", "j@2gmail.com", "123456789")
-        )
 
-        setPage(1)
+        getPatients(token, null)
     }
 
     private fun setPatientRecyclerView(){
@@ -91,7 +95,6 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
             if (user is Patient) selectedPatient = user
             pageNumber += 1
             setPage(pageNumber)
-            Log.d("pageNumber", pageNumber.toString())
         }
 
         recyclerView.adapter = userAdapter
@@ -111,8 +114,8 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         medicationRecyclerView.visibility = View.GONE
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
 
-        //TODO send request to the backend for patient list
         setPatientRecyclerView()
     }
 
@@ -123,9 +126,20 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         medicationRecyclerView.visibility = View.VISIBLE
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
 
         setMedicationsRecyclerView()
         checkGoToPage3ViewVisibility()
+    }
+
+    private fun setErrorConnectionLayout(){
+        userRecyclerView.visibility = View.GONE
+        filterPatientView.visibility = View.GONE
+        addMedicationView.visibility = View.GONE
+        medicationRecyclerView.visibility = View.GONE
+        goToThePage3View.visibility = View.GONE
+        notesView.visibility = View.GONE
+        errorConnectionView.visibility = View.VISIBLE
     }
 
     private fun setPage3Layout(){
@@ -135,7 +149,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         medicationRecyclerView.visibility = View.GONE
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.VISIBLE
-
+        errorConnectionView.visibility = View.GONE
     }
 
     private fun filterPatients(){
@@ -143,7 +157,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         val textInputEditTextPatientFilter = view?.findViewById<TextInputEditText>(R.id.textInputEditTextPatientFilter)?.text.toString()
 
         if (validateEmailAddress(textInputEditTextPatientFilter, textInputLayoutPatientFilter)){
-            //TODO send request to the backend to the filter patients by e-mail
+            getPatients(preferenceManager.getAuthToken(), textInputEditTextPatientFilter)
         }
     }
 
@@ -208,5 +222,27 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
 
         val activity = activity as? FragmentNavigation
         activity?.navigateToFragment(PrescriptionDetailsFragment().apply { arguments = bundle })
+    }
+
+    private fun getPatients(token: String?, preferredEmail: String?){
+        AppointmentRetrofitInstance.appointmentApiService.getPatients(token.toString(), preferredEmail)
+            .enqueue(object : Callback<List<Patient>> {
+                override fun onResponse(call: Call<List<Patient>>, response: Response<List<Patient>>) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (!body.isNullOrEmpty()){
+                            users = body
+                            setPage(pageNumber)
+                        }
+                        else setErrorConnectionLayout()
+                    }
+                    else setErrorConnectionLayout()
+                }
+
+                override fun onFailure(call: Call<List<Patient>>, t: Throwable) {
+                    setErrorConnectionLayout()
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 }

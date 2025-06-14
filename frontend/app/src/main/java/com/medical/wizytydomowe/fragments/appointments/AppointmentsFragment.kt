@@ -16,6 +16,7 @@ import com.medical.wizytydomowe.api.appointments.Appointment
 import com.medical.wizytydomowe.api.appointments.AppointmentAdapter
 import com.medical.wizytydomowe.fragments.registerAppointment.SearchMedicalStaffFragment
 import com.medical.wizytydomowe.fragments.profile.LoginFragment
+import com.sahana.horizontalcalendar.HorizontalCalendar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,9 +28,11 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
 
     private lateinit var preferenceManager : PreferenceManager
     private lateinit var logoutView: MaterialCardView
-    private lateinit var noAppointmentView: MaterialCardView
+    private lateinit var noAppointmentPatientView: MaterialCardView
     private lateinit var errorConnectionView: MaterialCardView
     private lateinit var appointmentRecyclerView: RecyclerView
+    private lateinit var horizontalCalendar: HorizontalCalendar
+    private lateinit var noAppointmentMedicalStaffView: MaterialCardView
 
     private lateinit var goToMakeAnAppointmentButton: Button
     private lateinit var goToAddAppointmentButton: Button
@@ -39,12 +42,14 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
 
         preferenceManager = PreferenceManager(requireContext())
         val userToken = preferenceManager.getAuthToken()
-        val userRole = preferenceManager.getRole()
+
 
         logoutView = view.findViewById(R.id.logoutView)
-        noAppointmentView = view.findViewById(R.id.noAppointmentView)
+        noAppointmentPatientView = view.findViewById(R.id.noAppointmentPatientView)
         appointmentRecyclerView = view.findViewById(R.id.appointmentsRecyclerView)
         errorConnectionView = view.findViewById(R.id.errorConnectionView)
+        horizontalCalendar = view.findViewById(R.id.horizontalCalendar)
+        noAppointmentMedicalStaffView = view.findViewById(R.id.noAppointmentMedicalStaffView)
 
         val goToLoginButton = view.findViewById<Button>(R.id.goToLoginButton)
         goToMakeAnAppointmentButton = view.findViewById(R.id.goToMakeAnAppointmentButton)
@@ -54,39 +59,58 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         goToMakeAnAppointmentButton.setOnClickListener { navigateToMakeAnAppointmentFragment() }
         goToAddAppointmentButton.setOnClickListener { navigateToAddAnAppointmentFragment() }
 
+        horizontalCalendar.setOnDateSelectListener { dateModel ->
+            val selectedDate = "%04d-%02d-%02d".format(
+                dateModel.year,
+                dateModel.monthNumber,
+                dateModel.day
+            )
+
+            sendRequestForAppointments(selectedDate)
+        }
+
         if (userToken != null) {
             logoutView.visibility = View.GONE
 
-            val token = "Bearer " + preferenceManager.getAuthToken()
-            if (userRole == "Doctor") getDoctorAppointments(token)
-            else if (userRole == "Patient") getPatientAppointments(token)
-            else getNurseAppointments(token)
+            sendRequestForAppointments(null)
         }
         else{
             setLogoutLayout()
         }
     }
 
-    private fun setNoAppointmentsLayout(userRole: String?, goToAddAppointmentButton: Button,
-                                        goToMakeAnAppointmentButton: Button){
+    private fun sendRequestForAppointments(selectedDate: String?){
+        val userRole = preferenceManager.getRole()
+        val token = "Bearer " + preferenceManager.getAuthToken()
+        if (userRole == "Doctor") getDoctorAppointments(token, selectedDate)
+        else if (userRole == "Patient") getPatientAppointments(token)
+        else getNurseAppointments(token, selectedDate)
+    }
+
+    private fun setNoAppointmentsLayout(userRole: String?){
         appointmentRecyclerView.visibility = View.GONE
-        noAppointmentView.visibility = View.VISIBLE
         errorConnectionView.visibility = View.GONE
 
         if (userRole == "Patient"){
-            goToAddAppointmentButton.visibility = View.GONE
-            goToMakeAnAppointmentButton.visibility = View.VISIBLE
+            noAppointmentPatientView.visibility = View.VISIBLE
+            horizontalCalendar.visibility = View.GONE
+            noAppointmentMedicalStaffView.visibility = View.GONE
         }
         else{
-            goToAddAppointmentButton.visibility = View.VISIBLE
-            goToMakeAnAppointmentButton.visibility = View.GONE
+            noAppointmentPatientView.visibility = View.GONE
+            horizontalCalendar.visibility = View.VISIBLE
+            noAppointmentMedicalStaffView.visibility = View.VISIBLE
         }
     }
 
     private fun setAppointmentsLayout(appointments : List<Appointment>){
         appointmentRecyclerView.visibility = View.VISIBLE
-        noAppointmentView.visibility = View.GONE
         errorConnectionView.visibility = View.GONE
+        noAppointmentPatientView.visibility = View.GONE
+        noAppointmentMedicalStaffView.visibility = View.GONE
+
+        if (preferenceManager.getRole() == "Patient") horizontalCalendar.visibility = View.GONE
+        else horizontalCalendar.visibility = View.VISIBLE
 
         recyclerView = appointmentRecyclerView
 
@@ -101,13 +125,18 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
     private fun setLogoutLayout(){
         logoutView.visibility = View.VISIBLE
         appointmentRecyclerView.visibility = View.GONE
-        noAppointmentView.visibility = View.GONE
+        noAppointmentPatientView.visibility = View.GONE
         errorConnectionView.visibility = View.GONE
+        horizontalCalendar.visibility = View.GONE
+        noAppointmentMedicalStaffView.visibility = View.GONE
     }
 
     private fun setErrorConnectionLayout(){
+        logoutView.visibility = View.VISIBLE
         appointmentRecyclerView.visibility = View.GONE
-        noAppointmentView.visibility = View.GONE
+        noAppointmentPatientView.visibility = View.GONE
+        horizontalCalendar.visibility = View.GONE
+        noAppointmentMedicalStaffView.visibility = View.GONE
         errorConnectionView.visibility = View.VISIBLE
     }
 
@@ -140,11 +169,7 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
                     val body = response.body()
                     if (!body.isNullOrEmpty()) setAppointmentsLayout(body)
                     else {
-                        setNoAppointmentsLayout(
-                            preferenceManager.getRole(),
-                            goToAddAppointmentButton,
-                            goToMakeAnAppointmentButton
-                        )
+                        setNoAppointmentsLayout(preferenceManager.getRole())
                     }
                 } else setErrorConnectionLayout()
             }
@@ -156,8 +181,8 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         })
     }
 
-    private fun getDoctorAppointments(token: String?) {
-        val request = AppointmentRetrofitInstance.appointmentApiService.getDoctorAppointment(token.toString())
+    private fun getDoctorAppointments(token: String?, selectedDate: String?) {
+        val request = AppointmentRetrofitInstance.appointmentApiService.getDoctorAppointment(token.toString(), selectedDate)
         getAppointments(request)
     }
 
@@ -166,8 +191,8 @@ class AppointmentsFragment : Fragment(R.layout.appointments_fragment) {
         getAppointments(request)
     }
 
-    private fun getNurseAppointments(token: String?) {
-        val request = AppointmentRetrofitInstance.appointmentApiService.getNurseAppointment(token.toString())
+    private fun getNurseAppointments(token: String?, selectedDate: String?) {
+        val request = AppointmentRetrofitInstance.appointmentApiService.getNurseAppointment(token.toString(), selectedDate)
         getAppointments(request)
     }
 

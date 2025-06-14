@@ -34,7 +34,6 @@ import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
 import com.medical.wizytydomowe.api.appointments.AddAppointmentRequest
 import com.medical.wizytydomowe.api.appointments.Appointment
-import com.medical.wizytydomowe.api.appointments.AppointmentChangeStatusRequest
 import com.medical.wizytydomowe.api.appointments.AppointmentRegisterRequest
 import com.medical.wizytydomowe.api.authApi.AuthRetrofitInstance
 import com.medical.wizytydomowe.api.userInfo.UserInfoResponse
@@ -298,9 +297,8 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         nurseView.visibility = View.GONE
         patientView.visibility = View.GONE
         noPatientView.visibility - View.GONE
-        addressHorizontalView.visibility = View.GONE
-        noAddressHorizontalView.visibility = View.GONE
 
+        setAddressHorizontalLayoutAndView()
         setAddressVerticaLayoutAndView()
 
         setLayoutPositionInGrid(doctorView, 0, 0)
@@ -318,9 +316,8 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
         nurseView.visibility = View.VISIBLE
         patientView.visibility = View.GONE
         noPatientView.visibility - View.GONE
-        addressHorizontalView.visibility = View.GONE
-        noAddressHorizontalView.visibility = View.GONE
 
+        setAddressHorizontalLayoutAndView()
         setAddressVerticaLayoutAndView()
 
         setLayoutPositionInGrid(nurseView, 0, 0)
@@ -382,9 +379,8 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private fun setDoctorLayoutWithoutNurse(){
         doctorView.visibility = View.GONE
         nurseView.visibility = View.GONE
-        addressHorizontalView.visibility = View.GONE
-        noAddressHorizontalView.visibility = View.GONE
 
+        setAddressHorizontalLayoutAndView()
         setAddressVerticaLayoutAndView()
         setPatientLayoutAndViewForMedicalStaff()
     }
@@ -428,11 +424,9 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
     private fun setNurseLayoutWithoutDoctor(){
         doctorView.visibility = View.GONE
         nurseView.visibility = View.GONE
-        addressHorizontalView.visibility = View.GONE
-        noAddressHorizontalView.visibility = View.GONE
 
         setAddressVerticaLayoutAndView()
-
+        setAddressHorizontalLayoutAndView()
         setPatientLayoutAndViewForMedicalStaff()
 
     }
@@ -458,7 +452,8 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
             appointment?.appointmentEndTime, appointment?.doctor?.id, appointment?.nurse?.id,
             appointment?.patient?.id, appointment?.address, appointment?.notes)
 
-        AppointmentRetrofitInstance.appointmentApiService.addSingleAppointment(addAppointmentRequest)
+        AppointmentRetrofitInstance.appointmentApiService.addSingleAppointment(addAppointmentRequest,
+            preferenceManager.getAuthToken().toString())
             .enqueue(object : Callback<Unit> {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                 if (response.isSuccessful) {
@@ -513,10 +508,8 @@ class AppointmentDetailsFragment : Fragment(R.layout.appointment_details_fragmen
 
     private fun finishAppointment(){
         val token = "Bearer " + preferenceManager.getAuthToken()
-        val appointmentChangeStatusRequest = AppointmentChangeStatusRequest("COMPLETED")
 
-        AppointmentRetrofitInstance.appointmentApiService.finishAppointment(token, appointment?.id.toString(),
-            appointmentChangeStatusRequest)
+        AppointmentRetrofitInstance.appointmentApiService.finishAppointment(appointment?.id.toString(), token)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {

@@ -42,6 +42,8 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var recyclerView: RecyclerView
     private lateinit var userAdapter: UserAdapter
+    private lateinit var users: List<User>
+    private var coworker: User? = null
 
     private var startDateAppointment: String? = null
     private var endDateAppointment: String? = null
@@ -67,6 +69,14 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        coworker = null
+        appointmentModeFlag = null
+        appointmentTypeFlag = null
+        durationTime = null
+        startTimeAppointment = null
+        startDateAppointment = null
+        endDateAppointment = null
+
         addAppointmentAloneView = view.findViewById(R.id.addAppointmentAloneView)
         addAppointmentWithSomeoneView = view.findViewById(R.id.addAppointmentWithSomeoneView)
         addOneAppointmentView = view.findViewById(R.id.addOneAppointmentView)
@@ -86,7 +96,10 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
         val buttonPrevAddOneAppointment = view.findViewById<Button>(R.id.buttonPrevAddOneAppointment)
         val buttonAddOneAppointment = view.findViewById<Button>(R.id.buttonAddOneAppointment)
 
-        buttonPrevAddOneAppointment.setOnClickListener { goBackToAppointmentAloneLayout() }
+        buttonPrevAddOneAppointment.setOnClickListener {
+            if (appointmentModeFlag == "alone") goBackToAppointmentAloneLayout()
+            else goBackToAppointmentWithSomeoneLayout()
+        }
         buttonAddOneAppointment.setOnClickListener {
             notes = view.findViewById<TextInputEditText>(R.id.textInputEditTextNotes).text.toString()
             durationTime = view.findViewById<TextInputEditText>(R.id.textInputEditTextDuration).text.toString()
@@ -112,9 +125,7 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
 
 
         addAppointmentAloneView.setOnClickListener { setAppointmentAloneLayout() }
-        addAppointmentWithSomeoneView.setOnClickListener {
-
-        }
+        addAppointmentWithSomeoneView.setOnClickListener { setAppointmentWithSomeoneLayout() }
         addMonthAppointmentView.setOnClickListener { setAddMonthAppointmentLayout() }
         addOneAppointmentView.setOnClickListener { setAddOneAppointmentLayout() }
 
@@ -147,14 +158,29 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
         addMonthAppointmentFormView.visibility = View.GONE
     }
 
+    private fun goBackToAppointmentWithSomeoneLayout(){
+        addOneAppointmentFormView.visibility = View.GONE
+        userRecyclerView.visibility = View.VISIBLE
+
+        if (preferenceManager.getRole() == "Nurse") getDoctorsFromSameHospital()
+        else getNursesFromSameHospital()
+    }
+
     private fun setAppointmentWithSomeoneLayout(){
         appointmentModeFlag = "someone"
+        addAppointmentAloneView.visibility = View.GONE
+        addAppointmentWithSomeoneView.visibility = View.GONE
+        userRecyclerView.visibility = View.VISIBLE
+
+        if (preferenceManager.getRole() == "Nurse") getDoctorsFromSameHospital()
+        else getNursesFromSameHospital()
     }
 
     private fun setAddOneAppointmentLayout(){
         appointmentTypeFlag = "one"
         addMonthAppointmentView.visibility = View.GONE
         addOneAppointmentView.visibility = View.GONE
+        userRecyclerView.visibility = View.GONE
         addOneAppointmentFormView.visibility = View.VISIBLE
     }
 
@@ -188,11 +214,12 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
         daysOfWeekDropdown.setAdapter(adapter)
     }
 
-    private fun setRecyclerView(users: List<User>){
+    private fun setUserRecyclerView(){
         recyclerView = userRecyclerView
 
         userAdapter = UserAdapter(users) { user ->
-
+            coworker = user
+            setAddOneAppointmentLayout()
         }
 
         recyclerView.adapter = userAdapter
@@ -256,21 +283,18 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
             if (validateDescription(notes, textInputLayoutNotes)){
                 endDateAppointment = countEndTimeAppointment("yyyy-MM-dd'T'HH:mm:ss", startDateAppointment, durationTime)
                 if (endDateAppointment != null && currentUserId != null){
-                    val doctorId: String?
-                    val nurseId: String?
-                    var appointment: Appointment? = null
+                    var doctor: Doctor? = null
+                    var nurse: Nurse? = null
                     if (preferenceManager.getRole() == "Doctor"){
-                        doctorId = currentUserId
-                        appointment = Appointment(null, "AVAILABLE", startDateAppointment, endDateAppointment,
-                            Doctor(doctorId, null, null, null, null),
-                            null, null, null, notes)
+                        doctor = Doctor(currentUserId, null, null, null, null)
+                        if (coworker != null) nurse = coworker as Nurse?
                     }
-                    if (preferenceManager.getRole() == "Nurse"){
-                        nurseId = currentUserId
-                        appointment = Appointment(null, "AVAILABLE", startDateAppointment, endDateAppointment,
-                            null, Nurse(nurseId, null, null, null),
-                            null, null, notes)
+                    else {
+                        nurse = Nurse(currentUserId, null, null, null)
+                        if (coworker != null) doctor = coworker as Doctor?
                     }
+                    val appointment = Appointment(null, "AVAILABLE", startDateAppointment,
+                        endDateAppointment, doctor, nurse, null, null, notes)
                     navigateToAppointmentDetails(appointment, "singleAppointment")
                 }
                 else Toast.makeText(requireContext(), "Wystąpił błąd podczas dodawania wizyty.", Toast.LENGTH_SHORT).show()
@@ -350,6 +374,50 @@ class AddAppointmentFragment : Fragment(R.layout.add_appointment_fragment)  {
                 }
 
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getDoctorsFromSameHospital(){
+        AppointmentRetrofitInstance.appointmentApiService.getDoctorsFromSameHospital(
+            "Bearer " + preferenceManager.getAuthToken().toString())
+            .enqueue(object : Callback<List<Doctor>> {
+                override fun onResponse(call: Call<List<Doctor>>, response: Response<List<Doctor>>) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (!body.isNullOrEmpty()){
+                            users = body
+                            setUserRecyclerView()
+                        }
+                    }
+                    //else setErrorConnectionLayout()
+                }
+
+                override fun onFailure(call: Call<List<Doctor>>, t: Throwable) {
+                    //setErrorConnectionLayout()
+                    Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun getNursesFromSameHospital(){
+        AppointmentRetrofitInstance.appointmentApiService.getNursesFromSameHospital(
+            "Bearer " + preferenceManager.getAuthToken().toString())
+            .enqueue(object : Callback<List<Nurse>> {
+                override fun onResponse(call: Call<List<Nurse>>, response: Response<List<Nurse>>) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (!body.isNullOrEmpty()){
+                            users = body
+                            setUserRecyclerView()
+                        }
+                    }
+                    //else setErrorConnectionLayout()
+                }
+
+                override fun onFailure(call: Call<List<Nurse>>, t: Throwable) {
+                    //setErrorConnectionLayout()
                     Toast.makeText(context, "Błąd połączenia: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
                 }
             })

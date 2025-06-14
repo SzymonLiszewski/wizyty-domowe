@@ -15,6 +15,13 @@
         app:layout_constraintGuide_percent="0.01" />
 
     <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.16" />
+
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,7 +77,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_35"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -112,6 +119,78 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <com.sahana.horizontalcalendar.HorizontalCalendar
+        android:id="@+id/horizontalCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:numOfDays="90"
+        app:setBgColor="@drawable/unselected_card_bg"
+        app:setDateTextSize="22sp"
+        app:setMonthTextSize="26sp"
+        app:setSelectedBgColor="@drawable/selected_card_bg"
+        app:setSelectedTextColor="@color/white"
+        app:setTextColor="@color/white"
+        app:setWeekTextSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_20"/>
+
+    <com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/noAppointmentView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        android:layout_margin="28dp"
+        android:foreground="@color/gray"
+        app:cardElevation="8dp"
+        android:layout_marginTop="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalCalendar"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp"
+            android:layout_margin="8dp">
+
+            <ImageView
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/status_information_svgrepo_com"/>
+
+            <TextView
+                android:id="@+id/statusNoAppointmentTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="12dp"
+                android:text="BRAK WIZYT"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="24sp"/>
+
+            <TextView
+                android:id="@+id/additionalInformationNoAppointmentTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="12dp"
+                android:text="Dany specjalista nie posiada dostępnych wizyt w wybranym terminie."
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/appointmentsRecyclerView"
         android:layout_width="match_parent"
@@ -124,7 +203,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleView"/>
+        app:layout_constraintTop_toBottomOf="@id/horizontalCalendar"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

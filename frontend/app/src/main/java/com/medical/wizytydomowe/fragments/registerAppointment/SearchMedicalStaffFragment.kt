@@ -2,11 +2,15 @@ package com.medical.wizytydomowe.fragments.registerAppointment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.medical.wizytydomowe.FragmentNavigation
 import com.medical.wizytydomowe.R
 import com.medical.wizytydomowe.api.appointmentApi.AppointmentRetrofitInstance
@@ -26,6 +30,10 @@ class SearchMedicalStaffFragment : Fragment(R.layout.search_medical_staff_fragme
     private lateinit var noMedicalStaffView: MaterialCardView
     private lateinit var errorConnectionView: MaterialCardView
     private lateinit var medicalStaffRecyclerView: RecyclerView
+    private lateinit var filterMedicalStaffView: MaterialCardView
+    private lateinit var chipGroup: ChipGroup
+    private lateinit var chipSpecializationGroup: ChipGroup
+
 
     private var errorConnectionFlag: Boolean = false
     private var responsesReceived: Int = 0
@@ -36,20 +44,64 @@ class SearchMedicalStaffFragment : Fragment(R.layout.search_medical_staff_fragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        responsesReceived = 0
-        errorConnectionFlag = false
-        users = mutableListOf()
+        val filterMedicalStaffButton = view.findViewById<Button>(R.id.filterMedicalStaffButton)
+        filterMedicalStaffButton.setOnClickListener { searchMedicalStaffWithFilters() }
 
         noMedicalStaffView = view.findViewById(R.id.noMedicalStaffView)
         errorConnectionView = view.findViewById(R.id.errorConnectionView)
         medicalStaffRecyclerView = view.findViewById(R.id.medicalStaffRecyclerView)
+        filterMedicalStaffView = view.findViewById(R.id.filterMedicalStaffView)
+        chipGroup = view.findViewById(R.id.chipGroup)
+        chipSpecializationGroup = view.findViewById(R.id.chipSpecializationGroup)
 
-        sendMedicalStaffRequests()
+        sendMedicalStaffRequests(null, null, null)
     }
 
-    private fun sendMedicalStaffRequests(){
-        getAvailableDoctors()
-        getAvailableNurses()
+    private fun searchMedicalStaffWithFilters(){
+        val textInputLayoutMedicalStaffFilter = view?.findViewById<TextInputLayout>(R.id.textInputLayoutMedicalStaffFilter)
+        val textInputEditTextMedicalStaffFilter = view?.findViewById<TextInputEditText>(R.id.textInputEditTextMedicalStaffFilter)
+
+        val query = textInputEditTextMedicalStaffFilter?.text.toString()
+
+        var specialization: String? = null
+        when (chipSpecializationGroup.checkedChipId) {
+            R.id.chipNurse -> specialization = "Nurse"
+            R.id.chipLekarzRodzinny -> specialization = "LekarzRodzinny"
+            R.id.chipPediatra -> specialization = "Pediatra"
+            R.id.chipInternista -> specialization = "Internista"
+            R.id.chipKardiolog -> specialization = "Kardiolog"
+            R.id.chipPsycholog -> specialization = "Psycholog"
+            R.id.chipGeneralPractitioner -> specialization = "General Practitioner"
+        }
+
+        if (query.isNullOrEmpty()) sendMedicalStaffRequests(null, null, specialization)
+        else {
+            when (chipGroup.checkedChipId) {
+                R.id.chipName -> sendMedicalStaffRequests(null, query, specialization)
+                R.id.chipCity -> sendMedicalStaffRequests(query, null, specialization)
+                else -> sendMedicalStaffRequests(null, null, specialization)
+            }
+        }
+    }
+
+    private fun sendMedicalStaffRequests(preferredCity: String?, preferredLastName: String?, preferredSpecialization: String?){
+        users = mutableListOf()
+        errorConnectionFlag = false
+
+        if (preferredSpecialization != null && preferredSpecialization == "Nurse") {
+            responsesReceived = 1
+            getAvailableNurses(preferredCity, preferredLastName)
+        }
+        else if (preferredSpecialization != null) {
+            responsesReceived = 1
+            getAvailableDoctors(preferredCity, preferredLastName, preferredSpecialization)
+        }
+        else {
+            responsesReceived = 0
+            getAvailableDoctors(preferredCity, preferredLastName, preferredSpecialization)
+            getAvailableNurses(preferredCity, preferredLastName)
+        }
+
     }
 
     private fun setMedicalStaffLayout(){
@@ -59,6 +111,7 @@ class SearchMedicalStaffFragment : Fragment(R.layout.search_medical_staff_fragme
                 noMedicalStaffView.visibility = View.GONE
                 errorConnectionView.visibility = View.GONE
                 medicalStaffRecyclerView.visibility = View.VISIBLE
+                filterMedicalStaffView.visibility = View.VISIBLE
 
                 recyclerView = medicalStaffRecyclerView
 
@@ -87,15 +140,16 @@ class SearchMedicalStaffFragment : Fragment(R.layout.search_medical_staff_fragme
         noMedicalStaffView.visibility = View.GONE
         errorConnectionView.visibility = View.VISIBLE
         medicalStaffRecyclerView.visibility = View.GONE
+        filterMedicalStaffView.visibility = View.GONE
     }
 
     private fun setNoMedicalStaffLayout(){
         noMedicalStaffView.visibility = View.VISIBLE
         errorConnectionView.visibility = View.GONE
         medicalStaffRecyclerView.visibility = View.GONE
+        filterMedicalStaffView.visibility = View.VISIBLE
     }
 
-    @Synchronized
     private fun addMedicalStaffToList(newUsers: List<User>){
         for (u in newUsers){
             if (u != null) users.add(u)
@@ -106,8 +160,8 @@ class SearchMedicalStaffFragment : Fragment(R.layout.search_medical_staff_fragme
         }
     }
 
-    private fun getAvailableDoctors(){
-        AppointmentRetrofitInstance.appointmentApiService.getDoctorAvailable()
+    private fun getAvailableDoctors(preferredCity: String?, preferredLastName: String?, preferredSpecialization: String?){
+        AppointmentRetrofitInstance.appointmentApiService.getDoctorAvailable(preferredCity, preferredLastName, preferredSpecialization)
             .enqueue(object : Callback<List<Doctor>> {
             override fun onResponse(call: Call<List<Doctor>>, response: Response<List<Doctor>>) {
                 if (response.isSuccessful) {
@@ -129,8 +183,8 @@ class SearchMedicalStaffFragment : Fragment(R.layout.search_medical_staff_fragme
         })
     }
 
-    private fun getAvailableNurses(){
-        AppointmentRetrofitInstance.appointmentApiService.getNursesAvailable()
+    private fun getAvailableNurses(preferredCity: String?, preferredLastName: String?){
+        AppointmentRetrofitInstance.appointmentApiService.getNursesAvailable(preferredCity, preferredLastName)
             .enqueue(object : Callback<List<Nurse>> {
                 override fun onResponse(call: Call<List<Nurse>>, response: Response<List<Nurse>>) {
                     if (response.isSuccessful) {

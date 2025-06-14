@@ -127,7 +127,7 @@ class PrescriptionDetailsFragment : Fragment(R.layout.prescription_details) {
     }
 
     private fun addNewPrescription(){
-        val prescriptionRequest = PrescriptionRequest("a8b4f9dd-381f-4026-a07b-14d5c8621f42",
+        val prescriptionRequest = PrescriptionRequest(prescription?.patient?.id,
             prescription?.medication, prescription?.dosage, prescription?.notes, prescription?.prescriptionTime)
         val token = "Bearer " + preferenceManager.getAuthToken()
         AppointmentRetrofitInstance.appointmentApiService.addNewPrescription(token,
