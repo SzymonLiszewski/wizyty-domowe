@@ -2,8 +2,6 @@ services:
   appointments:
     build: ../backend/appointments
     restart: always
-    ports:
-      - 8082:8082
     networks:
       - spring_mysql
     environment:
@@ -42,8 +40,6 @@ services:
   auth:
     build: ../backend/auth
     restart: always
-    ports:
-      - 8081:8081
     networks:
       - spring_mysql
     environment:
@@ -77,6 +73,14 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       retries: 5
+
+  gateway:
+    build: ../backend/gateway
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - spring_mysql
 
 networks:
   spring_mysql:
