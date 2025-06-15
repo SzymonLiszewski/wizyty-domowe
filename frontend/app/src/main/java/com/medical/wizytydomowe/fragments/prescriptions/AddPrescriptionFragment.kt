@@ -47,6 +47,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
     private lateinit var medicationRecyclerView: RecyclerView
     private lateinit var notesView: MaterialCardView
     private lateinit var errorConnectionView: MaterialCardView
+    private lateinit var noPatientView: MaterialCardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,6 +58,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
 
         userRecyclerView = view.findViewById(R.id.userRecyclerView)
         filterPatientView = view.findViewById(R.id.filterPatientView)
+        noPatientView = view.findViewById(R.id.noPatientView)
         goToThePage3View = view.findViewById(R.id.goToThePage3View)
         addMedicationView = view.findViewById(R.id.addMedicationView)
         medicationRecyclerView = view.findViewById(R.id.medicationRecyclerView)
@@ -115,6 +117,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.GONE
         errorConnectionView.visibility = View.GONE
+        noPatientView.visibility = View.GONE
 
         setPatientRecyclerView()
     }
@@ -127,6 +130,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.GONE
         errorConnectionView.visibility = View.GONE
+        noPatientView.visibility = View.GONE
 
         setMedicationsRecyclerView()
         checkGoToPage3ViewVisibility()
@@ -140,6 +144,18 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.GONE
         errorConnectionView.visibility = View.VISIBLE
+        noPatientView.visibility = View.GONE
+    }
+
+    private fun setNoPatientLayout(){
+        userRecyclerView.visibility = View.GONE
+        filterPatientView.visibility = View.VISIBLE
+        addMedicationView.visibility = View.GONE
+        medicationRecyclerView.visibility = View.GONE
+        goToThePage3View.visibility = View.GONE
+        notesView.visibility = View.GONE
+        errorConnectionView.visibility = View.GONE
+        noPatientView.visibility = View.VISIBLE
     }
 
     private fun setPage3Layout(){
@@ -150,6 +166,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
         goToThePage3View.visibility = View.GONE
         notesView.visibility = View.VISIBLE
         errorConnectionView.visibility = View.GONE
+        noPatientView.visibility = View.GONE
     }
 
     private fun filterPatients(){
@@ -234,7 +251,7 @@ class AddPrescriptionFragment : Fragment(R.layout.add_prescription_fragment)  {
                             users = body
                             setPage(pageNumber)
                         }
-                        else setErrorConnectionLayout()
+                        else setNoPatientLayout()
                     }
                     else setErrorConnectionLayout()
                 }
